@@ -26,7 +26,7 @@ function getButtonTypeStyle(type: ActionButtonType) {
 }
 
 const ActionButton= (props: ActionButtonProps) => {
-    const buttonTypeStyle = getButtonTypeStyle(props.type);
+  const buttonTypeStyle = getButtonTypeStyle(props.type);
   return (
     <TouchableOpacity style={[styles.buttonContainer, buttonTypeStyle]} onPress={props.onPress}>
       <Text style={styles.buttonText}>{props.title}</Text>
@@ -36,15 +36,17 @@ const ActionButton= (props: ActionButtonProps) => {
 
 const styles = StyleSheet.create({
   buttonContainer: {
+    flex: 1,
     backgroundColor: '#007bff', // Example background color
-    paddingVertical: 10,
-    paddingHorizontal: 10,
+    paddingVertical: 25,
+    paddingHorizontal: 5,
     borderRadius: 15, // Adjust for desired roundness
     borderWidth: 5, // Add border
     borderColor: '#0056b3', // Border color
     alignItems: 'center',
     justifyContent: 'center',
-    minWidth: 80,
+    marginHorizontal: 10,
+    //minWidth: 80,
   },
   buttonText: {
     color: '#ffffff', // Text color

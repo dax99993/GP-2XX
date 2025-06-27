@@ -17,6 +17,10 @@ export default function RootLayout() {
     return null;
   }
 
+  //const [gpmidi, setGpmidi] = useState(new GPMidi());
+  //const gpmidi = new GPMidi();
+
+
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>

@@ -6,9 +6,13 @@ function PresetBanner() {
     return (
         <>
         <View style={styles.bannerContainer}>
-            <Text style={styles.presetCodeContainer}>##-D</Text>
-            <View style={styles.presetSeparator}></View>
-            <Text style={styles.presetNameContainer}>Preset name</Text>
+            <View style={styles.presetCodeContainer}>
+              <Text style={styles.text}>##-D</Text>
+            </View>
+            <Text style={styles.presetSeparator}></Text>
+            <View style={styles.presetNameContainer}>
+              <Text style={styles.text}>Preset name</Text>
+            </View>
         </View>
         </>
     )
@@ -17,37 +21,44 @@ function PresetBanner() {
 
 const styles = StyleSheet.create({
   bannerContainer: {
-    //flex: 1,
+    flex: 1,
     flexDirection: 'row',
     backgroundColor: '#007FFF', //azure
     borderRadius: 5,
     borderCurve: 'continuous',
-    minHeight: 60,
-    //alignContent: 'center',
-    //justifyContent: 'center',
+    //minHeight: 60,
     alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
   },
   presetCodeContainer: {
     flex: 1,
     paddingHorizontal: 20,
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: 'white', 
-    //backgroundColor: 'black'
+    backgroundColor: 'lightgray', 
+    //marginBlockEnd: 10,
+    //marginLeft: 10,
   },
   presetSeparator: {
     //flex: 1,
     //paddingHorizontal: 20,
     backgroundColor: 'black', 
-    //maxHeight: '80%',
-    //maxWidth: 15,
+    minHeight: '80%',
+    //maxWidth: 5,
+    //fontSize: 1,
   },
   presetNameContainer: {
     flex: 3,
+    justifyContent: 'center',
+    alignContent: 'center',
+    paddingHorizontal: 20,
+    marginRight: 10,
+    backgroundColor: 'gray'
+  },
+  text: {
     fontSize: 30,
     fontWeight: 'bold',
     color: 'white', 
-
+    textAlign: 'center',
   },
 });
 

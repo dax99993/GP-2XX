@@ -14,6 +14,10 @@ function EffectChain() {
             <EffectUnit/>
             <EffectUnit/>
             <EffectUnit/>
+            <EffectUnit/>
+            <EffectUnit/>
+            <EffectUnit/>
+            <EffectUnit/>
         </View>
         </>
     )
