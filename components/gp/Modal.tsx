@@ -1,3 +1,4 @@
+import { EffectUnitSysEx } from "@/constants/SysExMsg";
 import useGP from "@/hooks/useGP";
 import { useState } from "react";
 import { Alert, Modal, StyleSheet, Text, View } from "react-native";
@@ -6,6 +7,14 @@ import { Alert, Modal, StyleSheet, Text, View } from "react-native";
 export default function ConnectionModal() {
     const [modalVisible, setModalVisible] = useState(true);
     const gpmidi = useGP();
+
+    const send_message = () => {
+        if (gpmidi) {
+            gpmidi.send(
+                EffectUnitSysEx.enablePre
+            );
+        }
+    };
 
     return (
     <Modal
@@ -18,7 +27,7 @@ export default function ConnectionModal() {
           }}>
         <View style={styles.mainContainer}>
             <View style={styles.modalContainer}>
-                <Text style={styles.modalText} onPress={(e)=>{setModalVisible(false)}}>
+                <Text style={styles.modalText} onPress={(e)=>{send_message(); setModalVisible(false)}}>
                     Connect device.
                 </Text>
             </View>

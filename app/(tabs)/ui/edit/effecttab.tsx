@@ -2,6 +2,7 @@ import { Platform, StatusBar, StyleSheet } from 'react-native';
 
 import { ThemedView } from '@/components/ThemedView';
 
+
 import EffectChain from '@/components/gp/EffectChain';
 
 
@@ -9,7 +10,7 @@ export default function HomeScreen() {
 
   return (
       <ThemedView style={styles.mainContainer}>
-        <EffectChain></EffectChain>
+        <EffectChain/>
       </ThemedView>
   );
 }

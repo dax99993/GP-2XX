@@ -1,17 +1,45 @@
+import { observer } from "mobx-react-lite";
 import { StyleSheet, Text, View } from "react-native";
 
 
+type PresetBannerProps = {
+  presetName: string;
+  presetNumber: number;
+}
 
-function PresetBanner() {
+function presetNumberToCode(number: number) : string {
+  const bankNumber = Math.floor(number / 4) + 1;
+  let bankLetter: string = "";
+  switch (number % 4) {
+    case 0:
+      bankLetter = 'A';
+      break;
+    case 1:
+      bankLetter = 'B';
+      break;
+    case 2:
+      bankLetter = 'C';
+      break;
+    case 3:
+      bankLetter = 'D';
+      break;
+  }
+
+  return bankNumber + '-' + bankLetter;
+}
+
+function PresetBanner(props: PresetBannerProps) {
+
+  
     return (
         <>
         <View style={styles.bannerContainer}>
             <View style={styles.presetCodeContainer}>
-              <Text style={styles.text}>##-D</Text>
+              <Text style={styles.text}>{presetNumberToCode(props.presetNumber)}</Text>
             </View>
             <Text style={styles.presetSeparator}></Text>
             <View style={styles.presetNameContainer}>
-              <Text style={styles.text}>Preset name</Text>
+              <Text style={styles.text}>{props.presetName}</Text>
             </View>
         </View>
         </>
@@ -33,7 +61,7 @@ const styles = StyleSheet.create({
   },
   presetCodeContainer: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     backgroundColor: 'lightgray', 
     //marginBlockEnd: 10,
     //marginLeft: 10,
@@ -62,4 +90,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PresetBanner;
+export default observer(PresetBanner);

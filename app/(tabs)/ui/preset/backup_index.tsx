@@ -5,46 +5,77 @@ import { ThemedView } from '@/components/ThemedView';
 import ActionButton from '@/components/gp/ActionButton';
 import PresetBanner from '@/components/gp/PresetBanner';
 import { ActionButtonType } from '@/components/gp/types';
+import { MidiPlaygroundArea } from '@/components/MidiArea';
+import { PatchChangeBaseSysEx, PatchChangeZeroSysEx } from '@/constants/SysExMsg';
 import { MidiIoContext } from '@/contexts/MidiIoContext';
-import { useContext, useEffect } from 'react';
-
-import { observer } from 'mobx-react-lite';
-
-import { gp200 } from '@/models/gp200';
+import { useContext, useEffect, useState } from 'react';
 
 
-function HomeScreen() {
+function getchangePresetSysEx(num: number) {
+  let baseSysEx = PatchChangeBaseSysEx; 
+  const high_byte = (num >> 4) & 0x0f;
+  const low_byte = (num) & 0x0f;
+  baseSysEx[25] = high_byte;
+  baseSysEx[26] = low_byte; 
 
+  return baseSysEx;
+}
+
+
+export default function HomeScreen() {
+
+  const [presetNum, setPresetNum] = useState(0);
+  
   const { inputPort, outputPort } = useContext(MidiIoContext);
 
   useEffect(()=>{
       console.log("Setting bank to 0");
-      if (outputPort && inputPort) {
-        gp200.setInput(inputPort);
-        gp200.setOutput(outputPort);
-
-        gp200.changePreset(0);
+      if (outputPort) {
+        outputPort.send(PatchChangeZeroSysEx);
       }
   }, []);
 
-  const increment = () => {
-    gp200.incrementPresetNum();
-  }
+  useEffect(()=>{
+    console.log(inputPort);
+    console.log(outputPort);
+  }, [inputPort, outputPort]);
 
-  const decrement = () => {
-    gp200.decrementPresetNum();
-  }
+
+  useEffect(() => {
+    console.log(presetNum);
+      if (outputPort) {
+        outputPort.send(getchangePresetSysEx(presetNum));
+      }
+  }, [presetNum]);
+
+    const preset_plus = () => {
+      let n = presetNum + 1;
+      if (n > 255) {
+        n = 0;
+      }
+      setPresetNum(n);
+    }
+
+    const preset_minus= () => {
+      let n = presetNum - 1;
+      if (n < 0) {
+        n = 255;
+      }
+      setPresetNum(n);
+    }
+  
+
 
   return (
     <>
       <ThemedView style={styles.maincontainer}>
         <View style={styles.presetContainer}>
           <View style={styles.bannerContainer}>
-            <PresetBanner presetName='Preset Name' presetNumber={gp200.current_preset}></PresetBanner>
+            <PresetBanner presetName='Preset Name' presetNumber={presetNum}></PresetBanner>
           </View>
           <View style={styles.viewButtons}>
-            <ActionButton title={"Patch -"} type={ActionButtonType.Patch} onPress={decrement}></ActionButton>
-            <ActionButton title={"Patch +"} type={ActionButtonType.Patch} onPress={increment}></ActionButton>
+            <ActionButton title={"Patch -"} type={ActionButtonType.Patch} onPress={preset_minus}></ActionButton>
+            <ActionButton title={"Patch +"} type={ActionButtonType.Patch} onPress={preset_plus}></ActionButton>
             <ActionButton title={"Bank"} type={ActionButtonType.ControlOn} onPress={() => { }}></ActionButton>
             <ActionButton title={"Tap"} type={ActionButtonType.Tap} onPress={() => { }}></ActionButton>
           </View>
@@ -56,11 +87,14 @@ function HomeScreen() {
           </View>
         </View>
         <View style={styles.controlContainer}>
+          <MidiPlaygroundArea/>
         </View>
       </ThemedView>
     </>
   );
 }
+          // <View style={styles.viewButtons}>
+          // </View>
 
 const styles = StyleSheet.create({
   maincontainer: {
@@ -94,5 +128,3 @@ const styles = StyleSheet.create({
     //maxWidth: 500,
   }
 });
-
-export default observer(HomeScreen);

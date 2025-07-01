@@ -1,3 +1,4 @@
+import { EffectUnitSysEx } from "@/constants/SysExMsg";
 import { MIDIAccess, MIDIOutput, requestMIDIAccess } from "@motiz88/react-native-midi";
 import { useEffect, useState } from "react";
 
@@ -33,9 +34,9 @@ function getOutputDevice(access: MIDIAccess) {
 function useGP() { 
     const [midiAccess, setMidiAccess] = useState<MIDIAccess | null>(null);
     const [midiOutput, setMidiOutput] = useState<MIDIOutput | null>(null);
-    const [midiChangeState, setMidiChangeState] = useState(false);
+    //const [midiChangeState, setMidiChangeState] = useState(false);
 
-    const [connected, setConnected] = useState(false);
+    //const [connected, setConnected] = useState(false);
     
     // Get MIDI access
     useEffect(() => {
@@ -51,36 +52,37 @@ function useGP() {
             setMidiChangeState(true);
         }
         */
-
+        setMidiAccess(access);
         console.log("Request midi access")
         console.log("midi access", '\n', access);
 
         });
     }, []);
 
-    // useEffect(() => {
-    // //     async () => {
-    // //         const access = await getMidiAccess();
-    // //         console.log("Access: ", access);
-    //         if (midiAccess) {
-    //          //const input = getInputDevice(midiAccess);
-    //          const output = getOutputDevice(midiAccess);
-    //          if (output) {
-    //             console.log("Found device!");
-    //             setMidiOutput(output);
-    //             //console.log("Get input", input);
-    //             console.log("Get output", output);
-    //          }
-    //         }
-    // //     }
-    // }, [midiAccess, midiChangeState]);
+    useEffect(() => {
+        if (midiAccess) {
+             //const input = getInputDevice(midiAccess);
+            const output = getOutputDevice(midiAccess);
+            if (output) {
+                console.log("Found device!");
+                console.log("Get output", output);
+                setMidiOutput(output);
+             }
+            }
+    }, [midiAccess]);
 
     useEffect(() => {
-        console.log("Some change:", midiAccess);
-    },[midiChangeState]);
+        if (midiOutput) {
+            midiOutput.send(EffectUnitSysEx.enablePre);
+        }
+    }, [midiOutput]);
+
+    // useEffect(() => {
+    //     console.log("Some change:", midiAccess);
+    // },[midiChangeState]);
     
 
-    //return gpmidi;
+    return midiOutput;
 }
 
 export default useGP;
