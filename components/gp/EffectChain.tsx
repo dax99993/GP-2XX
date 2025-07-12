@@ -12,7 +12,7 @@ function EffectChain() {
 
   const renderItem = useCallback<SortableGridRenderItem<string>>(
     ({ item }) => (
-      <EffectUnit title={item} effecttype={item.toLocaleLowerCase()}/>
+      <EffectUnit title={item} type={item.toLocaleLowerCase()}/>
     ),
     []
   );

@@ -1,16 +1,10 @@
-import { Effect } from "@/models/effect/effect";
-import { StyleSheet, Text, View } from "react-native";
-
-
-enum EffectType {
-    PRE = "pre",
-    WAH = "wah",
-    DST = "dst",
-}
+import { gp200 } from "@/models/gp200";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type EffectUnitProps = {
-    effect: Effect;
+    //effect: Effect;
     title: string;
+    type: string;
 }
 
 function getStyle(effecttype: string) {
@@ -37,12 +31,19 @@ function getStyle(effecttype: string) {
 function EffectUnit(props:EffectUnitProps) {
 
 
-    const style = getStyle(props.effecttype.toString());
+    const style = getStyle(props.type.toString());
+
+    const select_unit = () => {
+      console.log("You select ", props.title);
+      gp200.changeSelectedEffect(props.title);
+    }
 
     return (
+      <TouchableOpacity onPress={select_unit}>
         <View style={[styles.baseContainer, style]}>
-           <Text style={styles.text}>{props.title}</Text>
+          <Text style={styles.text}>{props.title}</Text>
         </View>
+      </TouchableOpacity>
     )
 }
 
@@ -57,10 +58,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'lightblue',
   },
   wahContainer: {
-    backgroundColor: 'yellow',
+    backgroundColor: 'lightgreen',
   },
   dstContainer: {
-    backgroundColor: 'lightred',
+    backgroundColor: 'orange',
   },
   text: {
     color: '#fff',

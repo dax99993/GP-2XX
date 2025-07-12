@@ -1,3 +1,4 @@
+import { EffectType } from "@/models/effect/effect";
 import { gp200 } from "@/models/gp200";
 import { observer } from "mobx-react-lite";
 import { StyleSheet, Switch, Text, View } from "react-native";
@@ -10,21 +11,20 @@ function EffectEdit() {
         <View style={styles.mainContainer}>
             <View style={styles.selectionContainer}>
                 <View style={styles.stateContainer}>
-                    <Text>State</Text>
+                    <Text>{`State ${EffectType[gp200.current_effect.type]}`}</Text>
                     <Switch
                         onValueChange={(v) => {
                             console.log(v);
-                            gp200.current_preset.pre.toggleState();
-                            gp200.changeEffectState();
+                            gp200.changeEffectState(v);
                         }}
-                        value={gp200.current_preset.pre.state}
+                        value={gp200.current_effect.state}
                     />
                 </View>
                 <Text>List of Effects</Text>
             </View>
             <View style={styles.parametersContainer}>
                 <Text>Parameters</Text>
-                { gp200.current_preset.pre.parameters.map(p => (
+                { gp200.current_effect.parameters.map(p => (
                     <Parameter key={p.name} name={p.name} initial_value={p.getValue()}/>
                 )) 
                 }

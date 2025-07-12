@@ -1,8 +1,9 @@
 import { action, makeObservable, observable } from "mobx";
 import { DeserializeParam, Parameter } from "../parameter/parameter";
 
-enum EffectType {
-    PRE,
+// this also encodes the natural order of pedal types id in default chain order
+export enum EffectType {
+    PRE = 0,
     WAH,
     DST,
     AMP,
@@ -25,6 +26,7 @@ export class Effect {
     state: boolean;
     parameters: Parameter[]
     //position
+
 
     constructor(name: string, id: number[], description: string, effect_type: EffectType, state: boolean, parameters: Parameter[]) {
         // TODO safety checks
@@ -53,6 +55,10 @@ export class Effect {
 
     toggleState() {
         this.state = !this.state;
+    }
+
+    changeState(state: boolean) {
+        this.state = state;
     }
 }
 

@@ -2,6 +2,7 @@ import { changeEffectState, PatchChangeBaseSysEx, SysExHeader } from "@/constant
 import { MIDIInput, MIDIMessageEvent, MIDIOutput } from "@motiz88/react-native-midi";
 
 import { action, makeObservable, observable } from "mobx";
+import { Effect } from "./effect/effect";
 import { default_preset, Preset } from "./preset";
 
 
@@ -25,6 +26,8 @@ class GP200Model {
     current_preset: Preset;
     current_preset_number: number;
 
+    current_effect: Effect;
+
     // Internal props
     message_received_counter: number;
 
@@ -37,13 +40,19 @@ class GP200Model {
 
         // Just to test
         this.current_preset = default_preset;
-        console.log(JSON.stringify(default_preset));
+        //console.log(JSON.stringify(default_preset));
+        this.current_effect = default_preset.nr;
 
         makeObservable(this, {
             current_preset_number: observable,
-            changePreset: action,
+            current_effect: observable,
+            // Change preset actions
             incrementPresetNum: action,
             decrementPresetNum: action,
+            changePreset: action,
+
+            // Change effect actions
+            changeSelectedEffect: action,
         });
 
     }
@@ -103,10 +112,49 @@ class GP200Model {
     // changeEffect() // Change the effect for a given effect unit
     // changeParameterEffect() // Change the effect for a given effect unit
 
-    changeEffectState() {
+    changeEffectState(state: boolean) {
         // should select current preset and current pedal
-        //this.current_preset.pre
-        this._midiChangeEffectState(0, this.current_preset.pre.state);
+        this.current_effect.changeState(state);
+        console.log("Effect type", this.current_effect.type);
+        this._midiChangeEffectState(this.current_effect.type, this.current_effect.state);
+    }
+
+    changeSelectedEffect(type: string) {
+      switch (type) {
+        case 'PRE':
+          this.current_effect = this.current_preset.pre;
+          break;
+        case 'WAH':
+          this.current_effect = this.current_preset.wah;
+          break;
+        case 'DST':
+          this.current_effect = this.current_preset.dst;
+          break;
+        case 'AMP':
+          this.current_effect = this.current_preset.amp;
+          break;
+        case 'NR':
+          this.current_effect = this.current_preset.nr;
+          break;
+        case 'CAB':
+          this.current_effect = this.current_preset.cab;
+          break;
+        case 'EQ':
+          this.current_effect = this.current_preset.eq;
+          break;
+        case 'MOD':
+          this.current_effect = this.current_preset.mod;
+          break;
+        case 'DLY':
+          this.current_effect = this.current_preset.dly;
+          break;
+        case 'RVB':
+          this.current_effect = this.current_preset.rvb;
+          break;
+        case 'VOL':
+          this.current_effect = this.current_preset.vol;
+          break;
+      }
     }
 
     // INTERNAL METHODS
