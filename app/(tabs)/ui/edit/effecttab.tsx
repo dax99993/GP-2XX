@@ -4,40 +4,25 @@ import { ThemedView } from '@/components/ThemedView';
 
 
 import EffectChain from '@/components/gp/EffectChain';
+import EffectEdit from '@/components/gp/EffectEdit';
 
 
-export default function HomeScreen() {
+export default function EditScreen() {
 
   return (
       <ThemedView style={styles.mainContainer}>
         <EffectChain/>
+        <EffectEdit/>
       </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   mainContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    //gap: 8,
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-  viewButtons: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    maxWidth: 500,
-  }
 });

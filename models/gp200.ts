@@ -1,7 +1,8 @@
-import { PatchChangeBaseSysEx, SysExHeader } from "@/constants/SysExMsg";
+import { changeEffectState, PatchChangeBaseSysEx, SysExHeader } from "@/constants/SysExMsg";
 import { MIDIInput, MIDIMessageEvent, MIDIOutput } from "@motiz88/react-native-midi";
 
 import { action, makeObservable, observable } from "mobx";
+import { default_preset, Preset } from "./preset";
 
 
 
@@ -14,22 +15,32 @@ function compareArrays(a: number[] | Uint8Array, b: number[] | Uint8Array) {
 
 class GP200Model {
 
+    // MIDI communication
     private inputPort: MIDIInput;
     private outputPort: MIDIOutput;
 
 
-    current_preset: number;
+    //
+    //presets: Preset[];
+    current_preset: Preset;
+    current_preset_number: number;
+
+    // Internal props
     message_received_counter: number;
 
     constructor() {
 
         // initialize internal values
-        this.current_preset = 0;
+        this.current_preset_number = 0;
 
         this.message_received_counter = 0;
 
+        // Just to test
+        this.current_preset = default_preset;
+        console.log(JSON.stringify(default_preset));
+
         makeObservable(this, {
-            current_preset: observable,
+            current_preset_number: observable,
             changePreset: action,
             incrementPresetNum: action,
             decrementPresetNum: action,
@@ -62,21 +73,21 @@ class GP200Model {
     }
 
     incrementPresetNum() {
-      this.current_preset++;
-      if (this.current_preset > 255) {
-        this.current_preset = 0;
+      this.current_preset_number++;
+      if (this.current_preset_number > 255) {
+        this.current_preset_number = 0;
       }
 
-      this.changePreset(this.current_preset);
+      this.changePreset(this.current_preset_number);
     }
 
     decrementPresetNum() {
-      this.current_preset--;
-      if (this.current_preset < 0) {
-        this.current_preset = 255;
+      this.current_preset_number--;
+      if (this.current_preset_number < 0) {
+        this.current_preset_number = 255;
       }
 
-      this.changePreset(this.current_preset);
+      this.changePreset(this.current_preset_number);
     }
 
     // savePreset()
@@ -90,9 +101,13 @@ class GP200Model {
     // -- EFFECT CHAIN ACTIONS
     // changePresetChainOrder()
     // changeEffect() // Change the effect for a given effect unit
-    // changeStatusEffect() // turn on or off
     // changeParameterEffect() // Change the effect for a given effect unit
 
+    changeEffectState() {
+        // should select current preset and current pedal
+        //this.current_preset.pre
+        this._midiChangeEffectState(0, this.current_preset.pre.state);
+    }
 
     // INTERNAL METHODS
     sendSysEx(message: Uint8Array | number[]) {
@@ -108,7 +123,8 @@ class GP200Model {
             // };
 
             const incomingMessage = [...event.data];
-            console.log("event ", this.message_received_counter,event.receivedTime);
+            const messageHex = incomingMessage.map((b) => b.toString(16).toUpperCase().padStart(2, "0")).join(" ");
+            console.log(`Midievent (${this.message_received_counter}) : ${messageHex}`);
             this.message_received_counter++;
             this.decodeReceivedSysEx(incomingMessage);
         };
@@ -121,10 +137,10 @@ class GP200Model {
        // Parse the message
        // execute corresponding action 
         if (this._isGPSysEx(message)) {
-            console.log("GP SysEx received");
+            //console.log("GP SysEx received");
             //console.log(message);
             if (message.length == 30) {
-                console.log("Parsing 30 length message.");
+                //console.log("Parsing 30 length message.");
                 this.decodeSysEx30length(message);
 
             } else if (message.length == 46) {
@@ -132,7 +148,7 @@ class GP200Model {
                 this.decodeSysEx46length(message);
 
             } else {
-                console.log("Parsing " + message.length + "length message.");
+                //console.log("Parsing " + message.length + "length message.");
             }
         }
     }
@@ -155,19 +171,6 @@ class GP200Model {
         return this._isSysEx(message) && compareArrays(message.slice(1, SysExHeader.length + 1), SysExHeader);
     }
 
-    _midiGetChangePreset(message: number[] | Uint8Array) {
-        // We already know this is the kind of message
-        let baseSysEx = message;
-        const high_byte = baseSysEx[25] 
-        const low_byte = baseSysEx[26]
-
-        console.log("bytes ", high_byte, low_byte);
-
-        const num = ((high_byte & 0x0f) << 4) | (low_byte & 0x0f);
-        console.log("read change preset number = ", num);
-
-        this.current_preset = num;
-    }
 
     // encodeSysEx()
 
@@ -180,6 +183,29 @@ class GP200Model {
         msg[26] = low_byte;
 
         this.sendSysEx(msg);
+    }
+
+    _midiGetChangePreset(message: number[] | Uint8Array) {
+        // We already know this is the kind of message
+        let baseSysEx = message;
+        const high_byte = baseSysEx[25] 
+        const low_byte = baseSysEx[26]
+
+        //console.log("bytes ", high_byte, low_byte);
+
+        const num = ((high_byte & 0x0f) << 4) | (low_byte & 0x0f);
+        //console.log("read change preset number = ", num);
+
+        this.current_preset_number = num;
+    }
+
+    _midiChangeEffectState(pedal_id: number, state: boolean) {
+       let baseSysEx = changeEffectState;
+       // check range of ids from 0 to 10 inclusive
+        baseSysEx[0x16] = pedal_id;
+        baseSysEx[0x18] = state ? 1: 0;
+
+        this.sendSysEx(baseSysEx);
     }
     // _midiGetPresets() // execute sequence to start receiving all preset information
     // _

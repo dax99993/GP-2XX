@@ -40,7 +40,7 @@ function HomeScreen() {
       <ThemedView style={styles.maincontainer}>
         <View style={styles.presetContainer}>
           <View style={styles.bannerContainer}>
-            <PresetBanner presetName='Preset Name' presetNumber={gp200.current_preset}></PresetBanner>
+            <PresetBanner presetName='Preset Name' presetNumber={gp200.current_preset_number}></PresetBanner>
           </View>
           <View style={styles.viewButtons}>
             <ActionButton title={"Patch -"} type={ActionButtonType.Patch} onPress={decrement}></ActionButton>

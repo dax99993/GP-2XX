@@ -66,6 +66,7 @@ export default function HomeScreen() {
             </View>
             <View style={{flex: 1, justifyContent: 'flex-end', paddingBottom: 100}}>
             <Button title="About" onPress={() => {router.navigate('/about')}}></Button>
+            <Button title="Go to UI" onPress={() => {router.replace('/ui/preset')}}></Button>
             </View>
         </View>
     );

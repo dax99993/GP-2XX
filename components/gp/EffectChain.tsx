@@ -18,7 +18,7 @@ function EffectChain() {
   );
 
     return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView style={{ flex: 1, marginBottom: 0}}>
         <View style={styles.container}>
           <Sortable.Grid
             columnGap={10}

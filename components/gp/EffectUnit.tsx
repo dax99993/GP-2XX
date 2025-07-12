@@ -1,3 +1,4 @@
+import { Effect } from "@/models/effect/effect";
 import { StyleSheet, Text, View } from "react-native";
 
 
@@ -8,8 +9,7 @@ enum EffectType {
 }
 
 type EffectUnitProps = {
-    effecttype: string;
-    //effecttype: EffectType;
+    effect: Effect;
     title: string;
 }
 
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'yellow',
   },
   dstContainer: {
-    backgroundColor: 'red',
+    backgroundColor: 'lightred',
   },
   text: {
     color: '#fff',
