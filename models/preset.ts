@@ -1,26 +1,26 @@
 import { DefaultEffectsInfo } from "@/constants/DefaultEffects";
 import { makeObservable, observable } from "mobx";
-import { DeserializeEffect, Effect, EffectType } from "./effect/effect";
+import { DeserializeEffect, EffectModel, EffectType } from "./effect/effect";
 import { IEffect, IEffectsInfo } from "./effect/effectInfo";
 
-export class Preset {
+export class PresetModel {
     // preset number?
     // name
     name: string;
     // effects or effect chain    
     chainOrder: number[];
 
-    pre: Effect;
-    wah: Effect;
-    dst: Effect;
-    amp: Effect;
-    nr: Effect;
-    cab: Effect;
-    eq: Effect;
-    mod: Effect;
-    dly: Effect;
-    rvb: Effect;
-    vol: Effect;
+    pre: EffectModel;
+    wah: EffectModel;
+    dst: EffectModel;
+    amp: EffectModel;
+    nr: EffectModel;
+    cab: EffectModel;
+    eq: EffectModel;
+    mod: EffectModel;
+    dly: EffectModel;
+    rvb: EffectModel;
+    vol: EffectModel;
 
     // category
     // author
@@ -67,11 +67,11 @@ export class Preset {
         this.chainOrder = new_order
     }
 
-    getEffect(effectName: string, type: EffectType): Effect {
+    getEffect(effectName: string, type: EffectType): EffectModel {
 
         const deserializeEffect = new DeserializeEffect();
 
-        let eff: Effect;
+        let eff: EffectModel;
         const effectsInfo: IEffectsInfo[] = Object.values(DefaultEffectsInfo);
         //console.log(Object.values(DefaultEffectsInfo));
         effectsInfo.forEach(effectsInfo => {
@@ -92,10 +92,17 @@ export class Preset {
 
 // default Gp200 preset
 // pre Boost,
-export const default_preset = new Preset("It's GP-200",
-    "Boost", "V-Wah", "Green OD",
+export const default_preset = new PresetModel("It's GP-200",
+    "Auto Swell", "V-Wah", "Green OD",
     "Tweedy", "Gate 1", "SUP ZEP",
-    "Guitar EQ1", "G-Chorus", "BBD Delay S",
+    "Mess EQ", "G-Chorus", "BBD Delay S",
     "Room", "Volume"
     );
+
+// export const default_preset = new PresetModel("It's GP-200",
+//     "Boost", "V-Wah", "Green OD",
+//     "Tweedy", "Gate 1", "SUP ZEP",
+//     "Mess EQ", "G-Chorus", "BBD Delay S",
+//     "Room", "Volume"
+//     );
 // Presets array of 256 []

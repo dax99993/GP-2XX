@@ -1,9 +1,10 @@
 import { useRouter } from 'expo-router';
-import { useContext } from 'react';
 import { Button, StyleSheet, Text, View } from "react-native";
 
-import { MidiIoSetupContext } from '@/contexts/MidiIoSetupContext';
+import { store } from '@/models/store';
 import { MIDIAccess } from "@motiz88/react-native-midi";
+import { observer } from 'mobx-react-lite';
+
 
 
 function getOutputDevice(access: MIDIAccess) {
@@ -18,29 +19,22 @@ function getOutputDevice(access: MIDIAccess) {
     return null;
 }
 
-export default function HomeScreen() {
+
+function HomeScreen() {
     const router = useRouter();
-
-  const {
-    inputs,
-    outputs,
-    setCurrentInputId,
-    currentInputId,
-    setCurrentOutputId,
-    currentOutputId,
-  } = useContext(MidiIoSetupContext);
-
 
     const scan_for_devices = () => {
         console.log('scanning');
-        console.log('inputs: ', inputs);
-        console.log('outputs', outputs);
+        store.gpmidi.midi.getMidiAccess();
+        console.log('inputs: ', store.gpmidi.midi.inputs);
+        console.log('outputs', store.gpmidi.midi.outputs);
     }
 
     const connect_procedure = (id:string) => {
-        console.log("id : ", id); 
-        setCurrentInputId(id);
-        setCurrentOutputId(id);
+        console.log("id: ", id); 
+        store.gpmidi.midi.setInput(id);
+        store.gpmidi.midi.setOutput(id);
+
         router.replace('/ui/preset');
     };
 
@@ -50,15 +44,16 @@ export default function HomeScreen() {
             <Text style={styles.text}>Connection screen</Text>
             <View style={{flex: 4}}>
                 <Button title="Scan for devices" onPress={scan_for_devices}></Button>
-                { inputs && outputs &&
+                { store.gpmidi.midi.inputs && store.gpmidi.midi.inputs?.size != 0 && 
+                  store.gpmidi.midi.outputs && store.gpmidi.midi.outputs?.size != 0 &&
                 <View>
                     <Text style={styles.text}>Found Devices</Text>
-                    <View style={{flexDirection: 'row', alignContent: 'space-between', justifyContent: 'space-between'}}>
-                        { [...inputs.entries()].map(([key, input]) => (
-                            <>
+                    <View style={{flexDirection: 'column', alignContent: 'space-between', justifyContent: 'space-between', marginBottom:20}}>
+                        { [...store.gpmidi.midi.inputs.entries()].map(([key, input]) => (
+                            <View style={{flexDirection: 'row'}}>
                             <Text style={styles.text}>{input.name}</Text>
                             <Button title="Connect" onPress={() => connect_procedure(key)}></Button>
-                            </>
+                            </View>
                         )) }
                     </View>
                 </View>
@@ -79,5 +74,8 @@ const styles = StyleSheet.create({
     text: {
         color: 'white',
         fontSize: 20,
+        marginRight: 20,
     }
 })
+
+export default observer(HomeScreen);

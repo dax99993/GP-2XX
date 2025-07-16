@@ -1,19 +1,11 @@
-import { EffectUnitSysEx } from "@/constants/SysExMsg";
-import useGP from "@/hooks/useGP";
 import { useState } from "react";
 import { Alert, Modal, StyleSheet, Text, View } from "react-native";
 
 
 export default function ConnectionModal() {
     const [modalVisible, setModalVisible] = useState(true);
-    const gpmidi = useGP();
 
     const send_message = () => {
-        if (gpmidi) {
-            gpmidi.send(
-                EffectUnitSysEx.enablePre
-            );
-        }
     };
 
     return (

@@ -1,5 +1,5 @@
 import { action, makeObservable, observable } from "mobx";
-import { DeserializeParam, Parameter } from "../parameter/parameter";
+import { DeserializeParam, IParameter } from "../parameter/parameter";
 
 // this also encodes the natural order of pedal types id in default chain order
 export enum EffectType {
@@ -17,18 +17,18 @@ export enum EffectType {
 }
 
 
-export class Effect {
+export class EffectModel {
     name: string;
     id: number[];
     description: string;
     type: EffectType;
     // false -> turn off; true -> turn on
     state: boolean;
-    parameters: Parameter[]
+    parameters: IParameter[]
     //position
 
 
-    constructor(name: string, id: number[], description: string, effect_type: EffectType, state: boolean, parameters: Parameter[]) {
+    constructor(name: string, id: number[], description: string, effect_type: EffectType, state: boolean, parameters: IParameter[]) {
         // TODO safety checks
         this.name = name;
         this.id = id;
@@ -41,6 +41,7 @@ export class Effect {
             state: observable,
             parameters: observable,
             toggleState: action,
+            changeState: action,
             //decrementPresetNum: action,
         });
     }
@@ -64,19 +65,19 @@ export class Effect {
 
 
 export class DeserializeEffect {
-    deserialize(jsonObject: any): Effect {
+    deserialize(jsonObject: any): EffectModel {
         //console.log('Received Effect Json = ', jsonObject);
 
         // Get typed parameter vector
         const deserializeParam = new DeserializeParam();
 
-        let params: Parameter[];
-        params = jsonObject["params"].map(p => deserializeParam.deserialize(p)) as Parameter[];
+        let params: IParameter[];
+        params = jsonObject["params"].map(p => deserializeParam.deserialize(p)) as IParameter[];
 
         let effect_type: keyof typeof EffectType;
         effect_type = jsonObject['type'] as keyof typeof EffectType;
 
-        const e = new Effect(jsonObject['name'], jsonObject['id'], jsonObject["description"],
+        const e = new EffectModel(jsonObject['name'], jsonObject['id'], jsonObject["description"],
             EffectType[effect_type], true,
             params
         );

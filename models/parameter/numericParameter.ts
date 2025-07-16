@@ -1,6 +1,7 @@
-import { Labels, Parameter } from "@/models/parameter/parameter";
+import { IParameter, Labels } from "@/models/parameter/parameter";
+import { makeAutoObservable } from "mobx";
 
-export class NumericParameter implements Parameter {
+export class NumericParameterModel implements IParameter {
     type: string = "Numeric";
     // Name of the parameter (ex. Threshold)
     name: string;
@@ -43,6 +44,8 @@ export class NumericParameter implements Parameter {
         this.labels = labels;
         this.changes_param = changes_param;
         this.numeric_type = numeric_type;
+
+        makeAutoObservable(this);
     }
 
     getValue(): number {

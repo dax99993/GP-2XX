@@ -5,34 +5,27 @@ import { ThemedView } from '@/components/ThemedView';
 import ActionButton from '@/components/gp/ActionButton';
 import PresetBanner from '@/components/gp/PresetBanner';
 import { ActionButtonType } from '@/components/gp/types';
-import { MidiIoContext } from '@/contexts/MidiIoContext';
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 
+import { store } from '@/models/store';
 import { observer } from 'mobx-react-lite';
 
-import { gp200 } from '@/models/gp200';
 
 
 function HomeScreen() {
 
-  const { inputPort, outputPort } = useContext(MidiIoContext);
-
   useEffect(()=>{
       console.log("Setting bank to 0");
-      if (outputPort && inputPort) {
-        gp200.setInput(inputPort);
-        gp200.setOutput(outputPort);
-
-        gp200.changePreset(0);
-      }
+      // send message
+      store.gp200.changePreset(0);
   }, []);
 
   const increment = () => {
-    gp200.incrementPresetNum();
+    store.gp200.incrementPresetNum();
   }
 
   const decrement = () => {
-    gp200.decrementPresetNum();
+    store.gp200.decrementPresetNum();
   }
 
   return (
@@ -40,7 +33,7 @@ function HomeScreen() {
       <ThemedView style={styles.maincontainer}>
         <View style={styles.presetContainer}>
           <View style={styles.bannerContainer}>
-            <PresetBanner presetName='Preset Name' presetNumber={gp200.current_preset_number}></PresetBanner>
+            <PresetBanner presetName='Preset Name' presetNumber={store.gp200.current_preset_number}></PresetBanner>
           </View>
           <View style={styles.viewButtons}>
             <ActionButton title={"Patch -"} type={ActionButtonType.Patch} onPress={decrement}></ActionButton>

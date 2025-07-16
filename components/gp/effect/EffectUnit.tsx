@@ -1,4 +1,4 @@
-import { gp200 } from "@/models/gp200";
+import { store } from "@/models/store";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type EffectUnitProps = {
@@ -35,13 +35,15 @@ function EffectUnit(props:EffectUnitProps) {
 
     const select_unit = () => {
       console.log("You select ", props.title);
-      gp200.changeSelectedEffect(props.title);
+      store.gp200.changeSelectedEffect(props.title);
     }
 
     return (
       <TouchableOpacity onPress={select_unit}>
         <View style={[styles.baseContainer, style]}>
-          <Text style={styles.text}>{props.title}</Text>
+          <View style={styles.unitContainer}>
+            <Text style={styles.text}>{props.title}</Text>
+          </View>
         </View>
       </TouchableOpacity>
     )
@@ -49,13 +51,24 @@ function EffectUnit(props:EffectUnitProps) {
 
 const styles = StyleSheet.create({
   baseContainer: {
-    borderRadius: 10,
-    height: 100,
+    borderRadius: 5,
+    height: 80,
+    width: 80,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    borderColor: 'lightblue',
+    borderWidth: 5,
+  },
+  unitContainer: {
+    height: 70,
+    width: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'red',
   },
   preContainer: {
-    backgroundColor: 'lightblue',
+    //backgroundColor: 'lightblue',
+    width: '100%',
   },
   wahContainer: {
     backgroundColor: 'lightgreen',

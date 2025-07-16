@@ -1,8 +1,8 @@
 import { EffectType } from "@/models/effect/effect";
-import { gp200 } from "@/models/gp200";
+import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 import { StyleSheet, Switch, Text, View } from "react-native";
-import Parameter from "./Parameter";
+import ParameterBox from "../parameter/Parameter";
 
 
 function EffectEdit() {
@@ -11,21 +11,21 @@ function EffectEdit() {
         <View style={styles.mainContainer}>
             <View style={styles.selectionContainer}>
                 <View style={styles.stateContainer}>
-                    <Text>{`State ${EffectType[gp200.current_effect.type]}`}</Text>
+                    <Text>{`State ${EffectType[store.gp200.current_effect.type]}`}</Text>
                     <Switch
                         onValueChange={(v) => {
                             console.log(v);
-                            gp200.changeEffectState(v);
+                            store.gp200.changeEffectState(v);
                         }}
-                        value={gp200.current_effect.state}
+                        value={store.gp200.current_effect.state}
                     />
                 </View>
                 <Text>List of Effects</Text>
             </View>
             <View style={styles.parametersContainer}>
                 <Text>Parameters</Text>
-                { gp200.current_effect.parameters.map(p => (
-                    <Parameter key={p.name} name={p.name} initial_value={p.getValue()}/>
+                { store.gp200.current_effect.parameters.map(p => (
+                    <ParameterBox key={p.name} param={p}/>
                 )) 
                 }
             </View>

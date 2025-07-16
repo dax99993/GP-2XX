@@ -1,6 +1,6 @@
-import { Labels, Parameter } from "./parameter";
+import { IParameter, Labels } from "./parameter";
 
-export class DoubleParameter implements Parameter {
+export class DoubleParameterModel implements IParameter {
     type: string = "Double";
     name: string;
     min_value: number[];

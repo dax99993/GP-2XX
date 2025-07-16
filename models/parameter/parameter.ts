@@ -1,10 +1,10 @@
-import { DoubleParameter } from "./doubleParameter";
-import { NumericParameter } from "./numericParameter";
-import { SelectParameter } from "./selectParameter";
+import { DoubleParameterModel } from "./doubleParameter";
+import { NumericParameterModel } from "./numericParameter";
+import { SelectParameterModel } from "./selectParameter";
 
 export type Labels = Record<number, string>;
 
-export interface Parameter {
+export interface IParameter {
     // General props
     name: string;
     type: string;
@@ -35,25 +35,25 @@ export interface Parameter {
 
 
 export class DeserializeParam {
-    deserialize(jsonObject: any): Parameter {
+    deserialize(jsonObject: any): IParameter {
         //console.log("RECEIVED JSON: ", jsonObject);
 
         switch(jsonObject['type']) {
             case 'Numeric':
                 //console.log('Numeric param')
-                return new NumericParameter(jsonObject['name'],
+                return new NumericParameterModel(jsonObject['name'],
                     jsonObject['min_value'][0], jsonObject['max_value'][0], jsonObject['step_size'][0], jsonObject['default_value'][0],
                     jsonObject['units'], jsonObject['labels'],
                     jsonObject['numeric_type'], jsonObject['changes_param']);
             case 'Select':
                 //console.log('Select param')
-                return new SelectParameter(jsonObject['name'],
+                return new SelectParameterModel(jsonObject['name'],
                     jsonObject['min_value'][0], jsonObject['max_value'][0], jsonObject['step_size'][0], jsonObject['default_value'][0],
                     jsonObject['units'], jsonObject['labels'],
                     jsonObject['numeric_type'], jsonObject['changes_param']);
             case 'Double':
                 //console.log('Double param')
-                return new DoubleParameter(jsonObject['name'],
+                return new DoubleParameterModel(jsonObject['name'],
                     jsonObject['min_value'], jsonObject['max_value'], jsonObject['step_size'], jsonObject['default_value'],
                     jsonObject['units'], jsonObject['labels'],
                     jsonObject['numeric_type'], jsonObject['changes_param']);
