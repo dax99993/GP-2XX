@@ -3,7 +3,7 @@ import { store } from "@/models/store";
 import Slider from "@react-native-community/slider";
 import { Picker } from "@react-native-picker/picker";
 import { observer } from "mobx-react-lite";
-import { Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useParameter } from "./Parameter";
 
 
@@ -35,11 +35,14 @@ function DoubleParameter() {
     ));
 
     return (
-        <>
-            <Text>{`${param.name} - ${param.getStringValue()}`}</Text>
+        <View style={styles.container}>
+            <View style={styles.infoContainer}>
+                <Text style={styles.paramName}>{param.name}</Text>
+                {!isSecondRangeActive && <Text>{param.getStringValue()}</Text>}
+            </View>
             {
                 !isSecondRangeActive && 
-                <Slider
+                <Slider style={styles.controlContainer}
                     //style={{width:200, height:40}}
                     minimumValue={param.min_value[0]}
                     maximumValue={param.max_value[0]}
@@ -50,7 +53,7 @@ function DoubleParameter() {
             }
             {
             isSecondRangeActive &&
-                <Picker 
+                <Picker style={styles.controlContainer}
                     mode="dropdown"
                     selectedValue={param.current_value[1].toString()}
                     onValueChange={onChangeSelect}
@@ -60,8 +63,30 @@ function DoubleParameter() {
                     }
                 </Picker>
             }
-        </>
+        </View>
     );
 }
 
+
+const styles = StyleSheet.create({
+    container: {
+        //flex: 1,
+        flexDirection: 'column',
+        paddingVertical: 10,
+        backgroundColor: 'lightgreen',
+    },
+    infoContainer: {
+        flexDirection: 'column',
+        justifyContent: 'center',
+        marginLeft: 15,
+    },
+    controlContainer: {
+        marginLeft: 15,
+        marginRight: 30,
+    },
+    paramName: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    }
+});
 export default observer(DoubleParameter);

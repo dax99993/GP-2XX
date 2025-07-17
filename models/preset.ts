@@ -105,6 +105,14 @@ export const default_preset = new PresetModel("Default",
     "Mess EQ", "M-Chorus", "Vintage Rack",
     "Plate", "Volume"
     );
+
+export const default_preset = new PresetModel("Default",
+    "Boost", "P-Wah", "Green OD",
+    "Mess4 LD3", "Auto Swell", "Mess",
+    "Mess EQ", "M-Chorus", "Vintage Rack",
+    "Plate", "Volume"
+    );
+
 // export const default_preset = new PresetModel("It's GP-200",
 //     "Boost", "V-Wah", "Green OD",
 //     "Tweedy", "Gate 1", "SUP ZEP",

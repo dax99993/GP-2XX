@@ -9,6 +9,7 @@ export interface IParameterInfo {
   labels: LabelsInfo
   numeric_type: string[]
   changes_param: string
+  id: number
 }
 
 export type LabelsInfo = Record<number, string>;

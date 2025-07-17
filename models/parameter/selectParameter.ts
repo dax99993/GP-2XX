@@ -20,9 +20,10 @@ export class SelectParameterModel implements IParameter {
     labels: Labels;
     changes_param: string;
     numeric_type: string[];
+    id: number;
 
     // This only has one parameter
-    constructor(name: string, //type
+    constructor(name: string, id: number,
         min_value: number, max_value: number, step_size: number, default_value: number,
         units: string = "", labels: Labels,
         numeric_type: string[], changes_param: string
@@ -45,6 +46,7 @@ export class SelectParameterModel implements IParameter {
         this.labels = labels;
         this.numeric_type = numeric_type;
         this.changes_param = changes_param;
+        this.id = id;
 
         makeAutoObservable(this);
     }

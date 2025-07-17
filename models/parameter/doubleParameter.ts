@@ -14,11 +14,12 @@ export class DoubleParameterModel implements IParameter {
     labels: Labels;
     changes_param: string;
     numeric_type: string[];
+    id: number;
 
     // 0 -> numeric range, 1 -> selectable range with labels
     current_range_idx: number;
 
-    constructor(name: string,
+    constructor(name: string, id: number,
         min_value: number[], max_value: number[], step_size: number[], default_value: number[],
         units: string = "", labels: Labels,
         numeric_type: string[], changes_param: string
@@ -33,6 +34,7 @@ export class DoubleParameterModel implements IParameter {
         this.labels = labels;
         this.changes_param = changes_param;
         this.numeric_type = numeric_type;
+        this.id = id;
         // Start in first range (numeric)
         this.current_range_idx = 0;
 
@@ -73,5 +75,6 @@ export class DoubleParameterModel implements IParameter {
         } else {
             this.current_range_idx = 0;
         }
+        this.current_value = this.default_value;
     }
 }

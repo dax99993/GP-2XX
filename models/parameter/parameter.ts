@@ -43,7 +43,7 @@ export class DeserializeParam {
             case 'Numeric':
                 //console.log('Numeric param')
                 return new NumericParameterModel(
-                    p.name,
+                    p.name, p.id,
                     p.min_value[0], p.max_value[0], p.step_size[0], p.default_value[0],
                     p.units, p.labels,
                     p.numeric_type, p.changes_param
@@ -51,7 +51,7 @@ export class DeserializeParam {
             case 'Select':
                 //console.log('Select param')
                 return new SelectParameterModel(
-                    p.name,
+                    p.name, p.id,
                     p.min_value[0], p.max_value[0], p.step_size[0], p.default_value[0],
                     p.units, p.labels,
                     p.numeric_type, p.changes_param
@@ -59,7 +59,7 @@ export class DeserializeParam {
             case 'Double':
                 //console.log('Double param')
                 return new DoubleParameterModel(
-                    p.name,
+                    p.name, p.id,
                     p.min_value, p.max_value, p.step_size, p.default_value,
                     p.units, p.labels,
                     p.numeric_type, p.changes_param

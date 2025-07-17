@@ -2,18 +2,12 @@ import { SelectParameterModel } from "@/models/parameter/selectParameter";
 import { store } from "@/models/store";
 import { Picker } from "@react-native-picker/picker";
 import { observer } from "mobx-react-lite";
-import { Switch, Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useParameter } from "./Parameter";
 
 
 function SelectParameter() {
     const param = useParameter() as SelectParameterModel;
-
-    const onChangeBoolean = (v: boolean) => {
-        const n: number = v ? 1 : 0;
-        store.gp200.changeParamValue(param.name, n);
-        console.log(`Numeric assign value (${param.name})= ${v}`);
-    };
 
     const onChangeNumber = (v:string, n: number) => {
        store.gp200.changeParamValue(param.name, n);
@@ -28,18 +22,10 @@ function SelectParameter() {
     ));
 
     return (
-        <>
-            <Text>{`${param.name} - ${param.getStringValue()}`}</Text>
+        <View style={styles.container}>
+            <Text style={styles.infoContainer}>{param.name}</Text>
             {
-            Object.keys(param.labels).length === 2 &&
-            <Switch
-                value={param.current_value[0] !== 0}
-                onValueChange={onChangeBoolean}
-            />
-            }
-            {
-            Object.keys(param.labels).length > 2 &&
-                <Picker 
+                <Picker style={styles.controlContainer}
                     mode="dropdown"
                     selectedValue={param.current_value[0].toString()}
                     onValueChange={onChangeNumber}
@@ -49,8 +35,27 @@ function SelectParameter() {
                     }
                 </Picker>
             }
-        </>
+        </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        //flex:1,
+        flexDirection: 'column',
+        backgroundColor: 'pink',
+        paddingVertical: 10,
+        //marginHorizontal: 10,
+    },
+    infoContainer: {
+        marginLeft: 15,
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    controlContainer: {
+        marginLeft: 15,
+        marginRight: 30,
+    }
+});
 
 export default observer(SelectParameter);

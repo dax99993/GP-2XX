@@ -138,8 +138,9 @@ export class GP200Model {
           w.activeSecondRange(value != 0);
         }
       }
-      // midi action
 
+      // midi action
+      this.midi._midiSendChangeEffectParam(this.current_effect.type, p[0].id, p[0].numeric_type[0], value);
     }
 
     changeSelectedEffect(type: string) {
@@ -178,8 +179,8 @@ export class GP200Model {
           this.current_effect = this.current_preset.vol;
           break;
       }
-      console.log("Current effect: ", this.current_effect);
-      console.log("Current params: ", this.current_effect.parameters);
+      //console.log("Current effect: ", this.current_effect);
+      //console.log("Current params: ", this.current_effect.parameters);
     }
 
 

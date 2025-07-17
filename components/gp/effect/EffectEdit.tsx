@@ -1,7 +1,7 @@
 import { EffectType } from "@/models/effect/effect";
 import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
-import { StyleSheet, Switch, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import ParameterBox from "../parameter/Parameter";
 
 
@@ -22,13 +22,13 @@ function EffectEdit() {
                 </View>
                 <Text>List of Effects</Text>
             </View>
-            <View style={styles.parametersContainer}>
+            <ScrollView style={styles.parametersContainer}>
                 <Text>Parameters</Text>
                 { store.gp200.current_effect.parameters.map(p => (
                     <ParameterBox key={p.name} param={p}/>
                 )) 
                 }
-            </View>
+            </ScrollView>
         </View>
         </>
     );
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'pink'
     },
     selectionContainer: {
-        flex:1,
+        //flex:1,
         flexDirection: 'row',
         justifyContent: 'space-between',
         backgroundColor: 'lightgreen',
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
     },
     parametersContainer: {
-        flex:5,
+        //flex:5,
         flexDirection: 'column',
         backgroundColor: 'lightblue',
     }
