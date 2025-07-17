@@ -1,3 +1,4 @@
+import { makeAutoObservable } from "mobx";
 import { IParameter, Labels } from "./parameter";
 
 export class DoubleParameterModel implements IParameter {
@@ -20,8 +21,8 @@ export class DoubleParameterModel implements IParameter {
     constructor(name: string,
         min_value: number[], max_value: number[], step_size: number[], default_value: number[],
         units: string = "", labels: Labels,
-        changes_param: string, numeric_type: string[])
-    {
+        numeric_type: string[], changes_param: string
+    ) {
         this.name = name;
         this.min_value = min_value;
         this.max_value = max_value;
@@ -34,11 +35,14 @@ export class DoubleParameterModel implements IParameter {
         this.numeric_type = numeric_type;
         // Start in first range (numeric)
         this.current_range_idx = 0;
+
+        makeAutoObservable(this);
     }
 
     setValue(value: number): number {
         const clamped_value = this.clampValue(value);
-        this.current_value = [clamped_value];
+        // set on currently active range
+        this.current_value[this.current_range_idx] = clamped_value;
 
         return clamped_value;
     }

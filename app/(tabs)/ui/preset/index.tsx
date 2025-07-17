@@ -15,9 +15,11 @@ import { observer } from 'mobx-react-lite';
 function HomeScreen() {
 
   useEffect(()=>{
-      console.log("Setting bank to 0");
-      // send message
-      store.gp200.changePreset(0);
+    // Testing preset 63-D
+    const preset_num = 251
+    // send message
+    store.gp200.changePreset(preset_num);
+    console.log("Setting bank to", store.gp200.getPresetBankCode());
   }, []);
 
   const increment = () => {

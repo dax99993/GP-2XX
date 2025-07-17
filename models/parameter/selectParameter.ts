@@ -24,7 +24,9 @@ export class SelectParameterModel implements IParameter {
     // This only has one parameter
     constructor(name: string, //type
         min_value: number, max_value: number, step_size: number, default_value: number,
-        units: string = "", labels: Labels, numeric_type: string[], changes_param: string) {
+        units: string = "", labels: Labels,
+        numeric_type: string[], changes_param: string
+    ) {
 
         // Safety checkouts
         // non-empty name

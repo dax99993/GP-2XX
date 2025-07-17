@@ -1,4 +1,5 @@
 import { SelectParameterModel } from "@/models/parameter/selectParameter";
+import { store } from "@/models/store";
 import { Picker } from "@react-native-picker/picker";
 import { observer } from "mobx-react-lite";
 import { Switch, Text } from "react-native";
@@ -10,21 +11,17 @@ function SelectParameter() {
 
     const onChangeBoolean = (v: boolean) => {
         const n: number = v ? 1 : 0;
-        console.log("param boolean new value = ", v, n);
-        //store.gp200.changeParamValue(param.name, n);
-        const a = param.setValue(n);
-        console.log("param assign value = ", a);
+        store.gp200.changeParamValue(param.name, n);
+        console.log(`Numeric assign value (${param.name})= ${v}`);
     };
 
     const onChangeNumber = (v:string, n: number) => {
-        console.log("param picker new value = ", v, n);
-        //store.gp200.changeParamValue(param.name, n);
-        const a = param.setValue(n);
-        console.log("param assign value = ", a);
+       store.gp200.changeParamValue(param.name, n);
+       console.log(`Select assign value (${param.name})= ${v}, ${n}`);
     };
 
     const labelEntries = Object.entries(param.labels);
-    console.log("Object entries = ", labelEntries);
+    //console.log("Select labels = ", labelEntries);
 
     const pickerItems = labelEntries.map(e => (
         <Picker.Item key={e[0]} value={e[0]} label={e[1]}/>

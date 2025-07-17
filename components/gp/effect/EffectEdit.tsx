@@ -11,7 +11,7 @@ function EffectEdit() {
         <View style={styles.mainContainer}>
             <View style={styles.selectionContainer}>
                 <View style={styles.stateContainer}>
-                    <Text>{`State ${EffectType[store.gp200.current_effect.type]}`}</Text>
+                    <Text>{`${EffectType[store.gp200.current_effect.type]}`}</Text>
                     <Switch
                         onValueChange={(v) => {
                             console.log(v);
@@ -50,6 +50,9 @@ const styles = StyleSheet.create({
         //flex:1,
         flexDirection: 'column',
         backgroundColor: 'red',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 5,
     },
     parametersContainer: {
         flex:5,

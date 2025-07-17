@@ -2,6 +2,7 @@ import { IParameter } from '@/models/parameter/parameter';
 import { observer } from 'mobx-react-lite';
 import { createContext, useContext } from 'react';
 import { StyleSheet, View } from "react-native";
+import DoubleParameter from './DoubleParameter';
 import NumericParameter from './NumericParameter';
 import SelectParameter from './SelectParameter';
 
@@ -26,6 +27,7 @@ function ParameterBox(props: ParameterProps) {
                 <View style={styles.container}>
                     {props.param.type === "Numeric" && <NumericParameter />}
                     {props.param.type === "Select" && <SelectParameter />}
+                    {props.param.type === "Double" && <DoubleParameter/>}
                 </View>
             </ParameterContext.Provider>
     );

@@ -1,5 +1,6 @@
 import { action, makeObservable, observable } from "mobx";
 import { DeserializeParam, IParameter } from "../parameter/parameter";
+import { IEffect } from "./effectInfo";
 
 // this also encodes the natural order of pedal types id in default chain order
 export enum EffectType {
@@ -65,19 +66,20 @@ export class EffectModel {
 
 
 export class DeserializeEffect {
-    deserialize(jsonObject: any): EffectModel {
+    deserialize(ieffect: IEffect): EffectModel {
         //console.log('Received Effect Json = ', jsonObject);
 
         // Get typed parameter vector
         const deserializeParam = new DeserializeParam();
 
         let params: IParameter[];
-        params = jsonObject["params"].map(p => deserializeParam.deserialize(p)) as IParameter[];
+        params = ieffect.params.map(p => deserializeParam.deserialize(p)) as IParameter[];
 
         let effect_type: keyof typeof EffectType;
-        effect_type = jsonObject['type'] as keyof typeof EffectType;
+        //effect_type = jsonObject['type'] as keyof typeof EffectType;
+        effect_type = ieffect.type as keyof typeof EffectType;
 
-        const e = new EffectModel(jsonObject['name'], jsonObject['id'], jsonObject["description"],
+        const e = new EffectModel(ieffect.name, ieffect.id, ieffect.description,
             EffectType[effect_type], true,
             params
         );

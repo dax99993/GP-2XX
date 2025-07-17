@@ -1,4 +1,4 @@
-export interface ParameterInfo {
+export interface IParameterInfo {
   name: string
   type: string
   min_value: number[]

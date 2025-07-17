@@ -1,4 +1,4 @@
-import { changeEffectState, PatchChangeBaseSysEx, SysExHeader } from "@/constants/SysExMsg";
+import { BaseSysExMsg, PatchChangeBaseSysEx, SysExHeader } from "@/constants/SysExMsg";
 import { MIDIMessageEvent } from "@motiz88/react-native-midi";
 import { action, makeObservable, observable } from "mobx";
 import { GP200Model } from "./gp200";
@@ -65,6 +65,8 @@ export class MidiGPDeviceModel {
         this.midi.inputPort?.addEventListener("midimessage", listener);
     }
 
+    // DECODE METHODS
+    // utils
     decodeReceivedSysEx(message: Uint8Array | number[]) {
        // Parse the message
        // execute corresponding action 
@@ -103,28 +105,7 @@ export class MidiGPDeviceModel {
         return this._isSysEx(message) && compareArrays(message.slice(1, SysExHeader.length + 1), SysExHeader);
     }
 
-
-    // MIDI SEND METHODS
-    _midiSendChangePreset(num: number) {
-        let msg = PatchChangeBaseSysEx;
-        const high_byte = (num >> 4) & 0x0f;
-        const low_byte = (num) & 0x0f;
-        msg[25] = high_byte;
-        msg[26] = low_byte;
-
-        this.sendSysEx(msg);
-    }
-
-    _midiChangeEffectState(pedal_id: number, state: boolean) {
-       let baseSysEx = changeEffectState;
-       // check range of ids from 0 to 10 inclusive
-        baseSysEx[0x16] = pedal_id;
-        baseSysEx[0x18] = state ? 1: 0;
-
-        this.sendSysEx(baseSysEx);
-    }
-
-    // MIDI GET METHODS
+    // DECODE ACTIONS
     _midiGetChangePreset(message: number[] | Uint8Array): number {
         // We already know this is the kind of message
         let baseSysEx = message;
@@ -138,6 +119,35 @@ export class MidiGPDeviceModel {
 
         return num;
     }
+
+
+    // MIDI ENCODE METHODS
+    // Preset actions
+    _midiSendChangePreset(num: number) {
+        // Checks num in range [0, 255]
+        // bytes 0x19 and 0x1a encode the preset/patch number (Hex digits)
+        let msg = BaseSysExMsg.PresetAction.changePreset;
+        const high_byte = (num >> 4) & 0x0f;
+        const low_byte = (num) & 0x0f;
+        msg[0x19] = high_byte;
+        msg[0x1a] = low_byte;
+
+        this.sendSysEx(msg);
+    }
+
+
+    //Effect actions
+    _midiChangeEffectState(pedal_id: number, state: boolean) {
+        // Check pedal_id in range [0, 10]
+
+        //byte 0x16 is the effect ID (0-10) ; byte 0x18 is the state of pedal OFF -> 0, ON -> 1
+        let baseSysEx = BaseSysExMsg.EffectActions.changeState;
+        baseSysEx[0x16] = pedal_id;
+        baseSysEx[0x18] = state ? 1 : 0;
+
+        this.sendSysEx(baseSysEx);
+    }
+
 
 }
 

@@ -1,5 +1,6 @@
 import { DoubleParameterModel } from "./doubleParameter";
 import { NumericParameterModel } from "./numericParameter";
+import { IParameterInfo } from "./parameterInfo";
 import { SelectParameterModel } from "./selectParameter";
 
 export type Labels = Record<number, string>;
@@ -35,28 +36,34 @@ export interface IParameter {
 
 
 export class DeserializeParam {
-    deserialize(jsonObject: any): IParameter {
+    deserialize(p: IParameterInfo): IParameter {
         //console.log("RECEIVED JSON: ", jsonObject);
 
-        switch(jsonObject['type']) {
+        switch(p.type) {
             case 'Numeric':
                 //console.log('Numeric param')
-                return new NumericParameterModel(jsonObject['name'],
-                    jsonObject['min_value'][0], jsonObject['max_value'][0], jsonObject['step_size'][0], jsonObject['default_value'][0],
-                    jsonObject['units'], jsonObject['labels'],
-                    jsonObject['numeric_type'], jsonObject['changes_param']);
+                return new NumericParameterModel(
+                    p.name,
+                    p.min_value[0], p.max_value[0], p.step_size[0], p.default_value[0],
+                    p.units, p.labels,
+                    p.numeric_type, p.changes_param
+                );
             case 'Select':
                 //console.log('Select param')
-                return new SelectParameterModel(jsonObject['name'],
-                    jsonObject['min_value'][0], jsonObject['max_value'][0], jsonObject['step_size'][0], jsonObject['default_value'][0],
-                    jsonObject['units'], jsonObject['labels'],
-                    jsonObject['numeric_type'], jsonObject['changes_param']);
+                return new SelectParameterModel(
+                    p.name,
+                    p.min_value[0], p.max_value[0], p.step_size[0], p.default_value[0],
+                    p.units, p.labels,
+                    p.numeric_type, p.changes_param
+                );
             case 'Double':
                 //console.log('Double param')
-                return new DoubleParameterModel(jsonObject['name'],
-                    jsonObject['min_value'], jsonObject['max_value'], jsonObject['step_size'], jsonObject['default_value'],
-                    jsonObject['units'], jsonObject['labels'],
-                    jsonObject['numeric_type'], jsonObject['changes_param']);
+                return new DoubleParameterModel(
+                    p.name,
+                    p.min_value, p.max_value, p.step_size, p.default_value,
+                    p.units, p.labels,
+                    p.numeric_type, p.changes_param
+                );
         }
 
         throw new Error("Should not reach this");

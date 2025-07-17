@@ -1,4 +1,4 @@
-import { ParameterInfo } from "../parameter/parameterInfo"
+import { IParameterInfo } from "../parameter/parameterInfo"
 
 export interface IEffectsInfo {
   PRE: IEffect[]
@@ -18,7 +18,7 @@ export interface IEffect {
   name: string
   id: number[]
   param_num: number
-  params: ParameterInfo[]
+  params: IParameterInfo[]
   type: string
   description: string
 }
