@@ -28,27 +28,47 @@ export class MidiDevice {
      }
 
     getMidiAccess() {
-        requestMIDIAccess({ sysex: true }).then(m => {
-            console.log("MIDI ACCESS Requested");
-            // register event listerner for changes
-            this.midiAccess = m;
-            this.midiAccess.addEventListener("statechange", this.handleDeviceChange);
-        }).then(() => {
-            console.log("MIDI ACCESS = ", this.midiAccess);
-            // ONly get the gp200 devices
-            if (this.midiAccess) {
-                //[...this.midiAccess.inputs.entries()].forEach(a => console.log(a))
-                        //.filter(([key, item]) => { item.name.includes("") })
-                //console.log(i);
-                //this.inputs = new Map(i);
-                // this.outputs = new Map(
-                //     [...this.midiAccess.outputs.entries()]
-                //         .filter(([key, item]) => item.name.includes(""))
-                // );
-                this.inputs = new Map(this.midiAccess.inputs);
-                this.outputs= new Map(this.midiAccess.outputs);
-            }
-        })
+        // let onMidiSucess = (m: MIDIAccess) => {
+        //     console.log(m);
+        //     //m.onstatechange = this.onStateChange;
+        //     this.midiAccess = m;
+        //     //this.midiAccess.onstatechange = this.onStateChange;
+        //     this.midiAccess.addEventListener("statechange", this.onStateChange);
+
+        //     // Register available inputs and outputs
+        //     this.inputs = new Map(this.midiAccess.inputs);
+        //     this.outputs = new Map(this.midiAccess.outputs);
+        // };
+        requestMIDIAccess({ sysex: true}).then(this.onMidiSucess.bind(this), this.onMidiFailure);
+    }
+
+    onMidiSucess(m: MIDIAccess) {
+        console.log(m);
+        //m.onstatechange = this.onStateChange;
+        this.midiAccess = m;
+        //this.midiAccess.onstatechange = this.onStateChange;
+        this.midiAccess.addEventListener("statechange", this.onStateChange.bind(this));
+        
+        // Register available inputs and outputs
+        this.inputs = new Map(this.midiAccess.inputs);
+        this.outputs = new Map(this.midiAccess.outputs);
+    }
+
+    onMidiFailure(msg: string) {
+        console.log("Midi access request failed!.", msg);
+    }
+
+    onStateChange(e: MIDIConnectionEvent) {
+        let port = e.port;
+        if (port?.state === "disconnected") {
+            console.log(`Port ${port} (${port.id}) disconnected`);
+            // handle disconnection
+
+        } else if ( port?.state === "connected") {
+            console.log(`Port ${port} (${port.id}) connected`);
+            // handle Re-request Midi Access to get updated ports
+            this.getMidiAccess();
+        }
     }
 
     setInput(input: string) {
