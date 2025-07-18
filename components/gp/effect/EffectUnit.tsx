@@ -1,10 +1,10 @@
+import { EffectType } from "@/models/effect/effect";
 import { store } from "@/models/store";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type EffectUnitProps = {
-    //effect: Effect;
     title: string;
-    type: string;
+    type: EffectType;
 }
 
 function getStyle(effecttype: string) {
@@ -30,12 +30,10 @@ function getStyle(effecttype: string) {
 
 function EffectUnit(props:EffectUnitProps) {
 
-
     const style = getStyle(props.type.toString());
 
     const select_unit = () => {
-      console.log("You select ", props.title);
-      store.gp200.changeSelectedEffect(props.title);
+      store.gp200.changeSelectedEffect(props.type);
     }
 
     return (

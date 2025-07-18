@@ -23,6 +23,7 @@ export interface IParameter {
     // Type of values in ranges
     numeric_type: string[];
 
+    id: number;
 
     // General methods
     setValue(value: number): number;

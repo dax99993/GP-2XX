@@ -2,21 +2,21 @@ import { useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-
-//const DATA = Object.values(EffectType).filter(e => typeof e === 'string');
-const DATA: number[] = Object.values(EffectType).filter(e => typeof e === 'number');
-
 import EffectUnit from "@/components/gp/effect/EffectUnit";
 import { EffectType } from "@/models/effect/effect";
+import { store } from "@/models/store";
 import Sortable, { SortableGridRenderItem } from 'react-native-sortables';
 import { SortableGridDragEndParams } from "react-native-sortables/dist/typescript/types";
+
+const DATA: number[] = Object.values(EffectType).filter(e => typeof e === 'number');
+
 
 function EffectChain() {
 
   const renderItem = useCallback<SortableGridRenderItem<number>>(
     ({ item }) => {
       const s = EffectType[item];
-      return <EffectUnit title={s} type={s.toLocaleLowerCase()}/>
+      return <EffectUnit title={s} type={item as EffectType}/>
     },
     []
   );
@@ -25,6 +25,7 @@ function EffectChain() {
     'worklet';
     const ids = params.indexToKey.map(i => Number(i));
     console.log("New chain order = ", ids);
+    store.gp200.changePresetChainOrder(ids);
   }, []);
 
     return (

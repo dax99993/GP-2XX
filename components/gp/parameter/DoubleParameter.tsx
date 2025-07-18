@@ -15,7 +15,8 @@ function DoubleParameter() {
 
     const onChangeNumeric = (v: number) => {
        //const a = param.setValue(v);
-       store.gp200.changeParamValue(param.name, v);
+       //store.gp200.changeParamValue(param.name, v);
+       store.gp200.changeParamValue(store.gp200.current_effect.type, param.id, v);
        //console.log("Numeric new value = ", v);
        console.log(`Numeric assign value (${param.name})= ${v}`);
     };
@@ -23,7 +24,8 @@ function DoubleParameter() {
     const onChangeSelect = (v:string, n: number) => {
         console.log("param picker new value = ", v, n);
         //store.gp200.changeParamValue(param.name, n);
-        store.gp200.changeParamValue(param.name, n);
+        //store.gp200.changeParamValue(param.name, n);
+        store.gp200.changeParamValue(store.gp200.current_effect.type, param.id, n);
         console.log(`Select assign value (${param.name}) = ${n}, ${v}`);
     };
 

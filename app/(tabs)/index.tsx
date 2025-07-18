@@ -35,6 +35,8 @@ function HomeScreen() {
         store.gpmidi.midi.setInput(id);
         store.gpmidi.midi.setOutput(id);
 
+        // Start listening to midi messages
+        store.gpmidi.setupReceivedSysEx();
         router.replace('/ui/preset');
     };
 

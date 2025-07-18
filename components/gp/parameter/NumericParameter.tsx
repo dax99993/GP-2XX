@@ -12,7 +12,7 @@ function NumericParameter() {
     const param = useParameter() as NumericParameterModel;
 
     const onChange = (v: number) => {
-       store.gp200.changeParamValue(param.name, v);
+       store.gp200.changeParamValue(store.gp200.current_effect.type, param.id, v);
        console.log(`Numeric assign value (${param.name})= ${v}`);
     };
 

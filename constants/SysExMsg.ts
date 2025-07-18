@@ -1,5 +1,5 @@
 
-export const SysExHeader = [
+export const SysExGPHeader = [
     0x21, 0x25, 0x7e, 0x47, 0x50, 0x2d, 0x32
 ]
 
@@ -7,7 +7,7 @@ export const SysExHeader = [
 export const BaseSysExMsg = {
     // Preset actions
     PresetAction: {
-        // bytes 0x18 and 0x19 encode the preset/patch number (Hex digits)
+        // bytes 0x19 and 0x1a encode the preset/patch number (Hex digits)
         changePreset: 
             [
                 0xf0, 0x21, 0x25, 0x7e, 0x47, 0x50, 0x2d, 0x32,
@@ -25,7 +25,19 @@ export const BaseSysExMsg = {
         changePresetPan: [],
         changeBPM: [],
 
-        changeChainOrder: [],
+        changeChainOrder: [
+            // bytes 0x15 and 0x16 have the preset number
+            // bytes 0x19 and 0x1a have the Fx loop send position
+            // bytes 0x1b and 0x1c have the Fx loop return position
+            // bytes 0x1d to 0x32 have the effect chain order
+            0xf0, 0x21, 0x25, 0x7e, 0x47, 0x50, 0x2d, 0x32,
+            0x12, 0x14, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00,
+            0x00, 0x01, 0x00, 0x00, 0x00, 0x0f, 0x0b, 0x00,
+            0x00, 0x00, 0x02, 0x00, 0x04, 0x00, 0x04, 0x00,
+            0x0a, 0x00, 0x00, 0x00, 0x01, 0x00, 0x02, 0x00,
+            0x03, 0x00, 0x05, 0x00, 0x06, 0x00, 0x07, 0x00,
+            0x08, 0x00, 0x09, 0x00, 0x00, 0xf7
+        ],
 
         // Knobs assign
         assignKnob: [],
@@ -73,6 +85,8 @@ export const BaseSysExMsg = {
             ],
         changeEffect: [],
         changeParameterValue:
+        // up to position 0x18 is the messagge identification bytes
+        // 46 bytes
         // byte 0x16 contains the effect chain id (0 to 10), byte 0x18 containes parameter id,
         // bytes 0x25 to 0x2c contains the encoded value
             [

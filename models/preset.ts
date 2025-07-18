@@ -3,24 +3,28 @@ import { makeObservable, observable } from "mobx";
 import { DeserializeEffect, EffectModel, EffectType } from "./effect/effect";
 import { IEffect, IEffectsInfo } from "./effect/effectInfo";
 
+type FxLoop = {
+    // 0-11
+    sendPosition: number;
+    // 0-11
+    returnPosition: number;
+    // 0-100
+    sendLevel: number;
+    // 0-100
+    returnLevel: number;
+    // 0 -> parallel ; 1 -> series
+    mode: number;
+}
+
 export class PresetModel {
     // preset number?
     // name
     name: string;
-    // effects or effect chain    
     chainOrder: number[];
+    effects: EffectModel[];
 
-    pre: EffectModel;
-    wah: EffectModel;
-    dst: EffectModel;
-    amp: EffectModel;
-    nr: EffectModel;
-    cab: EffectModel;
-    eq: EffectModel;
-    mod: EffectModel;
-    dly: EffectModel;
-    rvb: EffectModel;
-    vol: EffectModel;
+    // Settings
+    fxLoop: FxLoop;
 
     // category
     // author
@@ -38,27 +42,33 @@ export class PresetModel {
         this.chainOrder = [0,1,2,3,4,5,6,7,8,9,10];
 
         // Create Effect object class from string name
-        this.pre = this.getEffect(preName, EffectType.PRE);
-        this.wah = this.getEffect(wahName, EffectType.WAH);
-        this.dst = this.getEffect(dstName, EffectType.DST);
-        this.amp = this.getEffect(ampName, EffectType.AMP);
-        this.nr = this.getEffect(nrName, EffectType.NR);
-        this.cab = this.getEffect(cabName, EffectType.CAB);
-        this.eq= this.getEffect(eqName, EffectType.EQ);
-        this.mod= this.getEffect(modName, EffectType.MOD);
-        this.dly= this.getEffect(dlyName, EffectType.DLY);
-        this.rvb= this.getEffect(rvbName, EffectType.RVB);
-        this.vol= this.getEffect(volName, EffectType.VOL);
+        this.effects = [];
+        this.effects.push(this.getEffect(preName, EffectType.PRE));
+        this.effects.push(this.getEffect(wahName, EffectType.WAH));
+        this.effects.push(this.getEffect(dstName, EffectType.DST));
+        this.effects.push(this.getEffect(ampName, EffectType.AMP));
+        this.effects.push(this.getEffect(nrName, EffectType.NR));
+        this.effects.push(this.getEffect(cabName, EffectType.CAB));
+        this.effects.push(this.getEffect(eqName, EffectType.EQ));
+        this.effects.push(this.getEffect(modName, EffectType.MOD));
+        this.effects.push(this.getEffect(dlyName, EffectType.DLY));
+        this.effects.push(this.getEffect(rvbName, EffectType.RVB));
+        this.effects.push(this.getEffect(volName, EffectType.VOL));
 
+        // Settings
+        this.fxLoop = {
+           sendPosition: 0,
+           returnPosition: 0,
+           sendLevel: 0,
+           returnLevel: 0,
+           mode: 0
+        }
 
         // MOBX
         makeObservable(this, {
             name: observable,
             chainOrder: observable,
-            pre: observable,
-            wah: observable,
-            dst: observable,
-            nr: observable,
+            effects: observable,
             //decrementPresetNum: action,
         });
     }
@@ -79,7 +89,7 @@ export class PresetModel {
             effectInfo.forEach(e => {
                 //console.log(e);
                 if (e.name === effectName && e.type == EffectType[type]) {
-                    console.log("Found pedal!", effectName);
+                    console.log("Found pedal!", e.type, effectName);
                     eff = deserializeEffect.deserialize(e);
                 }
             })
@@ -101,14 +111,7 @@ export class PresetModel {
 
 export const default_preset = new PresetModel("Default",
     "Boost", "P-Wah", "Green OD",
-    "Mess4 LD3", "Auto Swell", "Mess",
-    "Mess EQ", "M-Chorus", "Vintage Rack",
-    "Plate", "Volume"
-    );
-
-export const default_preset = new PresetModel("Default",
-    "Boost", "P-Wah", "Green OD",
-    "Mess4 LD3", "Auto Swell", "Mess",
+    "Mess4 LD 3", "Auto Swell", "Mess",
     "Mess EQ", "M-Chorus", "Vintage Rack",
     "Plate", "Volume"
     );

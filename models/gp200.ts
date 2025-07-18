@@ -1,6 +1,6 @@
 
 import { action, makeObservable, observable } from "mobx";
-import { EffectModel } from "./effect/effect";
+import { EffectModel, EffectType } from "./effect/effect";
 import { MidiGPDeviceModel } from "./gpMidiDevice";
 import { DoubleParameterModel } from "./parameter/doubleParameter";
 import { default_preset, PresetModel } from "./preset";
@@ -28,7 +28,7 @@ export class GP200Model {
         // Just to test
         this.current_preset = default_preset;
         //console.log(JSON.stringify(default_preset));
-        this.current_effect = default_preset.nr;
+        this.current_effect = default_preset.effects[0];
 
         makeObservable(this, {
             current_preset_number: observable,
@@ -51,13 +51,15 @@ export class GP200Model {
     // USER METHODS
 
     // -- PRESET ACTIONS --
-    changePreset(preset_number: number) {
+    changePreset(preset_number: number, send: boolean = true) {
         // Clamp to valid range
         const num = Math.min(Math.max(preset_number, 0), 255);
         this.current_preset_number = num;
 
         // Execute action in physical device
-        this.midi._midiSendChangePreset(num);
+        if (send) {
+          this.midi._midiSendChangePreset(num);
+        }
 
         // Should I update here or in received messages?
     }
@@ -111,7 +113,16 @@ export class GP200Model {
     // changePresetFXLoop()
 
     // -- EFFECT CHAIN ACTIONS
-    // changePresetChainOrder()
+    changePresetChainOrder(order: number[], sendCommand = true) {
+      // check order has 11 elements in range(0-10)
+      this.current_preset.chainOrder = order;
+
+      if (sendCommand) {
+        this.midi._midiSendChangeChainOrder(this.current_preset_number,
+          this.current_preset.fxLoop.sendPosition, this.current_preset.fxLoop.returnPosition,
+        order)
+      }
+    }
     // changeEffect() // Change the effect for a given effect unit
     // changeParameterEffect() // Change the effect for a given effect unit
 
@@ -123,8 +134,10 @@ export class GP200Model {
         this.midi._midiChangeEffectState(this.current_effect.type, this.current_effect.state);
     }
 
-    changeParamValue(name: string, value: number) {
-      const p = this.current_effect.parameters.filter(p => p.name === name);
+    changeParamValue(effectID: number, parameterID: number, value: number, send: boolean = true) {
+      //const p = this.current_effect.parameters.filter(p => p.name === name && p.id === parameterID);
+      const e = this.current_preset.effects.filter(e => e.type === effectID);
+      const p = e[0].parameters.filter(p => p.id === parameterID);
       //console.log("Modifying ", p[0].name);
       p[0].setValue(value);
 
@@ -140,47 +153,13 @@ export class GP200Model {
       }
 
       // midi action
-      this.midi._midiSendChangeEffectParam(this.current_effect.type, p[0].id, p[0].numeric_type[0], value);
+      if (send) {
+        this.midi._midiSendChangeEffectParam(this.current_effect.type, p[0].id, p[0].numeric_type[0], value);
+      }
     }
 
-    changeSelectedEffect(type: string) {
-      switch (type) {
-        case 'PRE':
-          this.current_effect = this.current_preset.pre;
-          break;
-        case 'WAH':
-          this.current_effect = this.current_preset.wah;
-          break;
-        case 'DST':
-          this.current_effect = this.current_preset.dst;
-          break;
-        case 'AMP':
-          this.current_effect = this.current_preset.amp;
-          break;
-        case 'NR':
-          this.current_effect = this.current_preset.nr;
-          break;
-        case 'CAB':
-          this.current_effect = this.current_preset.cab;
-          break;
-        case 'EQ':
-          this.current_effect = this.current_preset.eq;
-          break;
-        case 'MOD':
-          this.current_effect = this.current_preset.mod;
-          break;
-        case 'DLY':
-          this.current_effect = this.current_preset.dly;
-          break;
-        case 'RVB':
-          this.current_effect = this.current_preset.rvb;
-          break;
-        case 'VOL':
-          this.current_effect = this.current_preset.vol;
-          break;
-      }
-      //console.log("Current effect: ", this.current_effect);
-      //console.log("Current params: ", this.current_effect.parameters);
+    changeSelectedEffect(effectType: EffectType) {
+      this.current_effect = this.current_preset.effects[effectType as number];
     }
 
 

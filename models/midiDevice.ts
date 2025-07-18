@@ -1,4 +1,4 @@
-import { MIDIAccess, MIDIConnectionEvent, MIDIInput, MIDIOutput, requestMIDIAccess } from "@motiz88/react-native-midi";
+import { MIDIAccess, MIDIConnectionEvent, MIDIInput, MIDIMessageEvent, MIDIOutput, requestMIDIAccess } from "@motiz88/react-native-midi";
 import { action, makeObservable, observable } from "mobx";
 
 export class MidiDevice {
@@ -53,7 +53,6 @@ export class MidiDevice {
 
     setInput(input: string) {
         this.inputPort = this.inputs?.get(input)
-        this.inputPort?.addEventListener("midimessage", this.getMessage);
     }
 
     setOutput(output: string) {
@@ -97,9 +96,13 @@ export class MidiDevice {
         this.outputPort?.send(message);
     }
 
-    getMessage(e: MIDIMessageEvent) {
-        console.log(e.data, e.timeStamp);
+    addMessageListener(listener: (e: MIDIMessageEvent)=> any) {
+        this.inputPort?.addEventListener("midimessage", listener);
     }
+
+    // getMessage(e: MIDIMessageEvent) {
+    //     console.log(e.data, e.timeStamp);
+    // }
 }
 
 //export const midiDevice = new MidiDevice();

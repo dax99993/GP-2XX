@@ -10,7 +10,8 @@ function SelectParameter() {
     const param = useParameter() as SelectParameterModel;
 
     const onChangeNumber = (v:string, n: number) => {
-       store.gp200.changeParamValue(param.name, n);
+       //store.gp200.changeParamValue(param.name, n);
+       store.gp200.changeParamValue(store.gp200.current_effect.type, param.id, n);
        console.log(`Select assign value (${param.name})= ${v}, ${n}`);
     };
 
