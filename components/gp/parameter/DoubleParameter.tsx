@@ -4,11 +4,12 @@ import Slider from "@react-native-community/slider";
 import { Picker } from "@react-native-picker/picker";
 import { observer } from "mobx-react-lite";
 import { StyleSheet, Text, View } from "react-native";
-import { useParameter } from "./Parameter";
 
+type DoubleParameterProps = {
+    param:DoubleParameterModel 
+}
 
-function DoubleParameter() {
-    const param = useParameter() as DoubleParameterModel;
+function DoubleParameter({param}: DoubleParameterProps) {
 
     const isSecondRangeActive = param.current_range_idx === 1;
     console.log("second range activated? = ", isSecondRangeActive);
@@ -72,7 +73,7 @@ function DoubleParameter() {
 
 const styles = StyleSheet.create({
     container: {
-        //flex: 1,
+        flex: 1,
         flexDirection: 'column',
         paddingVertical: 10,
         backgroundColor: 'lightgreen',

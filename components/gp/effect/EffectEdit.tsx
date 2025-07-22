@@ -1,8 +1,13 @@
 import { EffectType } from "@/models/effect/effect";
+import { DoubleParameterModel } from "@/models/parameter/doubleParameter";
+import { NumericParameterModel } from "@/models/parameter/numericParameter";
+import { SelectParameterModel } from "@/models/parameter/selectParameter";
 import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
-import ParameterBox from "../parameter/Parameter";
+import DoubleParameter from "../parameter/DoubleParameter";
+import NumericParameter from "../parameter/NumericParameter";
+import SelectParameter from "../parameter/SelectParameter";
 
 
 function EffectEdit() {
@@ -24,9 +29,15 @@ function EffectEdit() {
             </View>
             <ScrollView style={styles.parametersContainer}>
                 <Text>Parameters</Text>
-                { store.gp200.current_effect.parameters.map(p => (
-                    <ParameterBox key={p.name} param={p}/>
-                )) 
+                { store.gp200.current_effect.parameters.map(p => {
+                    if (p.type === "Numeric") {
+                        return <NumericParameter key={p.name} param={p as NumericParameterModel}/>
+                    } else if (p.type === "Select" ) {
+                        return <SelectParameter key={p.name} param={p as SelectParameterModel}/>
+                    } else {
+                        return <DoubleParameter key={p.name} param={p as DoubleParameterModel} />
+                    }
+                }) 
                 }
             </ScrollView>
         </View>

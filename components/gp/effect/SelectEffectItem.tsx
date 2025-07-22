@@ -7,7 +7,7 @@ type SelectEffectItemProps = {
 }
 
 
-function ListItem(props: SelectEffectItemProps) {
+function SelectEffectItem(props: SelectEffectItemProps) {
     const [selected, setSelected] = useState(store.gp200.current_effect.name === props.name);
 
     const onPress = () => {

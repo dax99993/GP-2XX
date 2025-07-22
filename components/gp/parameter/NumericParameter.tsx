@@ -3,13 +3,13 @@ import { store } from "@/models/store";
 import Slider from "@react-native-community/slider";
 import { observer } from "mobx-react-lite";
 import { StyleSheet, Text, View } from "react-native";
-import { useParameter } from "./Parameter";
 
+type NumericParameterProps = {
+    param: NumericParameterModel
+}
 
+function NumericParameter({param}: NumericParameterProps) {
 
-function NumericParameter() {
-
-    const param = useParameter() as NumericParameterModel;
 
     const onChange = (v: number) => {
        store.gp200.changeParamValue(store.gp200.current_effect.type, param.id, v);
@@ -37,9 +37,10 @@ function NumericParameter() {
 
 const styles = StyleSheet.create({
     container: {
-        //flex: 1,
+        flex: 1,
         flexDirection: 'column',
         paddingVertical: 10,
+        backgroundColor: 'orange',
     },
     infoContainer: {
         flexDirection: 'column',

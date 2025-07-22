@@ -2,7 +2,6 @@
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 
 import { ThemedView } from '@/components/ThemedView';
-import ConnectionModal from '@/components/gp/Modal';
 import SelectEffect from '@/components/gp/effect/SelectEffect';
 
 
@@ -13,15 +12,9 @@ export default function TestScreen() {
   return (
     <>
       <ThemedView style={styles.maincontainer}>
-        <ConnectionModal/>
-        <View style={styles.presetContainer}>
-          <View style={styles.bannerContainer}></View>
-          <View style={styles.viewButtons}></View>
-          <View style={[styles.viewButtons, {backgroundColor: 'lightgreen'}]}>
+        <View style={[styles.viewButtons, {backgroundColor: 'lightgreen'}]}>
             <SelectEffect data={["a"]}/>
-          </View>
         </View>
-        <View style={styles.controlContainer}></View>
       </ThemedView>
     </>
   );

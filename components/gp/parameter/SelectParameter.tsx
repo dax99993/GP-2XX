@@ -3,11 +3,12 @@ import { store } from "@/models/store";
 import { Picker } from "@react-native-picker/picker";
 import { observer } from "mobx-react-lite";
 import { StyleSheet, Text, View } from "react-native";
-import { useParameter } from "./Parameter";
 
+type SelectParameterProps = {
+    param: SelectParameterModel
+}
 
-function SelectParameter() {
-    const param = useParameter() as SelectParameterModel;
+function SelectParameter({param}: SelectParameterProps) {
 
     const onChangeNumber = (v:string, n: number) => {
        //store.gp200.changeParamValue(param.name, n);
@@ -42,7 +43,7 @@ function SelectParameter() {
 
 const styles = StyleSheet.create({
     container: {
-        //flex:1,
+        flex:1,
         flexDirection: 'column',
         backgroundColor: 'pink',
         paddingVertical: 10,
