@@ -47,42 +47,42 @@ function DoubleParameter({param}: DoubleParameterProps) {
     ));
 
     return (
-        <VStack style={styles.container}>
-            <Box className="bg-secondary-0 px-1 py-5">
-            <VStack style={styles.infoContainer}>
-                <Text size="lg" bold={true}>{param.name}</Text>
-                {!isSecondRangeActive && <Text>{param.getStringValue()}</Text>}
-            </VStack>
-            {
-                !isSecondRangeActive && 
-                <Slider
-                style={styles.numericControlContainer}
-                size="lg"
-                sliderTrackHeight={15}
-                minValue={param.min_value[0]}
-                maxValue={param.max_value[0]}
-                step={param.step_size[0]}
-                value={param.current_value[0]}
-                onChange={onChangeNumeric}
-            >
-                <SliderTrack>
-                    <SliderFilledTrack />
-                </SliderTrack>
-                <SliderThumb />
-            </Slider>
-            }
-            {
-            isSecondRangeActive &&
-                <Picker style={styles.selectControlContainer}
-                    mode="dropdown"
-                    selectedValue={param.current_value[1].toString()}
-                    onValueChange={onChangeSelect}
+        <VStack className="bg-secondary-0">
+            <Box className={`bg-secondary-300 mx-3 my-2 px-2 pt-3 rounded-md ${isSecondRangeActive ? "pb-0" : "pb-5"}`}>
+                <VStack style={styles.infoContainer}>
+                    <Text size="lg" bold={true}>{param.name}</Text>
+                    {!isSecondRangeActive && <Text>{param.getStringValue()}</Text>}
+                </VStack>
+                {
+                    !isSecondRangeActive && 
+                    <Slider
+                    style={styles.numericControlContainer}
+                    size="lg"
+                    sliderTrackHeight={15}
+                    minValue={param.min_value[0]}
+                    maxValue={param.max_value[0]}
+                    step={param.step_size[0]}
+                    value={param.current_value[0]}
+                    onChange={onChangeNumeric}
                 >
-                    {
-                        pickerItems
-                    }
-                </Picker>
-            }
+                    <SliderTrack>
+                        <SliderFilledTrack />
+                    </SliderTrack>
+                    <SliderThumb />
+                </Slider>
+                }
+                {
+                isSecondRangeActive &&
+                    <Picker style={styles.selectControlContainer}
+                        mode="dropdown"
+                        selectedValue={param.current_value[1].toString()}
+                        onValueChange={onChangeSelect}
+                    >
+                        {
+                            pickerItems
+                        }
+                    </Picker>
+                }
             </Box>
         </VStack>
     );

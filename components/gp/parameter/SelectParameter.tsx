@@ -38,8 +38,8 @@ function SelectParameter({param}: SelectParameterProps) {
     ));
 
     return (
-        <VStack style={styles.container}>
-            <Box className="bg-secondary-0 px-1 py-5">
+        <VStack className="bg-secondary-0">
+            <Box className="bg-secondary-300 mx-3 my-2 px-2 pt-3 rounded-md">
             <VStack style={styles.infoContainer}>
                 <Text size="lg" bold={true}>{param.name}</Text>
             </VStack>
@@ -100,18 +100,13 @@ const styles = StyleSheet.create({
     container: {
         //flex:1,
         flexDirection: 'column',
-        //backgroundColor: 'pink',
-        //paddingVertical: 15,
-        //marginHorizontal: 10,
     },
     infoContainer: {
         marginLeft: 15,
     },
     controlContainer: {
-        //marginTop: 10,
-        //paddingTop:10,
         marginLeft: 15,
-        marginRight: 30,
+        marginRight: 15,
     }
 });
 

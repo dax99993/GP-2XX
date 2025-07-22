@@ -1,36 +1,39 @@
+import { Center } from "@/components/ui/center";
+import { HStack } from "@/components/ui/hstack";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
+import { VStack } from "@/components/ui/vstack";
 import { EffectType } from "@/models/effect/effect";
 import { DoubleParameterModel } from "@/models/parameter/doubleParameter";
 import { NumericParameterModel } from "@/models/parameter/numericParameter";
 import { SelectParameterModel } from "@/models/parameter/selectParameter";
 import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import DoubleParameter from "../parameter/DoubleParameter";
 import NumericParameter from "../parameter/NumericParameter";
 import SelectParameter from "../parameter/SelectParameter";
 
 function EffectEdit() {
     return (
-        <>
-        <View style={styles.mainContainer}>
-            <View style={styles.selectionContainer}>
-                <View style={styles.stateContainer}>
-                    <Text bold={true}>{`${EffectType[store.gp200.current_effect.type]}`}</Text>
-                    <Switch
-                        size="md"
-                        value={store.gp200.current_effect.state}
-                        onValueChange={(v) => {
-                            console.log(v);
-                            store.gp200.changeEffectState(v);
-                        }}
-                    />
-                </View>
-                <Text bold={true}>List of Effects</Text>
-            </View>
+        <VStack style={styles.mainContainer}>
+            <HStack style={styles.selectionContainer}>
+                <Center className="bg-secondary-300 mx-3 my-2 px-2 py-2 rounded-md">
+                        <Text bold={true}>{EffectType[store.gp200.current_effect.type]}</Text>
+                        <Switch
+                            size="md"
+                            value={store.gp200.current_effect.state}
+                            onValueChange={(v) => {
+                                console.log(v);
+                                store.gp200.changeEffectState(v);
+                            }}
+                        />
+                </Center>
+                <Center className="bg-secondary-300 mx-3 my-2 px-2 py-2 rounded-md" style={{flex:1}}>
+                    <Text bold={true}>{store.gp200.current_effect.name}</Text>
+                </Center >
+            </HStack>
             <ScrollView style={styles.parametersContainer}>
-                <Text>Parameters</Text>
                 { store.gp200.current_effect.parameters.map(p => {
                     if (p.type === "Numeric") {
                         return <NumericParameter key={p.name} param={p as NumericParameterModel}/>
@@ -42,25 +45,19 @@ function EffectEdit() {
                 }) 
                 }
             </ScrollView>
-        </View>
-        </>
+        </VStack>
     );
 }
 
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
-        flexDirection: 'column',
-        backgroundColor: 'pink'
     },
     selectionContainer: {
-        //flex:1,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        backgroundColor: 'lightgreen',
     },
     stateContainer: {
-        //flex:1,
         flexDirection: 'column',
         backgroundColor: 'red',
         justifyContent: 'center',
@@ -68,9 +65,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
     },
     parametersContainer: {
-        //flex:5,
         flexDirection: 'column',
-        backgroundColor: 'lightblue',
     }
 
 });

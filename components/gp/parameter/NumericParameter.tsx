@@ -26,8 +26,8 @@ function NumericParameter({param}: NumericParameterProps) {
     };
 
     return (
-        <VStack>
-            <Box className="bg-secondary-0 px-1 py-5">
+        <VStack className="bg-secondary-0">
+            <Box className="bg-secondary-300 mx-3 my-2 px-2 pt-3 pb-5 rounded-md"> 
             <VStack style={styles.infoContainer}>
                 <Text size="lg" bold={true}>{param.name}</Text>
                 <Text>{param.getStringValue()}</Text>
@@ -57,8 +57,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        paddingVertical: 15,
-        //backgroundColor: 'orange',
     },
     infoContainer: {
         marginLeft: 15,
@@ -66,12 +64,8 @@ const styles = StyleSheet.create({
     controlContainer: {
         marginTop: 10,
         marginLeft: 20,
-        paddingRight: 65,
+        paddingRight: 50,
     },
-    paramName: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    }
 });
 
 
