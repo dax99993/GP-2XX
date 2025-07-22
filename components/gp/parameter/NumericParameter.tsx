@@ -1,8 +1,17 @@
 import { NumericParameterModel } from "@/models/parameter/numericParameter";
 import { store } from "@/models/store";
-import Slider from "@react-native-community/slider";
+//import Slider from "@react-native-community/slider";
+import { Box } from "@/components/ui/box";
+import {
+    Slider,
+    SliderFilledTrack,
+    SliderThumb,
+    SliderTrack,
+} from "@/components/ui/slider";
+import { Text } from "@/components/ui/text";
+import { VStack } from "@/components/ui/vstack";
 import { observer } from "mobx-react-lite";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 
 type NumericParameterProps = {
     param: NumericParameterModel
@@ -17,21 +26,30 @@ function NumericParameter({param}: NumericParameterProps) {
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.infoContainer}>
-                <Text style={styles.paramName}>{param.name}</Text>
+        <VStack>
+            <Box className="bg-secondary-0 px-1 py-5">
+            <VStack style={styles.infoContainer}>
+                <Text size="lg" bold={true}>{param.name}</Text>
                 <Text>{param.getStringValue()}</Text>
-            </View>
+            </VStack>
             <Slider
-                //style={{maxWidth:200, height:40}}
                 style={styles.controlContainer}
-                minimumValue={param.min_value[0]}
-                maximumValue={param.max_value[0]}
+                size="lg"
+                sliderTrackHeight={15}
+                minValue={param.min_value[0]}
+                maxValue={param.max_value[0]}
                 step={param.step_size[0]}
                 value={param.current_value[0]}
-                onValueChange={onChange}
-            />
-        </View>
+                onChange={onChange}
+            >
+                <SliderTrack>
+                    <SliderFilledTrack />
+                </SliderTrack>
+                <SliderThumb />
+            </Slider>
+
+            </Box>
+        </VStack>
     );
 }
 
@@ -39,17 +57,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        paddingVertical: 10,
-        backgroundColor: 'orange',
+        paddingVertical: 15,
+        //backgroundColor: 'orange',
     },
     infoContainer: {
-        flexDirection: 'column',
-        justifyContent: 'center',
         marginLeft: 15,
     },
     controlContainer: {
-        marginLeft: 15,
-        marginRight: 30,
+        marginTop: 10,
+        marginLeft: 20,
+        paddingRight: 65,
     },
     paramName: {
         fontSize: 16,

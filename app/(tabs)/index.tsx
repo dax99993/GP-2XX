@@ -1,5 +1,6 @@
+import { Button, ButtonText } from '@/components/ui/button';
 import { useRouter } from 'expo-router';
-import { Button, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import { store } from '@/models/store';
 import { MIDIAccess } from "@motiz88/react-native-midi";
@@ -45,7 +46,9 @@ function HomeScreen() {
         <View style={{flex: 1}}>
             <Text style={styles.text}>Connection screen</Text>
             <View style={{flex: 4}}>
-                <Button title="Scan for devices" onPress={scan_for_devices}></Button>
+                <Button size="md" variant="solid" action="primary" onPress={scan_for_devices}>
+                    <ButtonText>Scan for devices</ButtonText>
+                </Button>
                 { store.gpmidi.midi.inputs && store.gpmidi.midi.inputs?.size != 0 && 
                   store.gpmidi.midi.outputs && store.gpmidi.midi.outputs?.size != 0 &&
                 <View>
@@ -54,7 +57,9 @@ function HomeScreen() {
                         { [...store.gpmidi.midi.inputs.entries()].map(([key, input]) => (
                             <View style={{flexDirection: 'row'}}>
                             <Text style={styles.text}>{input.name}</Text>
-                            <Button title="Connect" onPress={() => connect_procedure(key)}></Button>
+                            <Button size="md" variant="solid" action="primary" onPress={() => connect_procedure(key)}>
+                                <ButtonText>Connect</ButtonText>
+                            </Button>
                             </View>
                         )) }
                     </View>
@@ -62,8 +67,12 @@ function HomeScreen() {
                 }
             </View>
             <View style={{flex: 1, justifyContent: 'flex-end', paddingBottom: 100}}>
-            <Button title="About" onPress={() => {router.navigate('/about')}}></Button>
-            <Button title="Go to UI" onPress={() => {router.replace('/ui/preset')}}></Button>
+                <Button size="md" variant="solid" action="primary" onPress={() => {router.navigate('/about')}}>
+                    <ButtonText>About</ButtonText>
+                </Button>
+                <Button size="md" variant="solid" action="primary" onPress={() => {router.replace('/ui/preset')}}>
+                    <ButtonText>Go to UI</ButtonText>
+                </Button>
             </View>
         </View>
     );

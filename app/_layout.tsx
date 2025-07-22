@@ -1,15 +1,15 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import "@/global.css";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
+import "@/global.css";
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+//import { useColorScheme } from '@/hooks/useColorScheme';
+//import { useColorScheme } from 'nativewind';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  //const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -19,17 +19,14 @@ export default function RootLayout() {
     return null;
   }
 
-  //const [gpmidi, setGpmidi] = useState(new GPMidi());
-  //const gpmidi = new GPMidi();
-
 
   return (
-    <GluestackUIProvider mode="light"><ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <GluestackUIProvider mode={"dark"}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
         <StatusBar style="auto" />
-      </ThemeProvider></GluestackUIProvider>
+      </GluestackUIProvider>
   );
 }
