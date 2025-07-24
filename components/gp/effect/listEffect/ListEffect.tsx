@@ -38,7 +38,7 @@ function ListEffect(props: ListEffectProps) {
     }
 
     return (
-        <VStack style={{flex:1}}>
+        <VStack style={{flex:1}} className="bg-secondary-0">
             <FlatList
                 data={filteredData}
                 renderItem={(item) => <ListEffectItem name={item.item} />}
@@ -76,8 +76,8 @@ function SearchBarEffect(props: SearchProps) {
     }
 
     return (
-        <Box className="bg-secondary-300 mx-5 my-5">
-            <Input style={{flex:1}} className="bg-secondary-0">
+        <Box className="bg-secondary-0 mx-5 my-5">
+            <Input style={{flex:1}} className="bg-secondary-300">
                 <InputField 
                     type="text"
                     value={query}

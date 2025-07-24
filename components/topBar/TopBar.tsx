@@ -1,21 +1,16 @@
 import { ReactNode } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { HStack } from "../ui/hstack";
 
 type TopBarProps = {
-    left: ReactNode;
-    right: ReactNode;
+    children: ReactNode;
 }
 
-function TopBar({left, right}: TopBarProps) {
+function TopBar({children}: TopBarProps) {
     return  (
-        <View style={styles.container}>
-            <View style={styles.leftItem}>
-                {left}
-            </View>
-            <View style={styles.rightItem}>
-                {right}
-            </View>
-        </View>
+        <HStack style={styles.container} className="bg-secondary-0 px-3 py-1">
+            {children}
+        </HStack>
     )
 }
 
@@ -25,9 +20,22 @@ type LeftProps = {
 
 function LeftItems({children}: LeftProps) {
     return (
-        <>
+        <HStack style={styles.leftItem} className="mr-0">
             {children}
-        </>
+        </HStack>
+    );
+}
+
+type CenterProps = {
+    children: ReactNode
+    style?: StyleProp<ViewStyle>
+}
+
+function CenterItems({children, style}: CenterProps) {
+    return (
+        <HStack style={[styles.centerItem, style]} className="mx-2">
+            {children}
+        </HStack>
     );
 }
 
@@ -37,40 +45,43 @@ type RightProps = {
 
 function RightItems({children}: RightProps) {
     return (
-        <>
+        <HStack style={styles.rightItem} className="ml-0">
             {children}
-        </>
+        </HStack>
     );
 }
 
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: 'blue',
         height: 50,
-        paddingHorizontal: 10,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-evenly',
     },
     leftItem: {
-        backgroundColor: 'pink',
-        flex: 2,
+        //flex: 1,
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        marginRight: 10,
+        backgroundColor: 'orange'
+    },
+    centerItem: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        backgroundColor: 'pink'
     },
     rightItem: {
-        backgroundColor: 'orange',
-        flex: 10,
+        //flex: 1,
         flexDirection: 'row',
-        justifyContent: 'flex-end',
-        gap: 10,
+        justifyContent: 'flex-start',
+        backgroundColor: 'orange'
     }
 });
 
 
 TopBar.leftItems = LeftItems; 
+TopBar.centerItems = CenterItems; 
 TopBar.rightItems = RightItems; 
 
 export default TopBar;
