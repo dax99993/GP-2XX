@@ -1,7 +1,5 @@
-import { DefaultEffectsInfo } from "@/constants/DefaultEffects";
 import { makeObservable, observable } from "mobx";
-import { DeserializeEffect, EffectModel, EffectType } from "./effect/effect";
-import { IEffect, IEffectsInfo } from "./effect/effectInfo";
+import { EffectModel, EffectType } from "./effect/effect";
 
 type FxLoop = {
     // 0-11
@@ -43,17 +41,17 @@ export class PresetModel {
 
         // Create Effect object class from string name
         this.effects = [];
-        this.effects.push(this.getEffect(preName, EffectType.PRE));
-        this.effects.push(this.getEffect(wahName, EffectType.WAH));
-        this.effects.push(this.getEffect(dstName, EffectType.DST));
-        this.effects.push(this.getEffect(ampName, EffectType.AMP));
-        this.effects.push(this.getEffect(nrName, EffectType.NR));
-        this.effects.push(this.getEffect(cabName, EffectType.CAB));
-        this.effects.push(this.getEffect(eqName, EffectType.EQ));
-        this.effects.push(this.getEffect(modName, EffectType.MOD));
-        this.effects.push(this.getEffect(dlyName, EffectType.DLY));
-        this.effects.push(this.getEffect(rvbName, EffectType.RVB));
-        this.effects.push(this.getEffect(volName, EffectType.VOL));
+        this.effects.push(EffectModel.from(preName, EffectType.PRE));
+        this.effects.push(EffectModel.from(wahName, EffectType.WAH));
+        this.effects.push(EffectModel.from(dstName, EffectType.DST));
+        this.effects.push(EffectModel.from(ampName, EffectType.AMP));
+        this.effects.push(EffectModel.from(nrName, EffectType.NR));
+        this.effects.push(EffectModel.from(cabName, EffectType.CAB));
+        this.effects.push(EffectModel.from(eqName, EffectType.EQ));
+        this.effects.push(EffectModel.from(modName, EffectType.MOD));
+        this.effects.push(EffectModel.from(dlyName, EffectType.DLY));
+        this.effects.push(EffectModel.from(rvbName, EffectType.RVB));
+        this.effects.push(EffectModel.from(volName, EffectType.VOL));
 
         // Settings
         this.fxLoop = {
@@ -75,27 +73,6 @@ export class PresetModel {
     // savePreset(save_number, name)
     changeChainPosition(new_order: number[]) {
         this.chainOrder = new_order
-    }
-
-    getEffect(effectName: string, type: EffectType): EffectModel {
-
-        const deserializeEffect = new DeserializeEffect();
-
-        let eff: EffectModel;
-        const effectsInfo: IEffectsInfo[] = Object.values(DefaultEffectsInfo);
-        //console.log(Object.values(DefaultEffectsInfo));
-        effectsInfo.forEach(effectsInfo => {
-            const effectInfo: IEffect[] = Object.values(effectsInfo);
-            effectInfo.forEach(e => {
-                //console.log(e);
-                if (e.name === effectName && e.type == EffectType[type]) {
-                    console.log("Found pedal!", e.type, effectName);
-                    eff = deserializeEffect.deserialize(e);
-                }
-            })
-        });
-
-        return eff;
     }
 }
 

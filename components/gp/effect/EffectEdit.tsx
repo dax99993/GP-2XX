@@ -1,3 +1,4 @@
+import ButtonWithIcon from "@/components/ButtonIcon";
 import { Center } from "@/components/ui/center";
 import { HStack } from "@/components/ui/hstack";
 import { Switch } from "@/components/ui/switch";
@@ -8,6 +9,8 @@ import { DoubleParameterModel } from "@/models/parameter/doubleParameter";
 import { NumericParameterModel } from "@/models/parameter/numericParameter";
 import { SelectParameterModel } from "@/models/parameter/selectParameter";
 import { store } from "@/models/store";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useRouter } from "expo-router";
 import { observer } from "mobx-react-lite";
 import { ScrollView, StyleSheet } from "react-native";
 import DoubleParameter from "../parameter/DoubleParameter";
@@ -15,6 +18,12 @@ import NumericParameter from "../parameter/NumericParameter";
 import SelectParameter from "../parameter/SelectParameter";
 
 function EffectEdit() {
+    const router = useRouter();
+
+    const goToSelectEffect = () => {
+        router.push("/ui/edit/select_effect");
+    };
+
     return (
         <VStack style={styles.mainContainer}>
             <HStack style={styles.selectionContainer}>
@@ -29,9 +38,10 @@ function EffectEdit() {
                             }}
                         />
                 </Center>
-                <Center className="bg-secondary-300 mx-3 my-2 px-2 py-2 rounded-md" style={{flex:1}}>
-                    <Text bold={true}>{store.gp200.current_effect.name}</Text>
-                </Center >
+                <ButtonWithIcon title={store.gp200.current_effect.name}
+                    onPress={goToSelectEffect}
+                    icon={<Ionicons name="caret-forward" color={"white"} size={16}/>}
+                />
             </HStack>
             <ScrollView style={styles.parametersContainer}>
                 { store.gp200.current_effect.parameters.map(p => {

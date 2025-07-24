@@ -1,5 +1,5 @@
 
-import { action, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { EffectModel, EffectType } from "./effect/effect";
 import { MidiGPDeviceModel } from "./gpMidiDevice";
 import { DoubleParameterModel } from "./parameter/doubleParameter";
@@ -36,7 +36,10 @@ export class GP200Model {
             // Change preset actions
             incrementPresetNum: action,
             decrementPresetNum: action,
+            presetBankCode: computed,
             changePreset: action,
+            changeEffect: action,
+            
 
             // Change effect actions
             changeSelectedEffect: action,
@@ -82,7 +85,7 @@ export class GP200Model {
       this.changePreset(this.current_preset_number);
     }
 
-    getPresetBankCode(): string {
+    get presetBankCode(): string {
       const number = this.current_preset_number;
       const bankNumber = Math.floor(number / 4) + 1;
       let bankLetter: string = "";
@@ -161,6 +164,16 @@ export class GP200Model {
     changeSelectedEffect(effectType: EffectType) {
       this.current_effect = this.current_preset.effects[effectType as number];
     }
+
+    changeEffect(name: string, effectType: EffectType) {
+        // Get Effect model with given specs
+        // Assign effect in current preset
+        const e = EffectModel.from(name, effectType);
+        this.current_preset.effects[effectType] = e;
+        this.current_effect = e;
+        // send midi action to update physical device
+    }
+
 
 
 

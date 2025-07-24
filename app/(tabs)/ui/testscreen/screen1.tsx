@@ -1,20 +1,27 @@
 
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Platform, StatusBar, StyleSheet } from 'react-native';
 
 import { ThemedView } from '@/components/ThemedView';
-import SelectEffect from '@/components/gp/effect/SelectEffect';
+import ListEffect from '@/components/gp/effect/listEffect/ListEffect';
+import { Button, ButtonText } from '@/components/ui/button';
+import { VStack } from '@/components/ui/vstack';
+import { useRouter } from 'expo-router';
 
 
 
 
 export default function TestScreen() {
+  const router = useRouter();
 
   return (
     <>
       <ThemedView style={styles.maincontainer}>
-        <View style={[styles.viewButtons, {backgroundColor: 'lightgreen'}]}>
-            <SelectEffect data={["a"]}/>
-        </View>
+        <VStack style={{flex:1}}>
+          <Button onPress={() => router.push("/ui/edit/effecttab")}>
+            <ButtonText>{"<"}</ButtonText>
+          </Button>
+          <ListEffect data={[]}/>
+        </VStack>
       </ThemedView>
     </>
   );

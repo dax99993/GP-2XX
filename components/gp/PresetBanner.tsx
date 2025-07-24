@@ -4,28 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 type PresetBannerProps = {
   presetName: string;
-  presetNumber: number;
-}
-
-function presetNumberToCode(number: number) : string {
-  const bankNumber = Math.floor(number / 4) + 1;
-  let bankLetter: string = "";
-  switch (number % 4) {
-    case 0:
-      bankLetter = 'A';
-      break;
-    case 1:
-      bankLetter = 'B';
-      break;
-    case 2:
-      bankLetter = 'C';
-      break;
-    case 3:
-      bankLetter = 'D';
-      break;
-  }
-
-  return bankNumber + '-' + bankLetter;
+  presetBankCode: string;
 }
 
 function PresetBanner(props: PresetBannerProps) {
@@ -35,7 +14,7 @@ function PresetBanner(props: PresetBannerProps) {
         <>
         <View style={styles.bannerContainer}>
             <View style={styles.presetCodeContainer}>
-              <Text style={styles.text}>{presetNumberToCode(props.presetNumber)}</Text>
+              <Text style={styles.text}>{props.presetBankCode}</Text>
             </View>
             <Text style={styles.presetSeparator}></Text>
             <View style={styles.presetNameContainer}>

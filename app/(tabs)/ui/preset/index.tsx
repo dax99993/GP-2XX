@@ -19,7 +19,7 @@ function HomeScreen() {
     const preset_num = 251
     // send message
     store.gp200.changePreset(preset_num);
-    console.log("Setting bank to", store.gp200.getPresetBankCode());
+    console.log("Setting bank to", store.gp200.presetBankCode);
   }, []);
 
   const increment = () => {
@@ -35,7 +35,7 @@ function HomeScreen() {
       <ThemedView style={styles.maincontainer}>
         <View style={styles.presetContainer}>
           <View style={styles.bannerContainer}>
-            <PresetBanner presetName='Preset Name' presetNumber={store.gp200.current_preset_number}></PresetBanner>
+            <PresetBanner presetName='Preset Name' presetBankCode={store.gp200.presetBankCode}></PresetBanner>
           </View>
           <View style={styles.viewButtons}>
             <ActionButton title={"Patch -"} type={ActionButtonType.Patch} onPress={decrement}></ActionButton>
