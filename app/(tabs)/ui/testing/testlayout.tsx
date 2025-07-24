@@ -1,7 +1,6 @@
 
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 
-import { ThemedView } from '@/components/ThemedView';
 import ConnectionModal from '@/components/gp/Modal';
 
 
@@ -11,7 +10,7 @@ export default function TestScreen() {
 
   return (
     <>
-      <ThemedView style={styles.maincontainer}>
+      <View style={styles.maincontainer}>
         <ConnectionModal/>
         <View style={styles.presetContainer}>
           <View style={styles.bannerContainer}></View>
@@ -20,7 +19,7 @@ export default function TestScreen() {
           </View>
         </View>
         <View style={styles.controlContainer}></View>
-      </ThemedView>
+      </View>
     </>
   );
 }

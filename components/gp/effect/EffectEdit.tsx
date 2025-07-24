@@ -1,6 +1,6 @@
-import ButtonWithIcon from "@/components/ButtonIcon";
 import { Center } from "@/components/ui/center";
 import { HStack } from "@/components/ui/hstack";
+import { ChevronRightIcon, Icon } from "@/components/ui/icon";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -9,10 +9,9 @@ import { DoubleParameterModel } from "@/models/parameter/doubleParameter";
 import { NumericParameterModel } from "@/models/parameter/numericParameter";
 import { SelectParameterModel } from "@/models/parameter/selectParameter";
 import { store } from "@/models/store";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import { observer } from "mobx-react-lite";
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import DoubleParameter from "../parameter/DoubleParameter";
 import NumericParameter from "../parameter/NumericParameter";
 import SelectParameter from "../parameter/SelectParameter";
@@ -25,8 +24,8 @@ function EffectEdit() {
     };
 
     return (
-        <VStack style={styles.mainContainer}>
-            <HStack style={styles.selectionContainer}>
+        <VStack style={styles.mainContainer} className="bg-secondary-0">
+            <HStack style={styles.selectionContainer} >
                 <Center className="bg-secondary-300 mx-3 my-2 px-2 py-2 rounded-md">
                         <Text bold={true}>{EffectType[store.gp200.current_effect.type]}</Text>
                         <Switch
@@ -38,10 +37,16 @@ function EffectEdit() {
                             }}
                         />
                 </Center>
-                <ButtonWithIcon title={store.gp200.current_effect.name}
-                    onPress={goToSelectEffect}
-                    icon={<Ionicons name="caret-forward" color={"white"} size={16}/>}
-                />
+                <TouchableOpacity style={{flex:1}} onPress={goToSelectEffect}>
+                    <HStack style={{ flex: 1, justifyContent: 'space-between' }} className="bg-secondary-300 mx-3 my-2 px-2 py-2 rounded-md">
+                        <Center style={{ flex: 1 }}>
+                            <Text bold={true}>{store.gp200.current_effect.name}</Text>
+                        </Center>
+                        <Center>
+                            <Icon as={ChevronRightIcon} className="ml-2" size="xl" />
+                        </Center>
+                    </HStack>
+                </TouchableOpacity>
             </HStack>
             <ScrollView style={styles.parametersContainer}>
                 { store.gp200.current_effect.parameters.map(p => {

@@ -1,6 +1,5 @@
-import { Button, Platform, StatusBar, StyleSheet } from 'react-native';
+import { Button, Platform, StatusBar, StyleSheet, View } from 'react-native';
 
-import { ThemedView } from '@/components/ThemedView';
 
 
 import EffectChain from '@/components/gp/effect/EffectChain';
@@ -11,7 +10,8 @@ import TopBar from '@/components/topBar/TopBar';
 export default function EditScreen() {
 
   return (
-      <ThemedView style={styles.mainContainer}>
+    <>
+      <View style={styles.mainContainer}>
         <TopBar
         left={<TopBar.leftItems>
           {
@@ -29,7 +29,8 @@ export default function EditScreen() {
       />
         <EffectChain/>
         <EffectEdit/>
-      </ThemedView>
+      </View>
+    </>
   );
 }
 

@@ -1,9 +1,9 @@
 
 import { Platform, StatusBar, StyleSheet } from 'react-native';
 
-import { ThemedView } from '@/components/ThemedView';
 import ListEffect from '@/components/gp/effect/listEffect/ListEffect';
-import { Button, ButtonText } from '@/components/ui/button';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { AddIcon } from '@/components/ui/icon';
 import { VStack } from '@/components/ui/vstack';
 import { useRouter } from 'expo-router';
 
@@ -15,14 +15,13 @@ export default function TestScreen() {
 
   return (
     <>
-      <ThemedView style={styles.maincontainer}>
         <VStack style={{flex:1}}>
           <Button onPress={() => router.push("/ui/edit/effecttab")}>
             <ButtonText>{"<"}</ButtonText>
+            <ButtonIcon as={AddIcon} className="ml-2" />
           </Button>
           <ListEffect data={[]}/>
         </VStack>
-      </ThemedView>
     </>
   );
 }

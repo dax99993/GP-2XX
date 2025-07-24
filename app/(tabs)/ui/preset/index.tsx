@@ -1,6 +1,5 @@
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 
-import { ThemedView } from '@/components/ThemedView';
 
 import ActionButton from '@/components/gp/ActionButton';
 import PresetBanner from '@/components/gp/PresetBanner';
@@ -32,7 +31,7 @@ function HomeScreen() {
 
   return (
     <>
-      <ThemedView style={styles.maincontainer}>
+      <View style={styles.maincontainer}>
         <View style={styles.presetContainer}>
           <View style={styles.bannerContainer}>
             <PresetBanner presetName='Preset Name' presetBankCode={store.gp200.presetBankCode}></PresetBanner>
@@ -52,7 +51,7 @@ function HomeScreen() {
         </View>
         <View style={styles.controlContainer}>
         </View>
-      </ThemedView>
+      </View>
     </>
   );
 }
