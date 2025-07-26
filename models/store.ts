@@ -1,25 +1,26 @@
 import { makeObservable, observable } from "mobx";
 import { GP200Model } from "./gp200";
-import { MidiGPDeviceModel } from "./gpMidiDevice";
+import { GP200Actions } from "./gp200Actions";
+import { GP200DeviceActions } from "./gp200DeviceActions";
+import { MidiDevice } from "./midiDevice";
 
 
 
 class Store {
     gp200: GP200Model;
-    gpmidi: MidiGPDeviceModel;
-    //midi: MidiDevice;
+    gpActions: GP200Actions;
+    midi: MidiDevice;
+    gpDeviceActions: GP200DeviceActions;
 
     constructor() {
         this.gp200 = new GP200Model();
-        this.gpmidi = new MidiGPDeviceModel();
-        //this.midi = new MidiDevice();
-
-        this.gp200.addMidi(this.gpmidi);
-        this.gpmidi.addGP(this.gp200);
+        this.midi = new MidiDevice();
+        this.gpActions = new GP200Actions(this.gp200, this.midi);
+        this.gpDeviceActions = new GP200DeviceActions(this.gp200, this.midi);
 
         makeObservable(this,{
             gp200: observable,
-            gpmidi: observable,
+            gpActions: observable,
         });
     }
 

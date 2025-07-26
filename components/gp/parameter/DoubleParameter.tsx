@@ -23,19 +23,19 @@ function DoubleParameter({param}: DoubleParameterProps) {
     const isSecondRangeActive = param.current_range_idx === 1;
     console.log("second range activated? = ", isSecondRangeActive);
 
-    const onChangeNumeric = (v: number) => {
-       //const a = param.setValue(v);
-       //store.gp200.changeParamValue(param.name, v);
-       store.gp200.changeParamValue(store.gp200.current_effect.type, param.id, v);
+    const onChangeNumeric = (n: number) => {
+       //store.gp200.changeParamValue(store.gp200.current_effect.type, param.id, v);
+       store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
        //console.log("Numeric new value = ", v);
-       console.log(`Numeric assign value (${param.name})= ${v}`);
+       console.log(`Numeric assign value (${param.name})= ${n}`);
     };
 
     const onChangeSelect = (v:string, n: number) => {
         console.log("param picker new value = ", v, n);
         //store.gp200.changeParamValue(param.name, n);
         //store.gp200.changeParamValue(param.name, n);
-        store.gp200.changeParamValue(store.gp200.current_effect.type, param.id, n);
+        //store.gp200.changeParamValue(store.gp200.current_effect.type, param.id, n);
+        store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
         console.log(`Select assign value (${param.name}) = ${n}, ${v}`);
     };
 
@@ -64,12 +64,12 @@ function DoubleParameter({param}: DoubleParameterProps) {
                     step={param.step_size[0]}
                     value={param.current_value[0]}
                     onChange={onChangeNumeric}
-                >
-                    <SliderTrack>
-                        <SliderFilledTrack />
-                    </SliderTrack>
-                    <SliderThumb />
-                </Slider>
+                    >
+                        <SliderTrack>
+                            <SliderFilledTrack />
+                        </SliderTrack>
+                        <SliderThumb />
+                    </Slider>
                 }
                 {
                 isSecondRangeActive &&

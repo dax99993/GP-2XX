@@ -75,6 +75,7 @@ export const BaseSysExMsg = {
 
     //
     EffectActions: {
+        // 30 bytes
         //byte 0x16 is the effect ID (0-10) ; byte 0x18 is the state of pedal OFF -> 0, ON -> 1
         changeState:
             [

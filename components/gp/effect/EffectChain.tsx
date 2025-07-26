@@ -25,7 +25,8 @@ function EffectChain() {
     //'worklet';
     const ids = params.indexToKey.map(i => Number(i));
     console.log("New chain order = ", ids);
-    store.gp200.changePresetChainOrder(ids);
+    // store.gp200.changePresetChainOrder(ids);
+    store.gpActions.ChangePresetChainOrder(ids);
   }, []);
 
     return (

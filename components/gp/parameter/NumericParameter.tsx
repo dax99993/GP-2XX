@@ -19,10 +19,10 @@ type NumericParameterProps = {
 
 function NumericParameter({param}: NumericParameterProps) {
 
-
-    const onChange = (v: number) => {
-       store.gp200.changeParamValue(store.gp200.current_effect.type, param.id, v);
-       console.log(`Numeric assign value (${param.name})= ${v}`);
+    const onChange = (n: number) => {
+       //store.gp200.changeParamValue(store.gp200.current_effect.type, param.id, v);
+       store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
+       console.log(`Numeric assign value (${param.name})= ${n}`);
     };
 
     return (

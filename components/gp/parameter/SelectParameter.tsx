@@ -26,7 +26,8 @@ function SelectParameter({param}: SelectParameterProps) {
 
     const onChangeNumber = (v:string, n: number) => {
        //store.gp200.changeParamValue(param.name, n);
-       store.gp200.changeParamValue(store.gp200.current_effect.type, param.id, n);
+       //store.gp200.changeParamValue(store.gp200.current_effect.type, param.id, n);
+       store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
        console.log(`Select assign value (${param.name})= ${v}, ${n}`);
     };
 

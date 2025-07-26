@@ -16,17 +16,19 @@ function HomeScreen() {
   useEffect(()=>{
     // Testing preset 63-D
     const preset_num = 251
-    // send message
-    store.gp200.changePreset(preset_num);
+    // send action
+    store.gpActions.ChangePreset(preset_num);
     console.log("Setting bank to", store.gp200.presetBankCode);
   }, []);
 
   const increment = () => {
-    store.gp200.incrementPresetNum();
+    store.gpActions.NextPreset();
+    console.log("Setting bank to", store.gp200.presetBankCode);
   }
 
   const decrement = () => {
-    store.gp200.decrementPresetNum();
+    store.gpActions.PreviousPreset();
+    console.log("Setting bank to", store.gp200.presetBankCode);
   }
 
   return (

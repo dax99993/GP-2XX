@@ -20,7 +20,7 @@ type LeftProps = {
 
 function LeftItems({children}: LeftProps) {
     return (
-        <HStack style={styles.leftItem} className="mr-0">
+        <HStack style={styles.leftItem} className="mr-1">
             {children}
         </HStack>
     );
@@ -45,7 +45,7 @@ type RightProps = {
 
 function RightItems({children}: RightProps) {
     return (
-        <HStack style={styles.rightItem} className="ml-0">
+        <HStack style={styles.rightItem} className="ml-1">
             {children}
         </HStack>
     );

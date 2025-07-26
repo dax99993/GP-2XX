@@ -26,18 +26,19 @@ function HomeScreen() {
 
     const scan_for_devices = () => {
         console.log('scanning');
-        store.gpmidi.midi.getMidiAccess();
-        console.log('inputs: ', store.gpmidi.midi.inputs);
-        console.log('outputs', store.gpmidi.midi.outputs);
+        store.gpActions.midi.getMidiAccess();
+        console.log('inputs: ', store.gpActions.midi.inputs);
+        console.log('outputs', store.gpActions.midi.outputs);
     }
 
     const connect_procedure = (id:string) => {
         console.log("id: ", id); 
-        store.gpmidi.midi.setInput(id);
-        store.gpmidi.midi.setOutput(id);
+        store.gpActions.midi.setInput(id);
+        store.gpActions.midi.setOutput(id);
 
         // Start listening to midi messages
-        store.gpmidi.setupReceivedSysEx();
+        //store.gpActions.setupReceivedSysEx();
+        store.gpDeviceActions.setupReceivedSysEx();
         router.replace('/ui/preset');
     };
 
@@ -49,12 +50,12 @@ function HomeScreen() {
                 <Button size="md" variant="solid" action="primary" onPress={scan_for_devices}>
                     <ButtonText>Scan for devices</ButtonText>
                 </Button>
-                { store.gpmidi.midi.inputs && store.gpmidi.midi.inputs?.size != 0 && 
-                  store.gpmidi.midi.outputs && store.gpmidi.midi.outputs?.size != 0 &&
+                { store.gpActions.midi.inputs && store.gpActions.midi.inputs?.size != 0 && 
+                  store.gpActions.midi.outputs && store.gpActions.midi.outputs?.size != 0 &&
                 <View>
                     <Text style={styles.text}>Found Devices</Text>
                     <View style={{flexDirection: 'column', alignContent: 'space-between', justifyContent: 'space-between', marginBottom:20}}>
-                        { [...store.gpmidi.midi.inputs.entries()].map(([key, input]) => (
+                        { [...store.gpActions.midi.inputs.entries()].map(([key, input]) => (
                             <View style={{flexDirection: 'row'}}>
                             <Text style={styles.text}>{input.name}</Text>
                             <Button size="md" variant="solid" action="primary" onPress={() => connect_procedure(key)}>

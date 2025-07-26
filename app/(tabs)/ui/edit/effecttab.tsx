@@ -150,8 +150,6 @@ export default function EditScreen() {
   return (
     <>
       <View style={styles.mainContainer}>
-        <EditScreenTopBar/>
-        <EditModeSelector/>
         <EffectChain/>
         <EffectEdit/>
       </View>

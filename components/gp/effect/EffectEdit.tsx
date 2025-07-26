@@ -33,7 +33,7 @@ function EffectEdit() {
                             value={store.gp200.current_effect.state}
                             onValueChange={(v) => {
                                 console.log(v);
-                                store.gp200.changeEffectState(v);
+                                store.gpActions.ChangeEffectState(v);
                             }}
                         />
                 </Center>
