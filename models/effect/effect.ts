@@ -1,7 +1,8 @@
 import { DefaultEffectsInfo } from "@/constants/DefaultEffects";
 import { action, makeObservable, observable } from "mobx";
-import { DeserializeParam, IParameter } from "../parameter/parameter";
-import { IEffect, IEffectsInfo } from "./effectInfo";
+import { DeserializeParam, IParameter } from "../parameter/IParameter";
+import { IEffectInfo } from "./IEffectInfo";
+import { IEffectsInfo } from "./IEffectsInfo";
 
 // this also encodes the natural order of pedal types id in default chain order
 export enum EffectType {
@@ -19,7 +20,7 @@ export enum EffectType {
 }
 
 export class DeserializeEffect {
-    deserialize(ieffect: IEffect): EffectModel {
+    deserialize(ieffect: IEffectInfo): EffectModel{
         //console.log('Received Effect Json = ', jsonObject);
 
         // Get typed parameter vector
@@ -95,7 +96,7 @@ export class EffectModel {
         const effectsInfo: IEffectsInfo[] = Object.values(DefaultEffectsInfo);
         //console.log(Object.values(DefaultEffectsInfo));
         effectsInfo.forEach(effectsInfo => {
-            const effectInfo: IEffect[] = Object.values(effectsInfo);
+            const effectInfo: IEffectInfo[] = Object.values(effectsInfo);
             effectInfo.forEach(e => {
                 //console.log(e);
                 if (e.name === effectName && e.type == EffectType[type]) {
@@ -107,6 +108,37 @@ export class EffectModel {
 
         return eff;
     }
+
+    static fromID(effectID: number[], effectType: EffectType): EffectModel {
+
+        const deserializeEffect = new DeserializeEffect();
+
+        let eff: EffectModel;
+        const effectsInfo: IEffectsInfo[] = Object.values(DefaultEffectsInfo);
+
+        effectsInfo.forEach(effectsInfo => {
+            const effectInfo: IEffectInfo[] = Object.values(effectsInfo);
+            effectInfo.forEach(e => {
+                const areEqual = arraysEqualShallow(e.id ,effectID);
+                //console.log("Compare IDS", e.type, e.id, effectID, areEqual);
+                if ( areEqual && e.type === EffectType[effectType] ) {
+                    console.log("Found pedal!", e.type, e.name, e.id);
+                    //return deserializeEffect.deserialize(e);
+                    eff = deserializeEffect.deserialize(e);
+                }
+            })
+        });
+
+        //throw new Error(`Effect not found!, check correct ID ${effectID}` );
+        return eff;
+    }
+}
+
+function arraysEqualShallow(arr1: any[], arr2: any[]): boolean {
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+  return arr1.every((value, index) => value === arr2[index]);
 }
 
 

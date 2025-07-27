@@ -4,9 +4,11 @@ import { HStack } from "@/components/ui/hstack";
 import { Input, InputField } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { EffectsNames } from "@/constants/EffectsNames";
+import { EffectsChangeInfo } from "@/constants/EffectsChangeInfo";
 import { EffectType } from "@/models/effect/effect";
+import { IEffectChangeInfo } from "@/models/effect/IEffectChangeInfo";
 import { store } from "@/models/store";
+import { observer } from "mobx-react-lite";
 import { useMemo, useState } from "react";
 import { FlatList, TouchableOpacity } from "react-native";
 
@@ -22,17 +24,20 @@ type EffectData = {
 
 function ListEffect(props: ListEffectProps) {
     const DATA = useMemo(() => {
-        return EffectsNames[EffectType[store.gp200.current_effect.type] as keyof typeof EffectsNames];
+        //return EffectsNames[EffectType[store.gp200.current_effect.type] as keyof typeof EffectsNames];
+        return EffectsChangeInfo[EffectType[store.gp200.current_effect.type] as keyof typeof EffectsChangeInfo];
     }, [store.gp200.current_effect]);
 
-    const [filteredData, setFilteredData] = useState<string[]>(DATA);
+    //const [filteredData, setFilteredData] = useState<string[]>(DATA);
+    const [filteredData, setFilteredData] = useState<IEffectChangeInfo[]>(DATA);
 
 
     const onSearchChange = (q: string) => {
         if (q === "") {
             setFilteredData(DATA);
         } else {
-            const n = DATA.filter(e => e.toLocaleLowerCase().includes(q.toLocaleLowerCase()));
+            //const n = DATA.filter(e => e.toLocaleLowerCase().includes(q.toLocaleLowerCase()));
+            const n = DATA.filter(e => e.name.toLocaleLowerCase().includes(q.toLocaleLowerCase()));
             setFilteredData(n);
         }
     }
@@ -41,8 +46,8 @@ function ListEffect(props: ListEffectProps) {
         <VStack style={{flex:1}} className="bg-secondary-0">
             <FlatList
                 data={filteredData}
-                renderItem={(item) => <ListEffectItem name={item.item} />}
-                keyExtractor={item => item}
+                renderItem={(item) => <ListEffectItem name={item.item.name} id={item.item.id}/>}
+                keyExtractor={item => item.name}
                 ListHeaderComponent={
                     <SearchBarEffect placeholder="Search effect" onChange={onSearchChange}/>
                 }
@@ -96,6 +101,7 @@ function SearchBarEffect(props: SearchProps) {
 // List item
 type ListEffectItemProps = {
     name: string;
+    id: number[];
 }
 
 function ListEffectItem(props: ListEffectItemProps) {
@@ -104,7 +110,8 @@ function ListEffectItem(props: ListEffectItemProps) {
     const onPress = () => {
         console.log("Selected ", props.name);
         // update current effect in preset and var
-        store.gp200.changeEffect(props.name, store.gp200.current_effect.type);
+        //store.gp200.changeEffect(props.name, store.gp200.current_effect.type);
+        store.gpActions.ChangeEffect(props.id);
 
         setSelected(store.gp200.current_effect.name === props.name);
         // on Press end
@@ -134,4 +141,4 @@ function ListEffectItem(props: ListEffectItemProps) {
 }
 
 
-export default ListEffect;
+export default observer(ListEffect);

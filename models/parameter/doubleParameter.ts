@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { IParameter, Labels } from "./parameter";
+import { IParameter, Labels } from "./IParameter";
 
 export class DoubleParameterModel implements IParameter {
     type: string = "Double";

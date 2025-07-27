@@ -1,8 +1,9 @@
 import { BaseSysExMsg, SysExGPHeader } from "@/constants/SysExMsg";
 import { MIDIMessageEvent } from "@motiz88/react-native-midi";
 import { makeObservable, observable } from "mobx";
-import { GP200Model } from "./gp200";
-import { MidiDevice } from "./midiDevice";
+import { GP200Model } from "../gp200";
+import { MidiDevice } from "../midiDevice";
+import { IDeviceActions } from "./IActions";
 
 function compareArrays(a: number[] | Uint8Array, b: number[] | Uint8Array) {
     // console.log("Sizes = ", a.length, b.length);
@@ -18,7 +19,7 @@ type midiMessage = {
 
 
 
-export class GP200DeviceActions {
+export class GP200DeviceActions implements IDeviceActions {
 
     gp200: GP200Model;
     midi: MidiDevice;
@@ -39,6 +40,9 @@ export class GP200DeviceActions {
             gp200: observable,
             midi: observable,
         });
+    }
+    ChangePresetChainOrder(message: number[]): void {
+        throw new Error("Method not implemented.");
     }
 
 
@@ -135,7 +139,7 @@ export class GP200DeviceActions {
 
         // Mask bit
         const n = numberValue & (~bit_mask);
-        console.log(n, n.toString(16).padStart(8, '0'));
+        console.log("Sign bit masked", n, n.toString(16).padStart(8, '0'));
 
         if (n === 0) {
             return 0;
@@ -146,14 +150,14 @@ export class GP200DeviceActions {
 
         // Create power of 2 encoded levels
         let levels = [];
-        for (let i = 0; i < 15; i = i + 1) {
+        for (let i = 0; i < 16; i = i + 1) {
             //console.log(i);
             levels.push(base + i * delta);
         }
 
         // Get level
         const m: number = levels.findIndex((l: number) => l > n) - 1;
-        console.log(m, Math.pow(2, m));
+        console.log("Number Level", m, "power of 2", Math.pow(2, m));
 
         // Calculate the integer number
         const steps = (n - (base + delta * m)) / (delta >> m)
@@ -202,13 +206,12 @@ export class GP200DeviceActions {
         if (this._isGPSysEx(message)) {
             //console.log("GP SysEx received");
             //console.log(message);
-            if (message.length == 30) {
-                //console.log("Parsing 30 length message.");
-                this.decodeSysEx30length(message);
-            } else if (message.length == 46) {
-                //console.log("Parsing 46 length message.");
+            if (message.length == 46) {
                 this.decodeSysEx46length(message);
-
+            } else if (message.length == 38) {
+                this.decodeSysEx38length(message);
+            } else if (message.length == 30) {
+                this.decodeSysEx30length(message);
             } else {
                 //console.log("Parsing " + message.length + "length message.");
             }
@@ -224,6 +227,15 @@ export class GP200DeviceActions {
         }
     }
 
+    decodeSysEx38length(message: Uint8Array | number[]) {
+        const changeEffect = BaseSysExMsg.EffectActions.changeEffect;
+        //if ( compareArrays(message.slice(0, 18+1), changeParameterValue.slice(0, 18+1))) {
+        if ( this.isSameMessage(message, changeEffect)) {
+            console.log("Change Effect message received!.");
+            this.ChangeEffect(message);
+        }
+    }
+
     decodeSysEx30length(message: Uint8Array | number[]) {
         const changePresetSysEx = BaseSysExMsg.PresetAction.changePreset;
         const changeEffectState = BaseSysExMsg.EffectActions.changeState;
@@ -231,7 +243,7 @@ export class GP200DeviceActions {
         //if ( compareArrays(message.slice(0, 18+1), changePresetSysEx.slice(0, 18+1))) {
         if ( this.isSameMessage(message, changePresetSysEx) ) {
             console.log("Change preset message received!.");
-            this.GetChangePreset(message);
+            this.ChangePreset(message);
 
 
         } else if (this.isSameMessage(message, changeEffectState)) {
@@ -245,7 +257,7 @@ export class GP200DeviceActions {
 
     // DECODE
     // PRESET ACTIONS
-    GetChangePreset(message: number[] | Uint8Array) {
+    ChangePreset(message: number[] | Uint8Array) {
         // bytes 0x19 and 0x1a encode the preset/patch number (Hex digits)
         let baseSysEx = message;
         const high_byte = baseSysEx[0x19] 
@@ -260,6 +272,26 @@ export class GP200DeviceActions {
     //PRESET SETTINGS ACTIONS
 
     // EFFECT ACTIONS
+    ChangeEffect(message: number[] | Uint8Array) {
+        // 38 bytes 
+        // byte 0x16 is the effect ID (0-10) ; bytes 0x1d to 0x24 are the effect ID
+        const pedalID = message[0x16];
+        const effectID = message.slice(0x1d, 0x24 + 1);
+        console.log("MIDI CHANGE EFFECT ID", effectID);
+
+        // Update model
+        this.gp200.changeEffectByID(effectID as number[], pedalID);
+    }
+
+    ChangeEffectState(message: number[] | Uint8Array ) {
+        //byte 0x16 is the effect ID (0-10) ; byte 0x18 is the state of pedal OFF -> 0, ON -> 1
+        const pedal_id = message[0x16];
+        const state = message[0x18] != 0;
+
+        // Update model
+        this.gp200.current_preset.effects[pedal_id].state = state;
+    }
+
     ChangeEffectParamValue(message: number[] | Uint8Array) {
         // byte 0x16 contains the effect chain id (0 to 10)
         // byte 0x18 containes parameter id,
@@ -295,14 +327,6 @@ export class GP200DeviceActions {
         this.gp200.changeParamValue(effectChainID, paramId, decodedValue);
     }
 
-    ChangeEffectState(message: number[] | Uint8Array ) {
-        //byte 0x16 is the effect ID (0-10) ; byte 0x18 is the state of pedal OFF -> 0, ON -> 1
-        const pedal_id = message[0x16];
-        const state = message[0x18] != 0;
-
-        // Update model
-        this.gp200.current_preset.effects[pedal_id].state = state;
-    }
 
 
 }

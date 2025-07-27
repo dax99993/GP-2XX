@@ -28,7 +28,7 @@ function getStyle(effecttype: string) {
 }
 
 
-function EffectUnit(props:EffectUnitProps) {
+function EffectChainUnit(props:EffectUnitProps) {
 
     const style = getStyle(props.type.toString());
 
@@ -80,4 +80,4 @@ const styles = StyleSheet.create({
 })
 
 
-export default EffectUnit;
+export default EffectChainUnit;

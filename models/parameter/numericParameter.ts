@@ -1,4 +1,4 @@
-import { IParameter, Labels } from "@/models/parameter/parameter";
+import { IParameter, Labels } from "@/models/parameter/IParameter";
 import { makeAutoObservable } from "mobx";
 
 export class NumericParameterModel implements IParameter {

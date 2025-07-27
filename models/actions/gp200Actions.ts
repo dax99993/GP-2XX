@@ -1,7 +1,10 @@
+import { EffectsChangeInfo } from "@/constants/EffectsChangeInfo";
 import { BaseSysExMsg } from "@/constants/SysExMsg";
 import { action, makeObservable, observable, runInAction } from "mobx";
-import { GP200Model } from "./gp200";
-import { MidiDevice } from "./midiDevice";
+import { EffectType } from "../effect/effect";
+import { GP200Model } from "../gp200";
+import { MidiDevice } from "../midiDevice";
+import { IActions } from "./IActions";
 
 
 // type gpAction = {
@@ -10,7 +13,7 @@ import { MidiDevice } from "./midiDevice";
 // }
 
 
-export class GP200Actions {
+export class GP200Actions implements IActions{
 
     gp200: GP200Model;
     midi: MidiDevice;
@@ -32,6 +35,7 @@ export class GP200Actions {
 
             ChangeEffectState: action,
             ChangeEffectParamValue: action,
+            ChangeEffect: action,
         });
     }
 
@@ -218,6 +222,52 @@ export class GP200Actions {
 
 
     // EFFECT ACTIONS
+    _contructChangeEffectMessage(pedalID: EffectType, effectID: number[]): number[] {
+        // 38 bytes 
+        // byte 0x16 is the effect ID (0-10) ; bytes 0x1d to 0x24 are the effect ID
+        let baseSysEx = BaseSysExMsg.EffectActions.changeEffect;
+        baseSysEx[0x16] = pedalID;
+
+        // set the encoded values in message (8 bytes)
+        for (let i = 0; i < effectID.length; i++) {
+            baseSysEx[0x1d + i] = effectID[i];
+        }
+
+        return baseSysEx;
+    }
+
+    ChangeEffect(effectID: number[]) {
+        // This is always invoked when the current effect is the one we want to change
+        const pedalID = this.gp200.current_effect.type;
+        // Construct midi message
+        const SysExMsg = this._contructChangeEffectMessage(pedalID, effectID);
+
+        // CHECK WHEN TYPE IS AMP TO ALSO CHANGE THE APPROPIATE CAB
+        const effectsChangeInfo = EffectsChangeInfo[EffectType[pedalID] as keyof typeof EffectsChangeInfo];
+        let effectChangeInfo = effectsChangeInfo.filter(e => e.id == effectID)[0];
+
+        // Update model
+        //this.gp200.changeEffect(effectChangeInfo.name, pedalID);
+        this.gp200.changeEffectByID(effectID, pedalID);
+
+        if (effectChangeInfo.associated != undefined) { 
+            const associated = effectChangeInfo.associated;
+            const t: EffectType = EffectType[associated.type as keyof typeof EffectType];
+            console.log(associated.name);
+            //this.gp200.changeEffect(associated.name, t);
+            this.gp200.changeEffectByID(associated.id, t);
+        }
+
+        // Send physical device
+        this.midi.sendMessage(SysExMsg);
+
+        if (effectChangeInfo.associated != undefined) { 
+            const associated = effectChangeInfo.associated;
+            const t: EffectType = EffectType[associated.type as keyof typeof EffectType];
+            const SysExMsg = this._contructChangeEffectMessage(t, associated.id);
+            this.midi.sendMessage(SysExMsg);
+        }
+    }
 
     //ChangeEffectState(pedal_id: number, state: boolean) {
     ChangeEffectState(state: boolean) {

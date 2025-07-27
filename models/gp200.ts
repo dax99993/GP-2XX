@@ -126,6 +126,13 @@ export class GP200Model {
         this.current_effect = e;
     }
 
+    changeEffectByID(effectID: number[], effectType: EffectType) {
+        // Get Effect model with given specs
+        // Assign effect in current preset
+        const e = EffectModel.fromID(effectID, effectType);
+        this.current_preset.effects[e.type] = e;
+        this.current_effect = e;
+    }
 
 
 

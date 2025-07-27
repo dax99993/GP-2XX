@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { StyleSheet } from "react-native";
 import { HStack } from "../ui/hstack";
 
 type TopBarProps = {
@@ -28,12 +28,11 @@ function LeftItems({children}: LeftProps) {
 
 type CenterProps = {
     children: ReactNode
-    style?: StyleProp<ViewStyle>
 }
 
-function CenterItems({children, style}: CenterProps) {
+function CenterItems({children}: CenterProps) {
     return (
-        <HStack style={[styles.centerItem, style]} className="mx-2">
+        <HStack style={styles.centerItem} className="mr-5 ml-5">
             {children}
         </HStack>
     );
@@ -63,19 +62,19 @@ const styles = StyleSheet.create({
         //flex: 1,
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        backgroundColor: 'orange'
+        //backgroundColor: 'orange'
     },
     centerItem: {
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        backgroundColor: 'pink'
+        //backgroundColor: 'pink'
     },
     rightItem: {
         //flex: 1,
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        backgroundColor: 'orange'
+        //backgroundColor: 'orange'
     }
 });
 

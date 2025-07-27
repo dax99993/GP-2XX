@@ -1,16 +1,11 @@
-import ListEffect from '@/components/gp/effect/listEffect/ListEffect';
-import ListEffectTopBar from '@/components/gp/effect/listEffect/ListEffectTopBar';
+import ListEffect from '@/components/gp/effect/listSelectEffect/ListEffect';
+import ListEffectTopBar from '@/components/gp/effect/listSelectEffect/ListEffectTopBar';
 import { VStack } from '@/components/ui/vstack';
-import { useRouter } from 'expo-router';
 import { Platform, StatusBar, StyleSheet } from 'react-native';
 
 
 function SelectEffect() {
-  const router = useRouter();
 
-  const goToEdit = () => {
-    router.push("/ui/edit/effecttab")
-  };
 
   return (
     <>

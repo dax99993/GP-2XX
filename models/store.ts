@@ -1,7 +1,7 @@
 import { makeObservable, observable } from "mobx";
+import { GP200Actions } from "./actions/gp200Actions";
+import { GP200DeviceActions } from "./actions/gp200DeviceActions";
 import { GP200Model } from "./gp200";
-import { GP200Actions } from "./gp200Actions";
-import { GP200DeviceActions } from "./gp200DeviceActions";
 import { MidiDevice } from "./midiDevice";
 
 

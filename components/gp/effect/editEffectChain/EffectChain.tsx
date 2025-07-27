@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import EffectUnit from "@/components/gp/effect/EffectUnit";
+import EffectChainUnit from "@/components/gp/effect/editEffectChain/EffectChainUnit";
 import { EffectType } from "@/models/effect/effect";
 import { store } from "@/models/store";
 import Sortable, { SortableGridRenderItem } from 'react-native-sortables';
@@ -16,7 +16,7 @@ function EffectChain() {
   const renderItem = useCallback<SortableGridRenderItem<number>>(
     ({ item }) => {
       const s = EffectType[item];
-      return <EffectUnit title={s} type={item as EffectType}/>
+      return <EffectChainUnit title={s} type={item as EffectType}/>
     },
     []
   );

@@ -1,6 +1,6 @@
 import { DoubleParameterModel } from "./doubleParameter";
+import { IParameterInfo } from "./IParameterInfo";
 import { NumericParameterModel } from "./numericParameter";
-import { IParameterInfo } from "./parameterInfo";
 import { SelectParameterModel } from "./selectParameter";
 
 export type Labels = Record<number, string>;
