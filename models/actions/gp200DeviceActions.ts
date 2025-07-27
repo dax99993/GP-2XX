@@ -433,13 +433,31 @@ export class GP200DeviceActions implements IDeviceActions {
 
         return chars.join("");
     }
+    decodeEffectInfo(msg: number[]) {
+        if (msg.length != 0x90) {
+            throw new Error("Effect info msg has to be 0x90 bytes");
+        }
+
+        const effectChainID = msg[0x09]
+        const effectID = msg.slice(0x10, 0x17 + 1);
+        let encodedParameterValues = [];
+        for(let i = 0x18; i < msg.length; i=i+8) {
+            encodedParameterValues.push(msg.slice(i, i+8));
+        }
+
+        console.log("Effect Chain ID", effectChainID);
+        console.log("Effect ID", effectID);
+        console.log("Parameter encoded values\n", encodedParameterValues);
+
+        //return [effectChainID, effectID, encodedParameterValues];
+    }
 
     GetPresetInfo() {
         console.log("Processing preset info messages");
         console.log(this.presetInfoMessages);
 
     // ---------------------------------
-    // Obtain Information from Message1
+    // Obtain Information from Message1 (PresetName, PresetSettings)
     // ---------------------------------
         const msg1  = this.presetInfoMessages[0];
         // Preset number in bytes 0x19, 0x1a (hex digits)
@@ -452,8 +470,6 @@ export class GP200DeviceActions implements IDeviceActions {
         const presetVolume : number= this.nibblesToByte(msg1[0x2d], msg1[0x2e]);
         // Patch / Preset Pan - encoded as 16bit twos complements split in nibbles, due to range only low byte is needed in bytes 0x33 and 0x34
         const presetPan = this.decodePanValuePresetInfo(msg1[0x33], msg1[0x34]);
-        const presetPanEncoded = Array.from(msg1.slice(0x2f, 0x36 + 1));
-        console.log("Encoded Pan value", presetPanEncoded);
 
         // FX
         // FX send level in bytes 0x39 and 0x3a
@@ -477,22 +493,55 @@ export class GP200DeviceActions implements IDeviceActions {
         // Effect Chain order in bytes 0xe5 to 0xfa, encoded in two bytes, only low byte has meaningful data
         const effectsChain: number[] = Array.from( msg1.slice(0xe5, 0xfa + 1).filter((_, index) => index % 2 !== 0) );
 
-        // EffectChainID of PRE pedal in byte 0x106
-        const PREeffectChainID = msg1[0x106]; //should be 0
+    // Obtain effects info (messages 1 to message5)
+        const msg2  = this.presetInfoMessages[1];
+        const msg3  = this.presetInfoMessages[2];
+        const msg4  = this.presetInfoMessages[3];
+        const msg5  = this.presetInfoMessages[4];
 
-        // Effect ID in bytes 0x10d to 0x114 (8 bytes)
-        const effectID = msg1.slice(0x10d, 0x10d+8);
+        // PRE 
+        const msgPre = [...msg1.slice(0xfd, 0x17e + 1), ...msg2.slice(0x0d, 0x1a +1)];
+        this.decodeEffectInfo(msgPre);
 
-        // PRE pedal parameters
-        // Each parameter is encoded in 8 bytes starting at byte 0x10d, there are at most 15 parameters for pedal, but only 6 are used in PRE
-        const encodedParam0 = msg1.slice(0x114, 0x114+8);
-        const encodedParam1 = msg1.slice(0x11d, 0x11d+8);
-        const encodedParam2 = msg1.slice(0x124, 0x124+8);
-        const encodedParam3 = msg1.slice(0x12d, 0x12d+8);
-        const encodedParam4 = msg1.slice(0x134, 0x134+8);
-        const encodedParam5 = msg1.slice(0x13d, 0x13d+8);
-        const encodedParam6 = msg1.slice(0x144, 0x144+8);
+        // WAH
+        const msgWah = [...msg2.slice(0x1b, 0xaa +1)];
+        this.decodeEffectInfo(msgWah);
+
+        // DST
+        const msgDst = [...msg2.slice(0xab, 0x13a +1)];
+        this.decodeEffectInfo(msgDst);
         
+        // AMP
+        const msgAmp = [...msg2.slice(0x13b, 0x17e + 1), ...msg3.slice(0x0d, 0x58 +1)];
+        this.decodeEffectInfo(msgAmp);
+
+        // NR
+        const msgNr = [...msg3.slice(0x59, 0xe8 +1)];
+        this.decodeEffectInfo(msgNr);
+
+        // CAB
+        const msgCab = [...msg3.slice(0xe9, 0x178 +1)];
+        this.decodeEffectInfo(msgCab);
+
+        // EQ
+        const msgEq = [...msg3.slice(0x179, 0x17e + 1), ...msg4.slice(0x0d, 0x96 +1)];
+        this.decodeEffectInfo(msgEq);
+
+        // MOD
+        const msgMod = [...msg4.slice(0x97, 0x126 +1)];
+        this.decodeEffectInfo(msgMod);
+
+        // DLY
+        const msgDly = [...msg4.slice(0x127, 0x17e + 1), ...msg5.slice(0x0d, 0x44 +1)];
+        this.decodeEffectInfo(msgDly);
+
+        // RVB
+        const msgRvb = [...msg5.slice(0x45, 0xd4 +1)];
+        this.decodeEffectInfo(msgRvb);
+
+        // VOL
+        const msgVol = [...msg5.slice(0xd5, 0x164 +1)];
+        this.decodeEffectInfo(msgVol);
 
 
         // LOGGING DATA
@@ -513,31 +562,6 @@ export class GP200DeviceActions implements IDeviceActions {
 
         console.log("Effect chain", effectsChain);
 
-        console.log("PRE effect chainID", PREeffectChainID);
-        console.log("effectID", effectID);
-
-        console.log("PRE parameters");
-        console.log("PRE param 0", encodedParam0);
-        console.log("PRE param 1", encodedParam1);
-        console.log("PRE param 2", encodedParam2);
-        console.log("PRE param 3", encodedParam3);
-        console.log("PRE param 4", encodedParam4);
-        console.log("PRE param 5", encodedParam5);
-        console.log("PRE param 6", encodedParam6);
-
-
-
-    // ---------------------------------
-    // Obtain Information from Message2
-    // ---------------------------------
-
-        // ---------------------------------
-        // Obtain Information from Message3
-        // ---------------------------------
-
-        // ---------------------------------
-        // Obtain Information from Message4
-        // ---------------------------------
 
         // ---------------------------------
         // Obtain Information from Message5
