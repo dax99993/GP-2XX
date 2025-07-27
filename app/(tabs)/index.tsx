@@ -2,6 +2,7 @@ import { Button, ButtonText } from '@/components/ui/button';
 import { useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from "react-native";
 
+import { VStack } from '@/components/ui/vstack';
 import { store } from '@/models/store';
 import { MIDIAccess } from "@motiz88/react-native-midi";
 import { observer } from 'mobx-react-lite';
@@ -44,7 +45,7 @@ function HomeScreen() {
 
 
     return (
-        <View style={{flex: 1}}>
+        <VStack className="bg-secondary-0" style={{flex: 1}}>
             <Text style={styles.text}>Connection screen</Text>
             <View style={{flex: 4}}>
                 <Button size="md" variant="solid" action="primary" onPress={scan_for_devices}>
@@ -75,7 +76,7 @@ function HomeScreen() {
                     <ButtonText>Go to UI</ButtonText>
                 </Button>
             </View>
-        </View>
+        </VStack>
     );
 }
 

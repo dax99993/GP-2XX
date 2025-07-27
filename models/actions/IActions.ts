@@ -20,6 +20,7 @@ export interface IDeviceActions {
     // PRESET SETTINGS ACITONS
 
     // EFFECT ACTIONS
-    ChangeEffectState(message: number[]): void;
-    ChangeEffectParamValue(message: number[]): void;
+    ChangeEffect(message: Uint8Array): void;
+    ChangeEffectState(message: Uint8Array): void;
+    ChangeEffectParamValue(message: Uint8Array): void;
 }

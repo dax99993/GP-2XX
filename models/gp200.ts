@@ -2,7 +2,7 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import { EffectModel, EffectType } from "./effect/effect";
 import { DoubleParameterModel } from "./parameter/doubleParameter";
-import { default_preset, PresetModel } from "./preset";
+import { default_preset, PresetModel } from "./preset/preset";
 
 
 export class GP200Model {
@@ -31,7 +31,8 @@ export class GP200Model {
 
             presetBankCode: computed,
             changePreset: action,
-            changeEffect: action,
+            //changeEffect: action,
+            changeEffectByID: action,
             
             // Change effect actions
             changeSelectedEffect: action,
@@ -118,13 +119,13 @@ export class GP200Model {
       this.current_effect = this.current_preset.effects[effectType as number];
     }
 
-    changeEffect(effectName: string, effectType: EffectType) {
-        // Get Effect model with given specs
-        // Assign effect in current preset
-        const e = EffectModel.from(effectName, effectType);
-        this.current_preset.effects[effectType] = e;
-        this.current_effect = e;
-    }
+    // changeEffect(effectName: string, effectType: EffectType) {
+    //     // Get Effect model with given specs
+    //     // Assign effect in current preset
+    //     const e = EffectModel.fromName(effectName, effectType);
+    //     this.current_preset.effects[effectType] = e;
+    //     this.current_effect = e;
+    // }
 
     changeEffectByID(effectID: number[], effectType: EffectType) {
         // Get Effect model with given specs

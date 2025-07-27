@@ -31,6 +31,11 @@ function HomeScreen() {
     console.log("Setting bank to", store.gp200.presetBankCode);
   }
 
+  const getPresetInfo = () => {
+    store.gpActions.AskPresetInfo(store.gp200.current_preset_number);
+    console.log("Asking for preset", store.gp200.presetBankCode, "Info");
+  }
+
   return (
     <>
       <View style={styles.maincontainer}>
@@ -45,7 +50,7 @@ function HomeScreen() {
             <ActionButton title={"Tap"} type={ActionButtonType.Tap} onPress={() => { }}></ActionButton>
           </View>
           <View style={styles.viewButtons}>
-             <ActionButton title={"Ctrl 1"} type={ActionButtonType.ControlOff} onPress={() => { }}></ActionButton>
+             <ActionButton title={"Ctrl 1"} type={ActionButtonType.ControlOff} onPress={getPresetInfo}></ActionButton>
              <ActionButton title={"Ctrl 2"} type={ActionButtonType.ControlOff} onPress={() => { }}></ActionButton>
              <ActionButton title={"Ctrl 3"} type={ActionButtonType.ControlOff} onPress={() => { }}></ActionButton>
              <ActionButton title={"Ctrl 4"} type={ActionButtonType.ControlOff} onPress={() => { }}></ActionButton>

@@ -1,5 +1,5 @@
 import { makeObservable, observable } from "mobx";
-import { EffectModel, EffectType } from "./effect/effect";
+import { EffectModel, EffectType } from "../effect/effect";
 
 type FxLoop = {
     // 0-11
@@ -41,17 +41,17 @@ export class PresetModel {
 
         // Create Effect object class from string name
         this.effects = [];
-        this.effects.push(EffectModel.from(preName, EffectType.PRE));
-        this.effects.push(EffectModel.from(wahName, EffectType.WAH));
-        this.effects.push(EffectModel.from(dstName, EffectType.DST));
-        this.effects.push(EffectModel.from(ampName, EffectType.AMP));
-        this.effects.push(EffectModel.from(nrName, EffectType.NR));
-        this.effects.push(EffectModel.from(cabName, EffectType.CAB));
-        this.effects.push(EffectModel.from(eqName, EffectType.EQ));
-        this.effects.push(EffectModel.from(modName, EffectType.MOD));
-        this.effects.push(EffectModel.from(dlyName, EffectType.DLY));
-        this.effects.push(EffectModel.from(rvbName, EffectType.RVB));
-        this.effects.push(EffectModel.from(volName, EffectType.VOL));
+        this.effects.push(EffectModel.fromName(preName, EffectType.PRE));
+        this.effects.push(EffectModel.fromName(wahName, EffectType.WAH));
+        this.effects.push(EffectModel.fromName(dstName, EffectType.DST));
+        this.effects.push(EffectModel.fromName(ampName, EffectType.AMP));
+        this.effects.push(EffectModel.fromName(nrName, EffectType.NR));
+        this.effects.push(EffectModel.fromName(cabName, EffectType.CAB));
+        this.effects.push(EffectModel.fromName(eqName, EffectType.EQ));
+        this.effects.push(EffectModel.fromName(modName, EffectType.MOD));
+        this.effects.push(EffectModel.fromName(dlyName, EffectType.DLY));
+        this.effects.push(EffectModel.fromName(rvbName, EffectType.RVB));
+        this.effects.push(EffectModel.fromName(volName, EffectType.VOL));
 
         // Settings
         this.fxLoop = {

@@ -1,4 +1,4 @@
-import { BaseSysExMsg, SysExGPHeader } from "@/constants/SysExMsg";
+import { BaseSysExMsg, GetPresetInfo, SysExGPHeader } from "@/constants/SysExMsg";
 import { MIDIMessageEvent } from "@motiz88/react-native-midi";
 import { makeObservable, observable } from "mobx";
 import { GP200Model } from "../gp200";
@@ -12,10 +12,10 @@ function compareArrays(a: number[] | Uint8Array, b: number[] | Uint8Array) {
 }
 
 
-type midiMessage = {
-    data: number[];
-    timestamp: number;
-}
+// type midiMessage = {
+//     data: number[];
+//     timestamp: number;
+// }
 
 
 
@@ -24,14 +24,17 @@ export class GP200DeviceActions implements IDeviceActions {
     gp200: GP200Model;
     midi: MidiDevice;
 
-    messages: midiMessage[];
+    //messages: midiMessage[];
+    presetInfoMessages: Uint8Array[];
     message_received_counter: number;
+
 
     constructor(gp200: GP200Model, midi: MidiDevice) {
         this.midi = midi;
         this.gp200 = gp200;
 
-        this.messages = [];
+        //this.messages = [];
+        this.presetInfoMessages = [];
         this.message_received_counter = 0;
 
         // Maybe add event listener to midi device
@@ -61,9 +64,9 @@ export class GP200DeviceActions implements IDeviceActions {
 
             const incomingMessage = [...event.data];
             const messageHex = incomingMessage.map((b) => b.toString(16).toUpperCase().padStart(2, "0")).join(" ");
-            console.log(`Midievent (${this.message_received_counter}) : ${messageHex}`);
+            console.log(`Midievent (${this.message_received_counter}) [${event.receivedTime}] {${incomingMessage.length}}: ${messageHex}`);
             //this.message_received_counter++;
-            this.decodeReceivedSysEx(incomingMessage);
+            this.decodeReceivedSysEx(event.data);
         };
         
         // add event listener to input
@@ -73,6 +76,10 @@ export class GP200DeviceActions implements IDeviceActions {
 
 
     // Util methods
+
+    nibblesToByte(high_byte: number, low_byte: number): number {
+        return ((high_byte & 0x0f) << 4) | (low_byte & 0x0f);
+    }
 
     nibbleArrayToByteArray(nibbles: number[] | Uint8Array): number[] {
         let bytes: number[] = [];
@@ -181,7 +188,7 @@ export class GP200DeviceActions implements IDeviceActions {
        return message[0] == 0xf0 && message[message.length - 1] == 0xf7;
     }
 
-    _isGPSysEx(message: number[] | Uint8Array) {
+    _isGPSysEx(message: Uint8Array) {
         return this._isSysEx(message) &&
         compareArrays(message.slice(1, SysExGPHeader.length + 1), SysExGPHeader);
     }
@@ -192,33 +199,86 @@ export class GP200DeviceActions implements IDeviceActions {
         return compareArrays(a, b)
     }
 
-    isSameMessage(receivedMessage: number[] | Uint8Array, sysExMessage: number[] | Uint8Array): boolean {
+    isSameMessage(receivedMessage: number[] | Uint8Array, sysExMessage: number[] | Uint8Array, upto: number = 18): boolean {
         // so far all board received messages are descernible base on the first 19 bytes
-        return this.compareMessage(receivedMessage, sysExMessage, 0, 18);
+        return this.compareMessage(receivedMessage, sysExMessage, 0, upto);
     }
 
 
     // MIDI DECODE METHODS
 
-    decodeReceivedSysEx(message: Uint8Array | number[]) {
+    decodeReceivedSysEx(message: Uint8Array) {
        // Parse the message
        // execute corresponding action 
         if (this._isGPSysEx(message)) {
             //console.log("GP SysEx received");
             //console.log(message);
-            if (message.length == 46) {
-                this.decodeSysEx46length(message);
-            } else if (message.length == 38) {
-                this.decodeSysEx38length(message);
-            } else if (message.length == 30) {
-                this.decodeSysEx30length(message);
-            } else {
-                //console.log("Parsing " + message.length + "length message.");
+            const messageLength = message.length;
+            switch (messageLength) {
+                case 384: 
+                    this.decodeSysEx384length(message);
+                    break;
+                case 146: 
+                    this.decodeSysEx146length(message);
+                    break;
+                case 46: 
+                    this.decodeSysEx46length(message);
+                    break;
+                case 38:
+                    this.decodeSysEx38length(message);
+                    break;
+                case 30:
+                    this.decodeSysEx30length(message);
+                    break;
+                default:
+                    console.log("Decode", messageLength, message);
+                    break;
             }
         }
     }
 
-    decodeSysEx46length(message: Uint8Array | number[]) {
+    decodeSysEx384length(message: Uint8Array ) {
+        const presetInfoMsg1 = GetPresetInfo.message1;
+        const presetInfoMsg2 = GetPresetInfo.message2;
+        const presetInfoMsg3 = GetPresetInfo.message3;
+        const presetInfoMsg4 = GetPresetInfo.message4;
+        const presetInfoMsg5 = GetPresetInfo.message5;
+        const presetInfoMsg6 = GetPresetInfo.message6;
+
+        if ( this.isSameMessage(message, presetInfoMsg1) ) {
+            console.log("Preset Info message 1 received!.");
+            this.presetInfoMessages[0] = message;
+        } else if ( this.isSameMessage(message, presetInfoMsg2) ) {
+            console.log("Preset Info message 2 received!.");
+            this.presetInfoMessages[1] = message;
+        } else if ( this.isSameMessage(message, presetInfoMsg3) ) {
+            console.log("Preset Info message 3 received!.");
+            this.presetInfoMessages[2] = message;
+        } else if ( this.isSameMessage(message, presetInfoMsg4) ) {
+            console.log("Preset Info message 4 received!.");
+            this.presetInfoMessages[3] = message;
+        } else if ( this.isSameMessage(message, presetInfoMsg5) ) {
+            console.log("Preset Info message 5 received!.");
+            this.presetInfoMessages[4] = message;
+        } else if ( this.isSameMessage(message, presetInfoMsg6) ) {
+            console.log("Preset Info message 6 received!.");
+            this.presetInfoMessages[5] = message;
+        }
+    }
+
+    decodeSysEx146length(message: Uint8Array) {
+        // IDK WHY is only constant up to byte 12
+        const presetInfoMsg7 = GetPresetInfo.message7;
+
+        if ( this.isSameMessage(message, presetInfoMsg7, 12)) {
+            console.log("Preset Info message 7 received!.");
+            this.presetInfoMessages[6] = message;
+            // Extract Preset Information
+            this.GetPresetInfo();
+        }
+    }
+
+    decodeSysEx46length(message: Uint8Array) {
         const changeParameterValue = BaseSysExMsg.EffectActions.changeParameterValue;
         //if ( compareArrays(message.slice(0, 18+1), changeParameterValue.slice(0, 18+1))) {
         if ( this.isSameMessage(message, changeParameterValue)) {
@@ -227,7 +287,7 @@ export class GP200DeviceActions implements IDeviceActions {
         }
     }
 
-    decodeSysEx38length(message: Uint8Array | number[]) {
+    decodeSysEx38length(message: Uint8Array) {
         const changeEffect = BaseSysExMsg.EffectActions.changeEffect;
         //if ( compareArrays(message.slice(0, 18+1), changeParameterValue.slice(0, 18+1))) {
         if ( this.isSameMessage(message, changeEffect)) {
@@ -236,7 +296,7 @@ export class GP200DeviceActions implements IDeviceActions {
         }
     }
 
-    decodeSysEx30length(message: Uint8Array | number[]) {
+    decodeSysEx30length(message: Uint8Array) {
         const changePresetSysEx = BaseSysExMsg.PresetAction.changePreset;
         const changeEffectState = BaseSysExMsg.EffectActions.changeState;
         // Compare to change preset message
@@ -263,7 +323,7 @@ export class GP200DeviceActions implements IDeviceActions {
         const high_byte = baseSysEx[0x19] 
         const low_byte = baseSysEx[0x1a]
 
-        const num = ((high_byte & 0x0f) << 4) | (low_byte & 0x0f);
+        const num = this.nibblesToByte(high_byte, low_byte);
 
         // Update model
         this.gp200.current_preset_number = num;
@@ -272,18 +332,18 @@ export class GP200DeviceActions implements IDeviceActions {
     //PRESET SETTINGS ACTIONS
 
     // EFFECT ACTIONS
-    ChangeEffect(message: number[] | Uint8Array) {
+    ChangeEffect(message: Uint8Array) {
         // 38 bytes 
         // byte 0x16 is the effect ID (0-10) ; bytes 0x1d to 0x24 are the effect ID
         const pedalID = message[0x16];
-        const effectID = message.slice(0x1d, 0x24 + 1);
+        const effectID: number[] = Array.from(message.slice(0x1d, 0x24 + 1));
         console.log("MIDI CHANGE EFFECT ID", effectID);
 
         // Update model
-        this.gp200.changeEffectByID(effectID as number[], pedalID);
+        this.gp200.changeEffectByID(effectID, pedalID);
     }
 
-    ChangeEffectState(message: number[] | Uint8Array ) {
+    ChangeEffectState(message: Uint8Array) {
         //byte 0x16 is the effect ID (0-10) ; byte 0x18 is the state of pedal OFF -> 0, ON -> 1
         const pedal_id = message[0x16];
         const state = message[0x18] != 0;
@@ -292,7 +352,7 @@ export class GP200DeviceActions implements IDeviceActions {
         this.gp200.current_preset.effects[pedal_id].state = state;
     }
 
-    ChangeEffectParamValue(message: number[] | Uint8Array) {
+    ChangeEffectParamValue(message: Uint8Array) {
         // byte 0x16 contains the effect chain id (0 to 10)
         // byte 0x18 containes parameter id,
         // bytes 0x25 to 0x2c contains the encoded value
@@ -301,7 +361,8 @@ export class GP200DeviceActions implements IDeviceActions {
         const paramId = baseSysEx[0x18];
 
         // get encoded value bytes
-        const encoded = baseSysEx.slice(0x25, 0x2c + 1) as number[];
+        //const encoded = baseSysEx.slice(0x25, 0x2c + 1) as number[];
+        const encoded : number[] = Array.from(baseSysEx.slice(0x25, 0x2c + 1));
         
         // Get type of encoded values
         let paramType = "";
@@ -327,7 +388,172 @@ export class GP200DeviceActions implements IDeviceActions {
         this.gp200.changeParamValue(effectChainID, paramId, decodedValue);
     }
 
+    // PRESET INFORMATION EXTRACTION METHODS
+    uint8BytesToInt16TwosComplement(bytes: number[]): number {
+        //Order is in little endian
+        const lowByte = bytes[0];
+        const highByte = bytes[1];
 
+        let value = (highByte << 8) | lowByte;
+
+        // Check if the most significant bit (sign bit) is set
+        if (value & 0x8000) {
+            // If it's negative, apply two's complement conversion
+            value = (Math.pow(2, 16) - value) * -1;
+        }
+        return value;
+    }
+
+    // decodePanValue(encoded: number[]) {
+    //     // combine pair of encoded bytes (contains nibbles) to form a complete byte
+    //     const bytes = this.nibbleArrayToByteArray(encoded);
+    //     console.log("Decoding float32", encoded, bytes);
+    //     // convert bytes to float32
+    //     const numberValue = this.uint8BytesToInt32(bytes)
+
+    //     return numberValue;
+    // }
+
+    decodePanValuePresetInfo(high_nibble: number, low_nibble: number) {
+        const low = this.nibblesToByte(high_nibble, low_nibble);
+        const high = low <= 0x64 ? 0x00 : 0xff;
+
+        const bytes = [low, high];
+        console.log("Decoding pan value bytes", bytes);
+
+        return this.uint8BytesToInt16TwosComplement(bytes);
+    }
+
+    decodePresetName(msg: number[]) {
+        // each characters is represented in ascii, split in to nibles
+        const bytes = this.nibbleArrayToByteArray(msg);
+        // remove empty characters
+        const filtered_bytes = bytes.filter(b => b !== 0);
+        const chars = filtered_bytes.map(b => String.fromCharCode(b));
+
+        return chars.join("");
+    }
+
+    GetPresetInfo() {
+        console.log("Processing preset info messages");
+        console.log(this.presetInfoMessages);
+
+    // ---------------------------------
+    // Obtain Information from Message1
+    // ---------------------------------
+        const msg1  = this.presetInfoMessages[0];
+        // Preset number in bytes 0x19, 0x1a (hex digits)
+        const presetNumber : number = this.nibblesToByte(msg1[0x19], msg1[0x1a]);
+        // Preset number in bytes 0x25, 0x26 (hex digits)
+
+        // BPM value in bytes 0x29 and 0x2a
+        const bpmValue : number = this.nibblesToByte(msg1[0x29], msg1[0x2a]);
+        // Patch / Preset Volume 0x2d and 0x2e
+        const presetVolume : number= this.nibblesToByte(msg1[0x2d], msg1[0x2e]);
+        // Patch / Preset Pan - encoded as 16bit twos complements split in nibbles, due to range only low byte is needed in bytes 0x33 and 0x34
+        const presetPan = this.decodePanValuePresetInfo(msg1[0x33], msg1[0x34]);
+        const presetPanEncoded = Array.from(msg1.slice(0x2f, 0x36 + 1));
+        console.log("Encoded Pan value", presetPanEncoded);
+
+        // FX
+        // FX send level in bytes 0x39 and 0x3a
+        const fxSendLevel :number = this.nibblesToByte(msg1[0x39], msg1[0x3a]);
+        // FX send level in bytes 0x3d to 0x3e
+        const fxReturnLevel :number = this.nibblesToByte(msg1[0x3d], msg1[0x3e]);
+        // FX mode in bytes 0x42 (0 -> parallel ; 1 -> series)
+        const fxMode :number = msg1[0x42];
+
+        // Patch Name in bytes 0x45 to 0x64 (encoded in ascii characters split in hex digits)
+        const presetName = this.decodePresetName(Array.from(msg1.slice(0x45, 0x64 + 1)));
+        // Patch Description maybe??? bytes 0x65 to 0xd5
+        // IDK bytes 0xd4 to 0xd6
+        // IDK bytes 0xd7 to 0xda
+        // preset number in bytes 0xdd and 0xde
+
+        // FX loop IN position in byte 0xe2
+        const fxInPosition :number = msg1[0xe2];
+        // FX loop OUT position in byte 0xe4
+        const fxOutPosition :number = msg1[0xe4];
+        // Effect Chain order in bytes 0xe5 to 0xfa, encoded in two bytes, only low byte has meaningful data
+        const effectsChain: number[] = Array.from( msg1.slice(0xe5, 0xfa + 1).filter((_, index) => index % 2 !== 0) );
+
+        // EffectChainID of PRE pedal in byte 0x106
+        const PREeffectChainID = msg1[0x106]; //should be 0
+
+        // Effect ID in bytes 0x10d to 0x114 (8 bytes)
+        const effectID = msg1.slice(0x10d, 0x10d+8);
+
+        // PRE pedal parameters
+        // Each parameter is encoded in 8 bytes starting at byte 0x10d, there are at most 15 parameters for pedal, but only 6 are used in PRE
+        const encodedParam0 = msg1.slice(0x114, 0x114+8);
+        const encodedParam1 = msg1.slice(0x11d, 0x11d+8);
+        const encodedParam2 = msg1.slice(0x124, 0x124+8);
+        const encodedParam3 = msg1.slice(0x12d, 0x12d+8);
+        const encodedParam4 = msg1.slice(0x134, 0x134+8);
+        const encodedParam5 = msg1.slice(0x13d, 0x13d+8);
+        const encodedParam6 = msg1.slice(0x144, 0x144+8);
+        
+
+
+        // LOGGING DATA
+        console.log("PRESET INFO IN MESSAGE 1");
+        console.log("Preset Number", presetNumber);
+        console.log("BPM value",bpmValue);
+        console.log("Preset Volume", presetVolume);
+        console.log("Preset Pan", presetPan);
+
+        console.log("FX send level", fxSendLevel);
+        console.log("FX return level", fxReturnLevel);
+        console.log("FX Mode", fxMode);
+
+        console.log("Preset name", presetName);
+
+        console.log("FX IN position", fxInPosition);
+        console.log("FX Out position", fxOutPosition);
+
+        console.log("Effect chain", effectsChain);
+
+        console.log("PRE effect chainID", PREeffectChainID);
+        console.log("effectID", effectID);
+
+        console.log("PRE parameters");
+        console.log("PRE param 0", encodedParam0);
+        console.log("PRE param 1", encodedParam1);
+        console.log("PRE param 2", encodedParam2);
+        console.log("PRE param 3", encodedParam3);
+        console.log("PRE param 4", encodedParam4);
+        console.log("PRE param 5", encodedParam5);
+        console.log("PRE param 6", encodedParam6);
+
+
+
+    // ---------------------------------
+    // Obtain Information from Message2
+    // ---------------------------------
+
+        // ---------------------------------
+        // Obtain Information from Message3
+        // ---------------------------------
+
+        // ---------------------------------
+        // Obtain Information from Message4
+        // ---------------------------------
+
+        // ---------------------------------
+        // Obtain Information from Message5
+        // ---------------------------------
+
+        // ---------------------------------
+        // Obtain Information from Message6
+        // ---------------------------------
+
+        // ---------------------------------
+        // Obtain Information from Message7
+        // ---------------------------------
+
+        // Reset meessage accumulator
+        this.presetInfoMessages = [];
+    }
 
 }
 

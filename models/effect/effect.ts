@@ -2,7 +2,6 @@ import { DefaultEffectsInfo } from "@/constants/DefaultEffects";
 import { action, makeObservable, observable } from "mobx";
 import { DeserializeParam, IParameter } from "../parameter/IParameter";
 import { IEffectInfo } from "./IEffectInfo";
-import { IEffectsInfo } from "./IEffectsInfo";
 
 // this also encodes the natural order of pedal types id in default chain order
 export enum EffectType {
@@ -88,49 +87,90 @@ export class EffectModel {
     }
 
 
-    static from(effectName: string, type: EffectType): EffectModel {
+    // static from(effectName: string, type: EffectType): EffectModel {
+
+    //     const deserializeEffect = new DeserializeEffect();
+
+    //     let eff: EffectModel;
+    //     const effectsInfo: IEffectsInfo[] = Object.values(DefaultEffectsInfo);
+    //     //console.log(Object.values(DefaultEffectsInfo));
+    //     effectsInfo.forEach(effectsInfo => {
+    //         const effectInfo: IEffectInfo[] = Object.values(effectsInfo);
+    //         effectInfo.forEach(e => {
+    //             //console.log(e);
+    //             if (e.name === effectName && e.type == EffectType[type]) {
+    //                 console.log("Found pedal!", e.type, effectName);
+    //                 eff = deserializeEffect.deserialize(e);
+    //             }
+    //         })
+    //     });
+
+    //     return eff;
+    // }
+
+    // static fromID(effectID: number[], effectType: EffectType): EffectModel {
+
+    //     const deserializeEffect = new DeserializeEffect();
+
+    //     let eff: EffectModel;
+    //     const effectsInfo: IEffectsInfo[] = Object.values(DefaultEffectsInfo);
+
+    //     effectsInfo.forEach(effectsInfo => {
+    //         const effectInfo: IEffectInfo[] = Object.values(effectsInfo);
+    //         effectInfo.forEach(e => {
+    //             const areEqual = arraysEqualShallow(e.id ,effectID);
+    //             //console.log("Compare IDS", e.type, e.id, effectID, areEqual);
+    //             if ( areEqual && e.type === EffectType[effectType] ) {
+    //                 console.log("Found pedal!", e.type, e.name, e.id);
+    //                 //return deserializeEffect.deserialize(e);
+    //                 eff = deserializeEffect.deserialize(e);
+    //             }
+    //         })
+    //     });
+
+    //     //throw new Error(`Effect not found!, check correct ID ${effectID}` );
+    //     return eff;
+    // }
+
+    static fromName(effectName: string, effectType: EffectType): EffectModel {
 
         const deserializeEffect = new DeserializeEffect();
 
-        let eff: EffectModel;
-        const effectsInfo: IEffectsInfo[] = Object.values(DefaultEffectsInfo);
-        //console.log(Object.values(DefaultEffectsInfo));
-        effectsInfo.forEach(effectsInfo => {
-            const effectInfo: IEffectInfo[] = Object.values(effectsInfo);
-            effectInfo.forEach(e => {
-                //console.log(e);
-                if (e.name === effectName && e.type == EffectType[type]) {
-                    console.log("Found pedal!", e.type, effectName);
-                    eff = deserializeEffect.deserialize(e);
-                }
-            })
-        });
+        // Get effects with given effectType
+        const key: string = EffectType[effectType];
+        const effectsInfo: IEffectInfo[] = DefaultEffectsInfo[key as keyof typeof DefaultEffectsInfo];
 
-        return eff;
+        // Search for effect
+        for(let i = 0; i < effectsInfo.length; i = i+1) {
+            const effectInfo = effectsInfo[i];
+            if (effectInfo.name === effectName && effectInfo.type === key) {
+                console.log("Found pedal!", effectInfo.type, effectName);
+                return deserializeEffect.deserialize(effectInfo);
+            }
+        }
+
+        throw new Error(`Effect not found!, check correct ID ${effectName} - ${effectType}` );
     }
 
     static fromID(effectID: number[], effectType: EffectType): EffectModel {
 
         const deserializeEffect = new DeserializeEffect();
 
-        let eff: EffectModel;
-        const effectsInfo: IEffectsInfo[] = Object.values(DefaultEffectsInfo);
+        // Get effects with given effectType
+        const key: string = EffectType[effectType];
+        const effectsInfo: IEffectInfo[] = DefaultEffectsInfo[key as keyof typeof DefaultEffectsInfo];
 
-        effectsInfo.forEach(effectsInfo => {
-            const effectInfo: IEffectInfo[] = Object.values(effectsInfo);
-            effectInfo.forEach(e => {
-                const areEqual = arraysEqualShallow(e.id ,effectID);
-                //console.log("Compare IDS", e.type, e.id, effectID, areEqual);
-                if ( areEqual && e.type === EffectType[effectType] ) {
-                    console.log("Found pedal!", e.type, e.name, e.id);
-                    //return deserializeEffect.deserialize(e);
-                    eff = deserializeEffect.deserialize(e);
-                }
-            })
-        });
+        // Search for effect
+        for(let i = 0; i < effectsInfo.length; i = i+1) {
+            const effectInfo = effectsInfo[i];
+            const areIdEqual = arraysEqualShallow(effectInfo.id ,effectID);
+            if (areIdEqual) {
+                console.log("Found pedal!", effectInfo.type, effectID);
+                return deserializeEffect.deserialize(effectInfo);
+            }
+        }
 
-        //throw new Error(`Effect not found!, check correct ID ${effectID}` );
-        return eff;
+        throw new Error(`Effect not found!, check correct ID ${effectID} - ${effectType}` );
     }
 }
 
@@ -140,9 +180,3 @@ function arraysEqualShallow(arr1: any[], arr2: any[]): boolean {
   }
   return arr1.every((value, index) => value === arr2[index]);
 }
-
-
-
-
-
-

@@ -317,6 +317,28 @@ export class GP200Actions implements IActions{
         this.midi.sendMessage(baseSysEx);
     }
 
+    AskPresetInfo(presetNumber: number) {
+        // Checks num in range [0, 255]
+        const num = Math.min(Math.max(presetNumber, 0), 255);
+
+        // Construct message
+        // bytes 19 and 1a contain the preset Number (hex digits)
+        // bytes 25 and 26 contain the preset Number (hex digits)
+        // bytes 29 and 2a contain the preset Number (hex digits)
+        let msg = BaseSysExMsg.askInfo.askPresetInfo;
+        const [high_byte, low_byte] = this.byteToNibbles(num);
+        msg[0x19] = high_byte;
+        msg[0x1a] = low_byte;
+
+        msg[0x25] = high_byte;
+        msg[0x26] = low_byte;
+
+        msg[0x29] = high_byte;
+        msg[0x2a] = low_byte;
+
+        // Execute action in physical device
+        this.midi.sendMessage(msg);
+    }
 
 }
 
