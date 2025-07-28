@@ -111,68 +111,6 @@ export class GP200DeviceActions implements IDeviceActions {
         return dataView.getFloat32(0, true); // 0 is the offset
     }
 
-
-    uint8BytesToUint32(bytes: number[]): number {
-        // should be a Uint8Array containing the 4 bytes of uint32 representation
-        const uint32Bytes = new Uint8Array(bytes);
-
-        // 1. Create an ArrayBuffer
-        const buffer = new ArrayBuffer(4);
-
-        // 2. Create a Uint8Array view to populate the buffer
-        const byteView = new Uint8Array(buffer);
-        byteView.set(uint32Bytes); // Copy the bytes into the buffer
-
-        // 3. Create a DataView
-        const dataView = new DataView(buffer);
-
-        // 4. Use getUint32() to read the number (assuming little-endian)
-        return dataView.getUint32(0, true); // 0 is the offset
-    }
-
-    decodeParamValueInt(encoded: number[]) {
-        // Get byte array
-        const bytes = this.nibbleArrayToByteArray(encoded);
-
-        // convert to bytes to uint32
-        const numberValue = this.uint8BytesToUint32(bytes);
-        console.log(numberValue, numberValue.toString(16).padStart(8, '0'));
-
-        // Decode
-        // get highest bit for sign
-        const bit_mask: number = 0x80_00_00_00
-        const sign: number = (numberValue & bit_mask) ? -1 : 1;
-        //console.log(sign);
-
-        // Mask bit
-        const n = numberValue & (~bit_mask);
-        console.log("Sign bit masked", n, n.toString(16).padStart(8, '0'));
-
-        if (n === 0) {
-            return 0;
-        }
-
-        const base = 0x3f_80_00_00;
-        const delta = 0x00_80_00_00;
-
-        // Create power of 2 encoded levels
-        let levels = [];
-        for (let i = 0; i < 16; i = i + 1) {
-            //console.log(i);
-            levels.push(base + i * delta);
-        }
-
-        // Get level
-        const m: number = levels.findIndex((l: number) => l > n) - 1;
-        console.log("Number Level", m, "power of 2", Math.pow(2, m));
-
-        // Calculate the integer number
-        const steps = (n - (base + delta * m)) / (delta >> m)
-        console.log(steps)
-
-        return sign * (Math.pow(2, m) + steps);
-    }
-
     decodeParamValueFloat(encoded: number[]) {
         // combine pair of encoded bytes (contains nibbles) to form a complete byte
         const bytes = this.nibbleArrayToByteArray(encoded);
@@ -379,7 +317,9 @@ export class GP200DeviceActions implements IDeviceActions {
             // round value to one decimal
             decodedValue = Math.round(decodedValue * 10) / 10;
         } else {
-            decodedValue = this.decodeParamValueInt(encoded);
+            decodedValue = this.decodeParamValueFloat(encoded);
+            // remove decimals
+            decodedValue = Math.round(decodedValue);
         }
 
         console.log(`Change parameter ${paramType} :`, effectChainID, paramId, decodedValue);

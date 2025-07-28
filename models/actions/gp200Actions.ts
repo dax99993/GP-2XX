@@ -75,41 +75,6 @@ export class GP200Actions implements IActions{
         return new Uint8Array(buffer);
     }
 
-    uint32ToUint8Bytes(n : number): Uint8Array {
-        const buffer = new ArrayBuffer(4);
-        const view = new DataView(buffer);
-        view.setUint32(0, n, false);
-        // get uint32 in little endian
-        const res_uint32le = new Uint32Array([view.getUint32(0, true)]);
-        // extract bytes of uint32
-        // idk why they are not reverse, so mannually reverse them
-        return new Uint8Array(res_uint32le.buffer).reverse();
-    }
-
-    encodeParamValueInt(n: number) {
-        let base = 0x3f_80_00_00;
-        const delta = 0x00_80_00_00;
-
-        if (n < 0) {
-            base |= 0x80_00_00_00;
-        }
-
-        const N = Math.abs(n);
-        // get integer level
-        const m = Math.floor(Math.log2(N));
-
-        const diff = N - Math.pow(2, m);
-
-        const res = (base + delta * m) + diff * (delta >> m);
-        // convert to res to uint32 little endian
-        const res_uint8 = this.uint32ToUint8Bytes(res);
-        // Split each byte into 2 bytes containing high and low nibble
-        const nibbles = this.byteArrayToNibbleArray(res_uint8);
-
-        return nibbles;
-    }
-
-
     encodeParamValueFloat(n: number) {
         // Get byte representation of float32
         const uint8Array = this.float32ToUint8Bytes(n);
@@ -122,8 +87,6 @@ export class GP200Actions implements IActions{
 
         return nibbles; 
     }
-
-
 
     //  --------------------------------------------------------------------------------
     //      MIDI/MODEL ENCODE ACTIONS
@@ -299,10 +262,12 @@ export class GP200Actions implements IActions{
 
         let encodedValue: number[];
         if (paramNumericType == "float") {
+            // round number to first decimal
             encodedValue = this.encodeParamValueFloat(n);
         // should i check explictly for int?
         } else {
-            encodedValue = this.encodeParamValueInt(n);
+            // round number
+            encodedValue = this.encodeParamValueFloat(n);
         }
 
         // set the encoded values in message (8 bytes)
