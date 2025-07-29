@@ -379,6 +379,7 @@ export class GP200DeviceActions implements IDeviceActions {
         }
 
         const effectChainID = msg[0x09]
+        const effectState = msg[0x0b] !== 0;
         const effectID = msg.slice(0x10, 0x17 + 1);
         let encodedParameterValues = [];
         for(let i = 0x18; i < msg.length; i=i+8) {
@@ -387,9 +388,53 @@ export class GP200DeviceActions implements IDeviceActions {
 
         console.log("Effect Chain ID", effectChainID);
         console.log("Effect ID", effectID);
+        console.log("Effect State", effectState);
         console.log("Parameter encoded values\n", encodedParameterValues);
 
         //return [effectChainID, effectID, encodedParameterValues];
+    }
+
+    decodeExpAssignInfo(msg: number[]) {
+        const expPedalID = msg[0x8];
+        const expPedalParamNumber = msg[0x9];
+        const expPedalModule = this.nibblesToByte(msg[0xa], msg[0xb]);
+        const expPedalModuleParamID = msg[0xd];
+        const maxValue = this.decodeParamValueFloat(msg.slice(0x10, 0x17 + 1));
+        const minValue = this.decodeParamValueFloat(msg.slice(0x18, 0x1f + 1));
+
+        console.log(`Exp ${expPedalID} Param ${expPedalParamNumber} Assign to\nModule ${expPedalModule} Param ${expPedalModuleParamID} range [${minValue}, ${maxValue}]`);
+    }
+
+    decodeKnobAssignInfo(msg: number[]) {
+        if (msg.length != 0x10) {
+            throw new Error ("Knob assign msg has to be 0x10 bytes");
+        }
+
+        const knobNumber = msg[0x9];
+        const knobModule = this.nibblesToByte(msg[0xa], msg[0xb]);
+        const paramID = msg[0xd];
+
+        console.log(`Knob ${knobNumber} assign to Module ${knobModule} Param ${paramID}`);
+    }
+
+    decodeCtrlAssignInfo(msg: number[]) {
+        const ctrlNumber = msg[0x9];
+        const ctrlMode = msg[0xb];
+
+        const pedals7To4 = msg[0x10];
+        const pedals3To0 = msg[0x11];
+        const pedals10To8 = msg[0x13];
+
+        const pedalsBitFlags = ( (pedals10To8 << 8) | (pedals7To4 << 4) | (pedals3To0) ) & 0x07ff;
+
+        const pedalArray = []
+        for (let i = 0; i <= 10; i = i+1){
+            const v = pedalsBitFlags & (1 << i) ? 1: 0;
+            pedalArray.push(v);
+        }
+
+        //console.log(`CTRL ${ctrlNumber} mode ${ctrlMode} Assign to pedals ${pedalsBitFlags.toString(2).padStart(12, '0')}`);
+        console.log(`CTRL ${ctrlNumber} mode ${ctrlMode} Assign to pedals ${pedalArray}`);
     }
 
     GetPresetInfo() {
@@ -400,6 +445,13 @@ export class GP200DeviceActions implements IDeviceActions {
     // Obtain Information from Message1 (PresetName, PresetSettings)
     // ---------------------------------
         const msg1  = this.presetInfoMessages[0];
+        const msg2  = this.presetInfoMessages[1];
+        const msg3  = this.presetInfoMessages[2];
+        const msg4  = this.presetInfoMessages[3];
+        const msg5  = this.presetInfoMessages[4];
+        const msg6  = this.presetInfoMessages[5];
+        const msg7  = this.presetInfoMessages[6];
+
         // Preset number in bytes 0x19, 0x1a (hex digits)
         const presetNumber : number = this.nibblesToByte(msg1[0x19], msg1[0x1a]);
         // Preset number in bytes 0x25, 0x26 (hex digits)
@@ -434,10 +486,6 @@ export class GP200DeviceActions implements IDeviceActions {
         const effectsChain: number[] = Array.from( msg1.slice(0xe5, 0xfa + 1).filter((_, index) => index % 2 !== 0) );
 
     // Obtain effects info (messages 1 to message5)
-        const msg2  = this.presetInfoMessages[1];
-        const msg3  = this.presetInfoMessages[2];
-        const msg4  = this.presetInfoMessages[3];
-        const msg5  = this.presetInfoMessages[4];
 
         // PRE 
         const msgPre = [...msg1.slice(0xfd, 0x17e + 1), ...msg2.slice(0x0d, 0x1a +1)];
@@ -504,16 +552,69 @@ export class GP200DeviceActions implements IDeviceActions {
 
 
         // ---------------------------------
-        // Obtain Information from Message5
+        // Obtain EXP assign info
         // ---------------------------------
 
-        // ---------------------------------
-        // Obtain Information from Message6
-        // ---------------------------------
+        const msgExp1AParam1 = [...msg5.slice(0x165, 0x17e + 1), ...msg6.slice(0xd, 0x12 + 1)];
+        const msgExp1AParam2 = [...msg6.slice(0x13, 0x32 + 1)];
+        const msgExp1AParam3 = [...msg6.slice(0x33, 0x52 + 1)];
+
+        const msgExp1BParam1 = [...msg6.slice(0x53, 0x72 + 1)];
+        const msgExp1BParam2 = [...msg6.slice(0x73, 0x92 + 1)];
+        const msgExp1BParam3 = [...msg6.slice(0x93, 0xb2 + 1)];
+
+        const msgExp2Param1 = [...msg6.slice(0xb3, 0xd2 + 1)];
+        const msgExp2Param2 = [...msg6.slice(0xd3, 0xf2 + 1)];
+        const msgExp2Param3 = [...msg6.slice(0xf3, 0x112 + 1)];
+
+        this.decodeExpAssignInfo(msgExp1AParam1);
+        this.decodeExpAssignInfo(msgExp1AParam2);
+        this.decodeExpAssignInfo(msgExp1AParam3);
+
+        this.decodeExpAssignInfo(msgExp1BParam1);
+        this.decodeExpAssignInfo(msgExp1BParam2);
+        this.decodeExpAssignInfo(msgExp1BParam3);
+
+        this.decodeExpAssignInfo(msgExp2Param1);
+        this.decodeExpAssignInfo(msgExp2Param2);
+        this.decodeExpAssignInfo(msgExp2Param3);
+        //GetExpAssign()
+
 
         // ---------------------------------
-        // Obtain Information from Message7
+        // Obtain Knob Assign Info
         // ---------------------------------
+        const msgKnob1 = [...msg6.slice(0x113, 0x122 + 1)];
+        const msgKnob2 = [...msg6.slice(0x123, 0x132 + 1)];
+        const msgKnob3 = [...msg6.slice(0x133, 0x142 + 1)];
+
+        this.decodeKnobAssignInfo(msgKnob1);
+        this.decodeKnobAssignInfo(msgKnob2);
+        this.decodeKnobAssignInfo(msgKnob3);
+
+        // ---------------------------------
+        // Obtain CTRL Assign Info
+        // ---------------------------------
+
+        const msgCtrl1 = [...msg6.slice(0x143, 0x15a + 1)];
+        const msgCtrl2 = [...msg6.slice(0x15b, 0x172 + 1)];
+        const msgCtrl3 = [...msg6.slice(0x173, 0x17e + 1), ...msg7.slice(0xd, 0x18 + 1)];
+        const msgCtrl4 = [...msg7.slice(0x19, 0x30 + 1)];
+
+        const msgCtrl5 = [...msg7.slice(0x31, 0x48 + 1)];
+        const msgCtrl6 = [...msg7.slice(0x49, 0x60 + 1)];
+        const msgCtrl7 = [...msg7.slice(0x61, 0x78 + 1)];
+        const msgCtrl8 = [...msg7.slice(0x79, 0x90 + 1)];
+
+        this.decodeCtrlAssignInfo(msgCtrl1);
+        this.decodeCtrlAssignInfo(msgCtrl2);
+        this.decodeCtrlAssignInfo(msgCtrl3);
+        this.decodeCtrlAssignInfo(msgCtrl4);
+        this.decodeCtrlAssignInfo(msgCtrl5);
+        this.decodeCtrlAssignInfo(msgCtrl6);
+        this.decodeCtrlAssignInfo(msgCtrl7);
+        this.decodeCtrlAssignInfo(msgCtrl8);
+
 
         // Reset meessage accumulator
         this.presetInfoMessages = [];
