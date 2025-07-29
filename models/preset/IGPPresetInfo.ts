@@ -1,34 +1,34 @@
 
-interface ExpAssign {
+export interface IGPExpAssign {
     id: number;
     paramNumber: number;
     module: number;
-    moduleParamNumber: number;
+    moduleParamID: number;
     moduleParamNumberMin: number;
     moduleParamNumberMax: number;
 }
 
-interface CtrlAssign {
+export interface IGPCtrlAssign {
     number: number;
     mode: number;
     pedalsAssign: number[];
 }
 
-interface KnobAssign {
+export interface IGPKnobAssign {
     number: number;
     module: number;
     paramID: number;
 }
 
-interface FxLoop {
-    fxSendLevel: number;
-    fxReturnLevel: number;
-    fxSendPosition: number;
-    fxReturnPosition: number;
-    fxMode: number;
+export interface IGPFxLoop {
+    sendLevel: number;
+    returnLevel: number;
+    sendPosition: number;
+    returnPosition: number;
+    mode: number;
 }
 
-interface EffectInfo {
+export interface IGPEffectInfo {
     chainID: number;
     id: number[];
     state: boolean; //or should it be a number?
@@ -37,45 +37,46 @@ interface EffectInfo {
 
 export interface IGPPresetInfo {
     name: string;
+    number: number;
 
     // Settings
     volume: number;
     pan: number;
     bpm: number;
+    effectsChainOrder: number[];
 
     // FXLOOP
-    fxloop: FxLoop;
+    fxloop: IGPFxLoop;
 
     // KNOB
-    knob1: KnobAssign;
-    knob2: KnobAssign;
-    knob3: KnobAssign;
+    knob1: IGPKnobAssign;
+    knob2: IGPKnobAssign;
+    knob3: IGPKnobAssign;
 
     // CTRL
-    ctrl1: CtrlAssign
-    ctrl2: CtrlAssign
-    ctrl3: CtrlAssign
-    ctrl4: CtrlAssign
+    ctrl1: IGPCtrlAssign
+    ctrl2: IGPCtrlAssign
+    ctrl3: IGPCtrlAssign
+    ctrl4: IGPCtrlAssign
 
-    ctrl5: CtrlAssign
-    ctrl6: CtrlAssign
-    ctrl7: CtrlAssign
-    ctrl8: CtrlAssign
+    ctrl5: IGPCtrlAssign
+    ctrl6: IGPCtrlAssign
+    ctrl7: IGPCtrlAssign
+    ctrl8: IGPCtrlAssign
 
     // EXP
-    exp1AParam1: ExpAssign;
-    exp1AParam2: ExpAssign;
-    exp1AParam3: ExpAssign;
+    exp1AParam1: IGPExpAssign;
+    exp1AParam2: IGPExpAssign;
+    exp1AParam3: IGPExpAssign;
 
-    exp1BParam1: ExpAssign;
-    exp1BParam2: ExpAssign;
-    exp1BParam3: ExpAssign;
+    exp1BParam1: IGPExpAssign;
+    exp1BParam2: IGPExpAssign;
+    exp1BParam3: IGPExpAssign;
 
-    exp2Param1: ExpAssign;
-    exp2Param2: ExpAssign;
-    exp2Param3: ExpAssign;
+    exp2Param1: IGPExpAssign;
+    exp2Param2: IGPExpAssign;
+    exp2Param3: IGPExpAssign;
 
     // Effects
-    effects: EffectInfo;
-
+    effects: IGPEffectInfo[];
 }

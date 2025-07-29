@@ -1,5 +1,6 @@
 import { makeObservable, observable } from "mobx";
 import { EffectModel, EffectType } from "../effect/effect";
+import { IGPPresetInfo } from "./IGPPresetInfo";
 
 type FxLoop = {
     // 0-11
@@ -20,6 +21,7 @@ export class PresetModel {
     name: string;
     chainOrder: number[];
     effects: EffectModel[];
+    number: number;
 
     // Settings
     fxLoop: FxLoop;
@@ -30,13 +32,14 @@ export class PresetModel {
 
 
     // METHODS
-    constructor(name: string,
+    constructor(number: number, name: string,
         preName: string, wahName: string, dstName: string,
         ampName: string, nrName: string, cabName: string,
         eqName: string, modName: string, dlyName: string,
         rvbName: string, volName: string
     ) {
         this.name = name;
+        this.number = number;
         this.chainOrder = [0,1,2,3,4,5,6,7,8,9,10];
 
         // Create Effect object class from string name
@@ -74,6 +77,31 @@ export class PresetModel {
     changeChainPosition(new_order: number[]) {
         this.chainOrder = new_order
     }
+
+    static fromGPPresetInfo(presetInfo: IGPPresetInfo): PresetModel {
+        //Get the effects
+        let effects = [];
+        for (let i =0; i < presetInfo.effects.length; i=i+1) {
+            effects.push(EffectModel.fromGPEffectInfo(presetInfo.effects[i]));
+        }
+
+        // Create the Preset
+        const preset = new PresetModel(presetInfo.number, presetInfo.name,
+            effects[0].name,
+            effects[1].name,
+            effects[2].name,
+            effects[3].name,
+            effects[4].name,
+            effects[5].name,
+            effects[6].name,
+            effects[7].name,
+            effects[8].name,
+            effects[9].name,
+            effects[10].name,
+        );
+
+        return preset;
+    }
 }
 
 
@@ -86,7 +114,7 @@ export class PresetModel {
 //     "Room", "Volume"
 //     );
 
-export const default_preset = new PresetModel("Default",
+export const default_preset = new PresetModel(2, "Default",
     "Boost", "P-Wah", "Green OD",
     "Mess4 LD 3", "Auto Swell", "Mess",
     "Mess EQ", "M-Chorus", "Vintage Rack",

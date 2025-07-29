@@ -1,6 +1,7 @@
 import { DefaultEffectsInfo } from "@/constants/DefaultEffects";
 import { action, makeObservable, observable } from "mobx";
 import { DeserializeParam, IParameter } from "../parameter/IParameter";
+import { IGPEffectInfo } from "../preset/IGPPresetInfo";
 import { IEffectInfo } from "./IEffectInfo";
 
 // this also encodes the natural order of pedal types id in default chain order
@@ -86,51 +87,9 @@ export class EffectModel {
         this.state = state;
     }
 
-
-    // static from(effectName: string, type: EffectType): EffectModel {
-
-    //     const deserializeEffect = new DeserializeEffect();
-
-    //     let eff: EffectModel;
-    //     const effectsInfo: IEffectsInfo[] = Object.values(DefaultEffectsInfo);
-    //     //console.log(Object.values(DefaultEffectsInfo));
-    //     effectsInfo.forEach(effectsInfo => {
-    //         const effectInfo: IEffectInfo[] = Object.values(effectsInfo);
-    //         effectInfo.forEach(e => {
-    //             //console.log(e);
-    //             if (e.name === effectName && e.type == EffectType[type]) {
-    //                 console.log("Found pedal!", e.type, effectName);
-    //                 eff = deserializeEffect.deserialize(e);
-    //             }
-    //         })
-    //     });
-
-    //     return eff;
-    // }
-
-    // static fromID(effectID: number[], effectType: EffectType): EffectModel {
-
-    //     const deserializeEffect = new DeserializeEffect();
-
-    //     let eff: EffectModel;
-    //     const effectsInfo: IEffectsInfo[] = Object.values(DefaultEffectsInfo);
-
-    //     effectsInfo.forEach(effectsInfo => {
-    //         const effectInfo: IEffectInfo[] = Object.values(effectsInfo);
-    //         effectInfo.forEach(e => {
-    //             const areEqual = arraysEqualShallow(e.id ,effectID);
-    //             //console.log("Compare IDS", e.type, e.id, effectID, areEqual);
-    //             if ( areEqual && e.type === EffectType[effectType] ) {
-    //                 console.log("Found pedal!", e.type, e.name, e.id);
-    //                 //return deserializeEffect.deserialize(e);
-    //                 eff = deserializeEffect.deserialize(e);
-    //             }
-    //         })
-    //     });
-
-    //     //throw new Error(`Effect not found!, check correct ID ${effectID}` );
-    //     return eff;
-    // }
+    static fromGPEffectInfo(gpEffectInfo: IGPEffectInfo): EffectModel {
+        return this.fromID(gpEffectInfo.id, gpEffectInfo.chainID);
+    }
 
     static fromName(effectName: string, effectType: EffectType): EffectModel {
 
