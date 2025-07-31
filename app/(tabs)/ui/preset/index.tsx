@@ -32,8 +32,12 @@ function HomeScreen() {
   }
 
   const getPresetInfo = () => {
-    store.gpActions.AskPresetInfo(store.gp200.current_preset_number);
+    store.gpActions.AskPresetInfo(store.gp200.currentPresetNumber);
     console.log("Asking for preset", store.gp200.presetBankCode, "Info");
+  }
+
+  const logPreset = () => {
+    console.log("Current preset", store.gp200.currentPreset);
   }
 
   return (
@@ -41,7 +45,7 @@ function HomeScreen() {
       <View style={styles.maincontainer}>
         <View style={styles.presetContainer}>
           <View style={styles.bannerContainer}>
-            <PresetBanner presetName='Preset Name' presetBankCode={store.gp200.presetBankCode}></PresetBanner>
+            <PresetBanner presetName={store.gp200.currentPreset?.name ?? ""} presetBankCode={store.gp200.presetBankCode}></PresetBanner>
           </View>
           <View style={styles.viewButtons}>
             <ActionButton title={"Patch -"} type={ActionButtonType.Patch} onPress={decrement}></ActionButton>
@@ -51,7 +55,7 @@ function HomeScreen() {
           </View>
           <View style={styles.viewButtons}>
              <ActionButton title={"Ctrl 1"} type={ActionButtonType.ControlOff} onPress={getPresetInfo}></ActionButton>
-             <ActionButton title={"Ctrl 2"} type={ActionButtonType.ControlOff} onPress={() => { }}></ActionButton>
+             <ActionButton title={"Ctrl 2"} type={ActionButtonType.ControlOff} onPress={logPreset}></ActionButton>
              <ActionButton title={"Ctrl 3"} type={ActionButtonType.ControlOff} onPress={() => { }}></ActionButton>
              <ActionButton title={"Ctrl 4"} type={ActionButtonType.ControlOff} onPress={() => { }}></ActionButton>
           </View>

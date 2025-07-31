@@ -1,36 +1,47 @@
 
 import { action, computed, makeObservable, observable } from "mobx";
 import { EffectModel, EffectType } from "./effect/effect";
-import { DoubleParameterModel } from "./parameter/doubleParameter";
-import { default_preset, PresetModel } from "./preset/preset";
+import { PresetModel } from "./preset/preset";
 
 
 export class GP200Model {
 
-    //presets: Preset[];
-    current_preset: PresetModel;
-    current_preset_number: number;
 
-    current_effect: EffectModel;
+    presets: PresetModel[];
+
+    // Currently available for editing
+    currentPresetNumber: number | undefined;
+    currentPreset: PresetModel | undefined;
+    currentEffect: EffectModel | undefined;
+    
+    syncedPresets: number;
 
 
     constructor() {
 
+        this.presets = []
         // initialize internal values
-        this.current_preset_number = 0;
+        this.currentPresetNumber = undefined;
+        this.currentPreset = undefined;
+        this.currentEffect = undefined;
 
-        // Just to test
-        this.current_preset = default_preset;
-        //console.log(JSON.stringify(default_preset));
-        this.current_effect = default_preset.effects[0];
+        this.syncedPresets = 0;
+
 
         makeObservable(this, {
-            current_preset_number: observable,
-            current_effect: observable,
+            presets: observable,
+
+            currentPresetNumber: observable,
+            currentPreset: observable,
+            currentEffect: observable,
+            // test
+            syncedPresets: observable,
+
             // Change preset actions
+            changePreset: action,
+            addPreset: action,
 
             presetBankCode: computed,
-            changePreset: action,
             //changeEffect: action,
             changeEffectByID: action,
             
@@ -46,14 +57,27 @@ export class GP200Model {
     changePreset(preset_number: number) {
         // Clamp to valid range
         const num = Math.min(Math.max(preset_number, 0), 255);
-        this.current_preset_number = num;
+        this.currentPresetNumber = num;
+        this.currentPreset = this.presets[num];
 
+        // select to pre by default
+        this.changeSelectedEffect(0);
+
+        console.log("Current preset",this.currentPreset);
     }
 
-
+    addPreset(preset: PresetModel) {
+      this.presets[preset.number] = preset;
+      this.syncedPresets = this.presets.length;
+    }
 
     get presetBankCode(): string {
-      const number = this.current_preset_number;
+      const number = this.currentPresetNumber;
+
+      if (number === undefined) {
+          return "";
+      }
+
       const bankNumber = Math.floor(number / 4) + 1;
       let bankLetter: string = "";
       switch (number % 4) {
@@ -85,65 +109,42 @@ export class GP200Model {
     // -- EFFECT CHAIN ACTIONS
     changePresetChainOrder(order: number[]) {
       // check order has 11 elements in range(0-10)
-      this.current_preset.chainOrder = order;
+      if (!this.currentPreset) { return }
+
+      this.currentPreset.changeEffectsChainOrder(order);
     }
-    // changeEffect() // Change the effect for a given effect unit
-    // changeParameterEffect() // Change the effect for a given effect unit
 
     changeEffectState(state: boolean) {
         // should select current preset and current pedal
-        this.current_effect.changeState(state);
-        console.log("Effect type", this.current_effect.type);
+        if (!this.currentEffect) { return }
+
+        this.currentEffect.changeState(state);
+        console.log("Effect type", this.currentEffect.type);
     }
 
-    changeParamValue(effectID: number, parameterID: number, value: number) {
-      //const p = this.current_effect.parameters.filter(p => p.name === name && p.id === parameterID);
-      const e = this.current_preset.effects.filter(e => e.type === effectID);
-      const p = e[0].parameters.filter(p => p.id === parameterID);
-      //console.log("Modifying ", p[0].name);
-      p[0].setValue(value);
+    changeParamValue(effectChainID: number, parameterID: number, value: number) {
+      if (!this.currentPreset) { return }
 
-      // check for double parameters
-      const other_param_name = p[0].changes_param;
-      //console.log("change parameter = ", other_param_name);
-      if (other_param_name != "") {
-        const q = this.current_effect.parameters.filter(p => p.name === other_param_name);
-        if (q[0].type === "Double") {
-          const w = q[0] as DoubleParameterModel;
-          w.activeSecondRange(value != 0);
-        }
-      }
+      const e = this.currentPreset.effects.filter(e => e.type === effectChainID);
+      e[0].setParameterValue(parameterID, value);
     }
 
     changeSelectedEffect(effectType: EffectType) {
-      this.current_effect = this.current_preset.effects[effectType as number];
+      if (!this.currentPreset) { return }
+
+      this.currentEffect = this.currentPreset.effects[effectType as number];
+      console.log("Current effect", this.currentEffect)
     }
 
-    // changeEffect(effectName: string, effectType: EffectType) {
-    //     // Get Effect model with given specs
-    //     // Assign effect in current preset
-    //     const e = EffectModel.fromName(effectName, effectType);
-    //     this.current_preset.effects[effectType] = e;
-    //     this.current_effect = e;
-    // }
 
     changeEffectByID(effectID: number[], effectType: EffectType) {
         // Get Effect model with given specs
         // Assign effect in current preset
-        const e = EffectModel.fromID(effectID, effectType);
-        this.current_preset.effects[e.type] = e;
-        this.current_effect = e;
+        if (!this.currentPreset) { return }
+
+        const e = EffectModel.defaultfromID(effectID, effectType);
+        this.currentPreset.effects[e.type] = e;
+        this.currentEffect = e;
     }
 
-
-
-    // encodeSysEx()
-
-    // _midiGetPresets() // execute sequence to start receiving all preset information
-    // _
-
-
 }
-
-
-//export const gp200 = new GP200Model();

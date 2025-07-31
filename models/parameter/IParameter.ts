@@ -1,5 +1,5 @@
+import { IDefaultParameterInfo } from "../effect/defaultEffect/IParameterInfo";
 import { DoubleParameterModel } from "./doubleParameter";
-import { IParameterInfo } from "./IParameterInfo";
 import { NumericParameterModel } from "./numericParameter";
 import { SelectParameterModel } from "./selectParameter";
 
@@ -37,7 +37,7 @@ export interface IParameter {
 
 
 export class DeserializeParam {
-    deserialize(p: IParameterInfo): IParameter {
+    deserialize(p: IDefaultParameterInfo): IParameter {
         //console.log("RECEIVED JSON: ", jsonObject);
 
         switch(p.type) {
@@ -67,6 +67,6 @@ export class DeserializeParam {
                 );
         }
 
-        throw new Error("Should not reach this");
+        throw new Error("DefaulEffectInfo should only contain type Numeric, Select or Double.");
     }
 }

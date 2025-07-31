@@ -5,8 +5,8 @@ import { Input, InputField } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { EffectsChangeInfo } from "@/constants/EffectsChangeInfo";
+import { IEffectChangeInfo } from "@/models/effect/changeEffect/IEffectChangeInfo";
 import { EffectType } from "@/models/effect/effect";
-import { IEffectChangeInfo } from "@/models/effect/IEffectChangeInfo";
 import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 import { useMemo, useState } from "react";
@@ -25,8 +25,8 @@ type EffectData = {
 function ListEffect(props: ListEffectProps) {
     const DATA = useMemo(() => {
         //return EffectsNames[EffectType[store.gp200.current_effect.type] as keyof typeof EffectsNames];
-        return EffectsChangeInfo[EffectType[store.gp200.current_effect.type] as keyof typeof EffectsChangeInfo];
-    }, [store.gp200.current_effect]);
+        return EffectsChangeInfo[EffectType[store.gp200.currentEffect.type] as keyof typeof EffectsChangeInfo];
+    }, [store.gp200.currentEffect]);
 
     //const [filteredData, setFilteredData] = useState<string[]>(DATA);
     const [filteredData, setFilteredData] = useState<IEffectChangeInfo[]>(DATA);
@@ -105,7 +105,7 @@ type ListEffectItemProps = {
 }
 
 function ListEffectItem(props: ListEffectItemProps) {
-    const [selected, setSelected] = useState(store.gp200.current_effect.name === props.name);
+    const [selected, setSelected] = useState(store.gp200.currentEffect.name === props.name);
 
     const onPress = () => {
         console.log("Selected ", props.name);
@@ -113,7 +113,7 @@ function ListEffectItem(props: ListEffectItemProps) {
         //store.gp200.changeEffect(props.name, store.gp200.current_effect.type);
         store.gpActions.ChangeEffect(props.id);
 
-        setSelected(store.gp200.current_effect.name === props.name);
+        setSelected(store.gp200.currentEffect.name === props.name);
         // on Press end
     };
 

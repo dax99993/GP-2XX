@@ -19,7 +19,7 @@ function EffectSelector() {
         <TouchableOpacity style={{ flex: 1 }} onPress={goToSelectEffect}>
             <HStack style={{ flex: 1, justifyContent: 'space-between' }} className="bg-secondary-300 mx-3 my-2 px-2 py-2 rounded-md">
                 <Center style={{ flex: 1 }}>
-                    <Text bold={true}>{store.gp200.current_effect.name}</Text>
+                    <Text bold={true}>{store.gp200.currentEffect.name}</Text>
                 </Center>
                 <Center>
                     <Icon as={ChevronRightIcon} className="ml-2" size="xl" />

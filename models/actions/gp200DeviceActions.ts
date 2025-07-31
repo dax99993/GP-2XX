@@ -1,9 +1,9 @@
 import { BaseSysExMsg, GetPresetInfo, SysExGPHeader } from "@/constants/SysExMsg";
 import { MIDIMessageEvent } from "@motiz88/react-native-midi";
-import { makeObservable, observable } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 import { GP200Model } from "../gp200";
 import { MidiDevice } from "../midiDevice";
-import { IGPCtrlAssign, IGPEffectInfo, IGPExpAssign, IGPKnobAssign, IGPPresetInfo } from "../preset/IGPPresetInfo";
+import { ICtrlAssign, IExpAssign, IKnobAssign, ISyncEffectInfo, ISyncPresetInfo } from "../preset/ISyncPresetInfo";
 import { PresetModel } from "../preset/preset";
 import { IDeviceActions } from "./IActions";
 
@@ -44,8 +44,11 @@ export class GP200DeviceActions implements IDeviceActions {
         makeObservable(this, {
             gp200: observable,
             midi: observable,
+
+            SyncPresetInfo: action,
         });
     }
+
     ChangePresetChainOrder(message: number[]): void {
         throw new Error("Method not implemented.");
     }
@@ -97,7 +100,7 @@ export class GP200DeviceActions implements IDeviceActions {
     uint8BytesToFloat32(bytes: number[]): number {
         // 'float32Bytes' should be a Uint8Array containing the 4 bytes of Float32 representation
         const float32Bytes = new Uint8Array(bytes);
-        console.log("Decoded float bytes", float32Bytes);
+        //console.log("Decoded float bytes", float32Bytes);
 
         // 1. Create an ArrayBuffer
         const buffer = new ArrayBuffer(4);
@@ -116,7 +119,7 @@ export class GP200DeviceActions implements IDeviceActions {
     decodeParamValueFloat(encoded: number[]) {
         // combine pair of encoded bytes (contains nibbles) to form a complete byte
         const bytes = this.nibbleArrayToByteArray(encoded);
-        console.log("Decoding float32", encoded, bytes);
+        //console.log("Decoding float32", encoded, bytes);
         // convert bytes to float32
         const numberValue = this.uint8BytesToFloat32(bytes)
 
@@ -214,14 +217,7 @@ export class GP200DeviceActions implements IDeviceActions {
         if ( this.isSameMessage(message, presetInfoMsg7, 12)) {
             console.log("Preset Info message 7 received!.");
             this.presetInfoMessages[6] = message;
-
-            // Extract Preset Information
-            const presetInfo = this.GetPresetInfo();
-            // Convert Info to model
-            const preset = PresetModel.fromGPPresetInfo(presetInfo);
-            console.log(`PRESET MODEL (${presetInfo.number}\n${preset}`);
-            console.log(preset);
-
+            this.SyncPresetInfo();
         }
     }
 
@@ -261,6 +257,18 @@ export class GP200DeviceActions implements IDeviceActions {
         }
     }
 
+    SyncPresetInfo() {
+        // Extract Preset Information
+        const presetInfo = this.GetPresetInfo();
+        // Convert Info to model
+        const preset = new PresetModel(presetInfo);
+        console.log(`PRESET MODEL (${presetInfo.number}\n${preset}`);
+        console.log(preset);
+
+        // Update model
+        this.gp200.addPreset(preset);
+    }
+
 
     // DECODE
     // PRESET ACTIONS
@@ -273,7 +281,7 @@ export class GP200DeviceActions implements IDeviceActions {
         const num = this.nibblesToByte(high_byte, low_byte);
 
         // Update model
-        this.gp200.current_preset_number = num;
+        this.gp200.changePreset(num);
     }
 
     //PRESET SETTINGS ACTIONS
@@ -296,7 +304,10 @@ export class GP200DeviceActions implements IDeviceActions {
         const state = message[0x18] != 0;
 
         // Update model
-        this.gp200.current_preset.effects[pedal_id].state = state;
+        if (this.gp200.currentPreset) {
+            //this.gp200.currentPreset.effects[pedal_id].state = state;
+            this.gp200.currentPreset.effects[pedal_id].changeState(state);
+        }
     }
 
     ChangeEffectParamValue(message: Uint8Array) {
@@ -313,9 +324,11 @@ export class GP200DeviceActions implements IDeviceActions {
         
         // Get type of encoded values
         let paramType = "";
-        this.gp200.current_preset.effects[effectChainID].parameters.forEach(p => {
+        if (!this.gp200.currentPreset) {return;}
+
+        this.gp200.currentPreset.effects[effectChainID].parameters.forEach(p => {
                 if (p.id === paramId) {
-                    console.log("Match Effect", effectChainID, p.name);
+                    //console.log("Match Effect", effectChainID, p.name);
                     paramType = p.numeric_type[0];
                 }
         });
@@ -331,7 +344,7 @@ export class GP200DeviceActions implements IDeviceActions {
             decodedValue = Math.round(decodedValue);
         }
 
-        console.log(`Change parameter ${paramType} :`, effectChainID, paramId, decodedValue);
+        //console.log(`Change parameter ${paramType} :`, effectChainID, paramId, decodedValue);
 
         // Update model
         this.gp200.changeParamValue(effectChainID, paramId, decodedValue);
@@ -353,15 +366,6 @@ export class GP200DeviceActions implements IDeviceActions {
         return value;
     }
 
-    // decodePanValue(encoded: number[]) {
-    //     // combine pair of encoded bytes (contains nibbles) to form a complete byte
-    //     const bytes = this.nibbleArrayToByteArray(encoded);
-    //     console.log("Decoding float32", encoded, bytes);
-    //     // convert bytes to float32
-    //     const numberValue = this.uint8BytesToInt32(bytes)
-
-    //     return numberValue;
-    // }
 
     decodePanValuePresetInfo(high_nibble: number, low_nibble: number) {
         const low = this.nibblesToByte(high_nibble, low_nibble);
@@ -382,7 +386,7 @@ export class GP200DeviceActions implements IDeviceActions {
 
         return chars.join("");
     }
-    decodeEffectInfo(msg: number[]): IGPEffectInfo {
+    decodeEffectInfo(msg: number[]): ISyncEffectInfo {
         if (msg.length != 0x90) {
             throw new Error("Effect info msg has to be 0x90 bytes");
         }
@@ -409,7 +413,7 @@ export class GP200DeviceActions implements IDeviceActions {
         }
     }
 
-    decodeExpAssignInfo(msg: number[]): IGPExpAssign {
+    decodeExpAssignInfo(msg: number[]): IExpAssign {
         const expPedalID = msg[0x8];
         const expPedalParamNumber = msg[0x9];
         const expPedalModule = this.nibblesToByte(msg[0xa], msg[0xb]);
@@ -430,7 +434,7 @@ export class GP200DeviceActions implements IDeviceActions {
         }
     }
 
-    decodeKnobAssignInfo(msg: number[]): IGPKnobAssign{
+    decodeKnobAssignInfo(msg: number[]): IKnobAssign{
         if (msg.length != 0x10) {
             throw new Error ("Knob assign msg has to be 0x10 bytes");
         }
@@ -448,7 +452,7 @@ export class GP200DeviceActions implements IDeviceActions {
         };
     }
 
-    decodeCtrlAssignInfo(msg: number[]): IGPCtrlAssign {
+    decodeCtrlAssignInfo(msg: number[]): ICtrlAssign {
         const ctrlNumber = msg[0x9];
         const ctrlMode = msg[0xb];
 
@@ -474,7 +478,7 @@ export class GP200DeviceActions implements IDeviceActions {
         }
     }
 
-    GetPresetInfo(): IGPPresetInfo {
+    GetPresetInfo(): ISyncPresetInfo {
         console.log("Processing preset info messages");
         console.log(this.presetInfoMessages);
 
@@ -638,7 +642,7 @@ export class GP200DeviceActions implements IDeviceActions {
         const ctrlAssign8 = this.decodeCtrlAssignInfo(msgCtrl8);
 
         // Create IGPPreset object
-        const presetInfo: IGPPresetInfo = {
+        const presetInfo: ISyncPresetInfo = {
             name: presetName,
             number: presetNumber,
 

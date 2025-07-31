@@ -1,16 +1,10 @@
 import { EffectsChangeInfo } from "@/constants/EffectsChangeInfo";
 import { BaseSysExMsg } from "@/constants/SysExMsg";
-import { action, makeObservable, observable, runInAction } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 import { EffectType } from "../effect/effect";
 import { GP200Model } from "../gp200";
 import { MidiDevice } from "../midiDevice";
 import { IActions } from "./IActions";
-
-
-// type gpAction = {
-//     action: number;
-//     data: number[];
-// }
 
 
 export class GP200Actions implements IActions{
@@ -105,44 +99,49 @@ export class GP200Actions implements IActions{
         msg[0x1a] = low_byte;
 
         // Update model
-        runInAction(() => {
-            this.gp200.current_preset_number = num;
-        })
+        this.gp200.changePreset(num);
 
         // Execute action in physical device
         this.midi.sendMessage(msg);
     }
 
     NextPreset() {
-      let num = this.gp200.current_preset_number + 1;
-      if (num > 255) {
-        num = 0;
-      } else if ( num < 0) {
-        num = 255;
-      }
+        if (this.gp200.currentPresetNumber === undefined) { return; }
 
-      this.ChangePreset(num);
+        let num = this.gp200.currentPresetNumber + 1;
+        if (num > 255) {
+            num = 0;
+        } else if (num < 0) {
+            num = 255;
+        }
+
+        this.ChangePreset(num);
     }
 
     PreviousPreset() {
-      let num = this.gp200.current_preset_number - 1;
-      if (num > 255) {
-        num = 0;
-      } else if ( num < 0) {
-        num = 255;
-      }
+        if (this.gp200.currentPresetNumber === undefined) { return; }
 
-      this.ChangePreset(num);
+        let num = this.gp200.currentPresetNumber - 1;
+        if (num > 255) {
+            num = 0;
+        } else if (num < 0) {
+            num = 255;
+        }
+
+        this.ChangePreset(num);
     }
 
     // PRESET SETTINGS ACTIONS
     //ChangePresetChainOrder(preset_num:number, fxSendPos: number, fxReturnPos: number, effectsChainOrder: number[]) {
     //ChangePresetChainOrder(fxSendPos: number, fxReturnPos: number, effectsChainOrder: number[]) {
     ChangePresetChainOrder(effectsChainOrder: number[]) {
-        const preset_num = this.gp200.current_preset_number;
+        if (this.gp200.currentPresetNumber === undefined) { return; }
+        if (this.gp200.currentPreset === undefined) { return; }
+
+        const preset_num = this.gp200.currentPresetNumber;
         // Keep this the same
-        const fxSendPos = this.gp200.current_preset.fxLoop.sendPosition;
-        const fxReturnPos = this.gp200.current_preset.fxLoop.returnPosition;
+        const fxSendPos = this.gp200.currentPreset.fxLoop.sendPosition;
+        const fxReturnPos = this.gp200.currentPreset.fxLoop.returnPosition;
 
         // bytes 0x15 and 0x16 have the preset number
         // bytes 0x19 and 0x1a have the Fx loop send position
@@ -175,7 +174,7 @@ export class GP200Actions implements IActions{
 
         // Update model
         // This should modify a given preset not only the current, change later
-        this.gp200.current_preset.chainOrder = effectsChainOrder;
+        this.gp200.currentPreset.changeEffectsChainOrder(effectsChainOrder);
         // Also update FX send and return position
         //this.gp200.current_effect.
 
@@ -200,8 +199,10 @@ export class GP200Actions implements IActions{
     }
 
     ChangeEffect(effectID: number[]) {
+        if (this.gp200.currentEffect === undefined) { return; }
+
         // This is always invoked when the current effect is the one we want to change
-        const pedalID = this.gp200.current_effect.type;
+        const pedalID = this.gp200.currentEffect.type;
         // Construct midi message
         const SysExMsg = this._contructChangeEffectMessage(pedalID, effectID);
 
@@ -234,7 +235,10 @@ export class GP200Actions implements IActions{
 
     //ChangeEffectState(pedal_id: number, state: boolean) {
     ChangeEffectState(state: boolean) {
-        const pedal_id = this.gp200.current_effect.type;
+        if (this.gp200.currentPreset === undefined) { return; }
+        if (this.gp200.currentEffect === undefined) { return; }
+
+        const pedal_id = this.gp200.currentEffect.type;
         // Check pedal_id in range [0, 10]
 
         //byte 0x16 is the effect ID (0-10) ; byte 0x18 is the state of pedal OFF -> 0, ON -> 1
@@ -243,7 +247,7 @@ export class GP200Actions implements IActions{
         baseSysEx[0x18] = state ? 1 : 0;
 
         // Update model
-        this.gp200.current_preset.effects[pedal_id].state = state;
+        this.gp200.currentPreset.effects[pedal_id].state = state;
 
         // Send to physical device
         this.midi.sendMessage(baseSysEx);
@@ -251,7 +255,9 @@ export class GP200Actions implements IActions{
 
     //ChangeEffectParamValue(effectChainID: number, paramId: number, paramType: string, n:number) {
     ChangeEffectParamValue(paramId: number, paramNumericType: string, n:number) {
-        const effectChainID = this.gp200.current_effect.type;
+        if (this.gp200.currentEffect === undefined) { return; }
+
+        const effectChainID = this.gp200.currentEffect.type;
 
         // byte 0x16 contains the effect chain id (0 to 10)
         // byte 0x18 containes parameter id,

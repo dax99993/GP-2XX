@@ -21,7 +21,7 @@ function EffectEdit() {
                 <EffectSelector/>
             </HStack>
             <ScrollView style={styles.parametersContainer}>
-                { store.gp200.current_effect.parameters.map(p => {
+                { store.gp200.currentEffect.parameters.map(p => {
                     if (p.type === "Numeric") {
                         return <NumericParameter key={p.name} param={p as NumericParameterModel}/>
                     } else if (p.type === "Select" ) {

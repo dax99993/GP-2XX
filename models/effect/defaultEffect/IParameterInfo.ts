@@ -1,4 +1,4 @@
-export interface IParameterInfo {
+export interface IDefaultParameterInfo {
   name: string
   type: string
   min_value: number[]
@@ -6,10 +6,10 @@ export interface IParameterInfo {
   step_size: number[]
   default_value: number[]
   units: string
-  labels: LabelsInfo
+  labels: DefaultLabelsInfo
   numeric_type: string[]
   changes_param: string
   id: number
 }
 
-export type LabelsInfo = Record<number, string>;
+export type DefaultLabelsInfo = Record<number, string>;
