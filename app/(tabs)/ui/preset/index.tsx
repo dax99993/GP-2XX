@@ -14,8 +14,8 @@ import { observer } from 'mobx-react-lite';
 function HomeScreen() {
 
   useEffect(()=>{
-    // Testing preset 63-D
-    const preset_num = 251
+    // Testing preset 63-D 251 number
+    const preset_num = 1
     // send action
     store.gpActions.ChangePreset(preset_num);
     console.log("Setting bank to", store.gp200.presetBankCode);
@@ -32,8 +32,6 @@ function HomeScreen() {
   }
 
   const getPresetInfo = () => {
-    store.gpActions.AskPresetInfo(store.gp200.currentPresetNumber);
-    console.log("Asking for preset", store.gp200.presetBankCode, "Info");
   }
 
   const logPreset = () => {
