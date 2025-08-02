@@ -118,7 +118,8 @@ export class MidiDevice {
             this.unSetOutput();
             console.log("INPUT PORT ", this.inputPort);
             console.log("OUTPUT PORT ", this.outputPort);
-            //this.disconnectCallback();
+            // Execute disconnect Callback
+            this.disconnectCallback();
         } else if ( port.state === "connected" && port.id !== "" && port.name.includes("GP-200") && port.id != this.portID && this.connectedPorts < 2 ) {
             // handle re-connection
             console.log(`Port ${port.type} (${port.id}) [${port.name}] connected`);
@@ -137,7 +138,8 @@ export class MidiDevice {
                 console.log("INPUT PORT ", this.inputPort);
                 console.log("OUTPUT PORT ", this.outputPort);
                 this.portID = port.id;
-                //this.connectCallback();
+                // Execute Connect Callback
+                this.connectCallback();
             }
 
         }

@@ -1,4 +1,4 @@
-import { action, makeObservable, observable } from "mobx";
+import { action, makeObservable, observable, runInAction } from "mobx";
 import { GP200Actions } from "./actions/gp200Actions";
 import { GP200DeviceActions } from "./actions/gp200DeviceActions";
 import { GP200Model } from "./gp200";
@@ -25,7 +25,7 @@ class Store {
         const midiConnectCb = () => {
             //this.modals.closeModal("disconnectModal");
             this.modals.openModal("syncModal");
-            //this.SyncGP();
+            this.SyncGP();
         }
 
         this.midi = new MidiDevice(midiConnectCb, midiDisconnectCb);
@@ -48,34 +48,45 @@ class Store {
         });
     }
 
-    // SyncGP() {
-    //     // Reset state to start Syncing again
-    //     while (this.gp200.syncedPresets < 4) {
-    //         const intervalId = setInterval(() => {
-    //             if (!this.gp200.syncing) {
-    //                 console.log(`Executing ask preset ${this.gp200.syncedPresets}`);
-    //                 // Your code to execute in each iteration
-    //                 this.gpActions.AskPresetInfo(this.gp200.syncedPresets);
-    //             } else {
-    //                 clearInterval(intervalId); // Stop the interval when the condition is met
-    //                 console.log("Preset", this.gp200.syncedPresets, "done");
-    //             }
-    //         }, 1000); // Execute every 1000 milliseconds (1 second)
-    //     }
-    // }
-
     SyncGP() {
         // Reset state to start Syncing again
-        const intervalId = setInterval(() => {
-            if (this.gp200.syncedPresets < 2 && !this.gp200.syncing) {
-                console.log(`Executing ask preset ${this.gp200.syncedPresets}`);
-                // Your code to execute in each iteration
-                //this.gpActions.AskPresetInfo(this.gp200.syncedPresets);
-            } else {
-                clearInterval(intervalId); // Stop the interval when the condition is met
-                console.log("Preset", this.gp200.syncedPresets, "done");
-            }
-        }, 2000); // Execute every 1000 milliseconds (1 second)
+        this.gp200.SetToStartSyncing();
+        const maxTriesPerPreset = 5;
+        let tries = 0;
+        let syncedPresets = 0;
+        // Start syncing process after 1 seconds
+        const timeoutID = setTimeout(() => {
+            // clearInterval when device is disconnected! otherwise infine loop occurs.
+            const intervalId = setInterval(() => {
+                if (this.gp200.syncedPresets < 256  && !this.gp200.syncing && tries < maxTriesPerPreset) {
+                    console.log(`Executing ask preset ${this.gp200.syncedPresets}`);
+                    // Your code to execute in each iteration
+                    if (syncedPresets != this.gp200.syncedPresets) {
+                        console.log("Preset", syncedPresets, "done");
+                        syncedPresets = this.gp200.syncedPresets;
+                        tries = 0;
+                    }
+                    tries++;
+                    this.gpActions.AskPresetInfo(this.gp200.syncedPresets);
+                } else {
+                    // Could not sync the device stop this and reconnect to try again
+                    if (this,this.gp200.syncedPresets !== 256) {
+                        console.log("SYNCING PROBLEM OCCUR");
+                        runInAction(() => {
+                            store.gp200.syncingErrorOccur = true;
+                        })
+                    } else {
+                        console.log("SYNCING SUCCESSFUL");
+                        this.modals.closeModal("syncModal");
+                        // Execute action to changePreset to current preset in device
+
+                    }
+                    clearInterval(intervalId); // Stop the interval when the condition is met
+                }
+            }, 250); // Execute every quater of second
+        }, 1500);
+
+        //clearTimeout(timeoutID);
     }
 }
 

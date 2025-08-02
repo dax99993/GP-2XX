@@ -16,6 +16,7 @@ export class GP200Model {
     
     syncedPresets: number;
     syncing: boolean;
+    syncingErrorOccur: boolean;
 
 
     constructor() {
@@ -28,6 +29,7 @@ export class GP200Model {
 
         this.syncedPresets = 0;
         this.syncing = false;
+        this.syncingErrorOccur = false;
 
 
         makeObservable(this, {
@@ -36,9 +38,14 @@ export class GP200Model {
             currentPresetNumber: observable,
             currentPreset: observable,
             currentEffect: observable,
+
             // test
             syncedPresets: observable,
             syncing: observable,
+            syncingErrorOccur: observable,
+            
+            SetToStartSyncing: action,
+            SyncingPresetDone: action,
 
             // Change preset actions
             changePreset: action,
@@ -55,6 +62,17 @@ export class GP200Model {
     }
 
     // USER METHODS
+    SetToStartSyncing() {
+      this.presets = []
+      this.syncedPresets = 0
+      this.syncing = false; 
+      this.syncingErrorOccur = false;
+    }
+
+    SyncingPresetDone() {
+      this.syncedPresets = this.presets.length;
+      this.syncing = false;
+    }
 
     // -- PRESET ACTIONS --
     changePreset(preset_number: number) {
@@ -71,8 +89,6 @@ export class GP200Model {
 
     addPreset(preset: PresetModel) {
       this.presets[preset.number] = preset;
-      this.syncedPresets = this.presets.length;
-      this.syncing = false;
     }
 
     get presetBankCode(): string {

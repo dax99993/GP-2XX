@@ -6,13 +6,14 @@ import { Spinner } from "../ui/spinner";
 import { Text } from "../ui/text";
 
 import { store } from "@/models/store";
+import { VStack } from "../ui/vstack";
 import MyModal from "./Modal";
 
 
 function SyncModal() {
     const headerTitle = "Syncing GP-200";
-    const bodyText = "Loading Preset " + store.gp200.syncedPresets;
-    const progressValue = 40;
+    const syncingBodyText = "Loading Preset " + store.gp200.syncedPresets;
+    const progressValue = store.gp200.syncedPresets / 256 * 100;
 
     return (
         <MyModal
@@ -24,8 +25,18 @@ function SyncModal() {
             }
             bodyElements={
                 <HStack space="sm">
-                    <Spinner />
-                    <Text size="md">{bodyText}</Text>
+                    {store.gp200.syncingErrorOccur && 
+                    <VStack>
+                        <Text size="md">An error occur while syncing.</Text>
+                        <Text size="md">Please reconnect device.</Text>
+                    </VStack>
+                    }
+                    {!store.gp200.syncingErrorOccur &&
+                    <>
+                        <Spinner />
+                        <Text size="md">{syncingBodyText}</Text>
+                    </>
+                    }
                 </HStack>
             }
             footerElements={

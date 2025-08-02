@@ -189,13 +189,14 @@ export class GP200DeviceActions implements IDeviceActions {
 
         if ( this.isSameMessage(message, presetInfoMsg1, 12) ) {
             console.log("Preset Info message 1 received!.");
+            // Set syncing flag
             this.gp200.syncing = true;
             if (this.presetInfoMessages.length > 1) {return}
             this.presetInfoMessages[0] = message;
         } else if ( this.isSameMessage(message, presetInfoMsg2, 12) ) {
             console.log("Preset Info message 2 received!.");
-            this.presetInfoMessages[1] = message;
             if (this.presetInfoMessages.length > 2) {return}
+            this.presetInfoMessages[1] = message;
         } else if ( this.isSameMessage(message, presetInfoMsg3, 12) ) {
             console.log("Preset Info message 3 received!.");
             if (this.presetInfoMessages.length > 3) {return}
@@ -276,7 +277,7 @@ export class GP200DeviceActions implements IDeviceActions {
         this.gp200.addPreset(preset);
 
         // Notify synced preset
-        
+        this.gp200.SyncingPresetDone();
     }
 
 
