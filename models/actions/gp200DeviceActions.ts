@@ -75,8 +75,7 @@ export class GP200DeviceActions implements IDeviceActions {
         };
         
         // add event listener to input
-        //this.midi.inputPort?.addEventListener("midimessage", listener);
-        this.midi.addMessageListener(listener);
+        this.midi.addMIDIMessageListener(listener);
     }
 
 
@@ -190,21 +189,28 @@ export class GP200DeviceActions implements IDeviceActions {
 
         if ( this.isSameMessage(message, presetInfoMsg1, 12) ) {
             console.log("Preset Info message 1 received!.");
+            this.gp200.syncing = true;
+            if (this.presetInfoMessages.length > 1) {return}
             this.presetInfoMessages[0] = message;
         } else if ( this.isSameMessage(message, presetInfoMsg2, 12) ) {
             console.log("Preset Info message 2 received!.");
             this.presetInfoMessages[1] = message;
+            if (this.presetInfoMessages.length > 2) {return}
         } else if ( this.isSameMessage(message, presetInfoMsg3, 12) ) {
             console.log("Preset Info message 3 received!.");
+            if (this.presetInfoMessages.length > 3) {return}
             this.presetInfoMessages[2] = message;
         } else if ( this.isSameMessage(message, presetInfoMsg4, 12) ) {
             console.log("Preset Info message 4 received!.");
+            if (this.presetInfoMessages.length > 4) {return}
             this.presetInfoMessages[3] = message;
         } else if ( this.isSameMessage(message, presetInfoMsg5, 12) ) {
             console.log("Preset Info message 5 received!.");
+            if (this.presetInfoMessages.length > 5) {return}
             this.presetInfoMessages[4] = message;
         } else if ( this.isSameMessage(message, presetInfoMsg6, 12) ) {
             console.log("Preset Info message 6 received!.");
+            if (this.presetInfoMessages.length > 6) {return}
             this.presetInfoMessages[5] = message;
         }
     }
@@ -216,6 +222,7 @@ export class GP200DeviceActions implements IDeviceActions {
 
         if ( this.isSameMessage(message, presetInfoMsg7, 12)) {
             console.log("Preset Info message 7 received!.");
+            if (this.presetInfoMessages.length > 7) {return}
             this.presetInfoMessages[6] = message;
             this.SyncPresetInfo();
         }
@@ -262,11 +269,14 @@ export class GP200DeviceActions implements IDeviceActions {
         const presetInfo = this.GetPresetInfo();
         // Convert Info to model
         const preset = new PresetModel(presetInfo);
-        console.log(`PRESET MODEL (${presetInfo.number}\n${preset}`);
-        console.log(preset);
+        console.log(`PRESET MODEL (${presetInfo.number})`);
+        //console.log(preset);
 
         // Update model
         this.gp200.addPreset(preset);
+
+        // Notify synced preset
+        
     }
 
 
@@ -372,7 +382,7 @@ export class GP200DeviceActions implements IDeviceActions {
         const high = low <= 0x64 ? 0x00 : 0xff;
 
         const bytes = [low, high];
-        console.log("Decoding pan value bytes", bytes);
+        //console.log("Decoding pan value bytes", bytes);
 
         return this.uint8BytesToInt16TwosComplement(bytes);
     }
@@ -469,7 +479,7 @@ export class GP200DeviceActions implements IDeviceActions {
         }
 
         //console.log(`CTRL ${ctrlNumber} mode ${ctrlMode} Assign to pedals ${pedalsBitFlags.toString(2).padStart(12, '0')}`);
-        console.log(`CTRL ${ctrlNumber} mode ${ctrlMode} Assign to pedals ${pedalArray}`);
+        //console.log(`CTRL ${ctrlNumber} mode ${ctrlMode} Assign to pedals ${pedalArray}`);
 
         return {
             number: ctrlNumber,
@@ -694,7 +704,7 @@ export class GP200DeviceActions implements IDeviceActions {
             effects: [pre, wah, dst, amp, nr, cab, eq, mod, dly, rvb, vol],
         }
 
-        console.log("Preset Info Object", presetInfo);
+        //console.log("Preset Info Object", presetInfo);
 
         // Reset meessage accumulator
         this.presetInfoMessages = [];

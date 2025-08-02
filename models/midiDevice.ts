@@ -1,4 +1,4 @@
-import { MIDIAccess, MIDIConnectionEvent, MIDIInput, MIDIMessageEvent, MIDIOutput, requestMIDIAccess } from "@motiz88/react-native-midi";
+import { MIDIAccess, MIDIConnectionEvent, MIDIInput, MIDIMessageEvent, MIDIOutput, MIDIPort, requestMIDIAccess } from "@motiz88/react-native-midi";
 import { action, makeObservable, observable } from "mobx";
 
 export class MidiDevice {
@@ -7,9 +7,27 @@ export class MidiDevice {
     inputPort?: MIDIInput = undefined;
     outputPort?: MIDIOutput = undefined;
 
-    constructor() {
+    portID: string;
+    connectedPorts: number;
+
+    // TEST
+    connectCallback: () => void;
+    disconnectCallback: () => void;
+
+    midiListener: ((e: MIDIMessageEvent) => any) | undefined;
+
+    constructor(connectCallback: () => void, disconnectCallback: () => void) {
+
+        this.connectCallback = connectCallback;
+        this.disconnectCallback = disconnectCallback;
+
+        this.midiListener = undefined;
+
+        this.portID = "";
+        this.connectedPorts = 0;
+
         makeObservable(this, {
-            midiAccess: observable,
+            // midiAccess: observable,
             inputPort: observable,
             outputPort: observable,
 
@@ -19,11 +37,15 @@ export class MidiDevice {
             unSetInput: action,
             unSetOutput: action,
 
+
             sendMessage: action,
         });
      }
 
     getMidiAccess() {
+        // if (this.midiAccess) {
+        //     this.midiAccess.onstatechange = null;
+        // }
         requestMIDIAccess({ sysex: true }).then(this.onMidiSucess.bind(this), this.onMidiFailure);
     }
 
@@ -32,97 +54,137 @@ export class MidiDevice {
         m.addEventListener("statechange", this.onStateChange.bind(this));
         console.log(m);
         this.midiAccess = m;
-        //this.midiAccess.addEventListener("statechange", this.onStateChange.bind(this));
         
-        // Set input and output if already available
-        this.initialConnectionInput();
-        this.initialConnectionOutput();
 
-        //console.log(this.midiAccess.inputs);
-        //console.log(this.midiAccess.outputs);
+        // Set input and output if already available
+        this.initialConnection();
+
     }
 
     onMidiFailure(msg: string) {
         console.log("Midi access request failed!.", msg);
     }
 
-    initialConnectionInput() {
+    initialConnection() {
         if (!this.midiAccess) {return}
 
-        for(const[id, input] of this.midiAccess.inputs) {
+        let inputPort = undefined;
+        for (const[id, input] of this.midiAccess.inputs) {
             if (input.name.includes("GP-200")) {
-                this.setInput(id);
+                input.open();
+                inputPort = input as MIDIPort;
+                break;
             }
         }
-    }
 
-    initialConnectionOutput() {
-        if (!this.midiAccess) {return}
 
-        for(const[id, output] of this.midiAccess.outputs) {
+        let outputPort = undefined;
+        for (const[id, output] of this.midiAccess.outputs) {
             if (output.name.includes("GP-200")) {
-                this.setOutput(id);
+                output.open();
+                outputPort = output as MIDIPort;
+                break;
             }
         }
 
+        // Force an event so, midi input and output are initialized in the same way, as when reconnected!.
+        if (inputPort && outputPort) {
+            //console.log("Trying to dispatch Event");
+            const e1 = new MIDIConnectionEvent("statechange", { port: inputPort })
+            const e2 = new MIDIConnectionEvent("statechange", { port: outputPort })
+            this.midiAccess.dispatchEvent(e1 as unknown as Event);
+            this.midiAccess.dispatchEvent(e2 as unknown as Event);
+        }
     }
 
     onStateChange(e: MIDIConnectionEvent) {
         let port = e.port;
-        console.log("Midi State Change", e);
+        //console.log("Midi State Change", e);
 
         if(!port) {
             console.log("Connection even Port is NULL");
+            return;
         }
 
-        if (port?.state === "disconnected") {
-            console.log(`Port ${port} (${port.id}) disconnected`);
+        if ( port.state === "disconnected" && port.id !== "" && port.name.includes("GP-200") && port.id == this.portID ) {
             // handle disconnection
-            if (port.type =="input" && port.name.includes("GP-200") ) {
-                console.log(`Unregister (${port.id}) ${port.name} INPUT`);
-                this.unSetInput();
-            }
-            if (port.type =="output" && port.name.includes("GP-200") ) {
-                console.log(`Unregister (${port.id}) ${port.name} OUTPUT`);
-                this.unSetOutput();
-            }
-        } else if ( port?.state === "connected") {
-            console.log(`Port ${port} (${port.id}) [${port.name}] connected`);
+            console.log(`Port ${port.type} (${port.id}) disconnected`);
+            this.portID = "";
+            this.connectedPorts = 0;
+            console.log("Disconnected device should be set only once!");
+            console.log("set output id to", this.portID)
+            // If either input or output disconnects unset both ports
+            this.unSetInput();
+            this.unSetOutput();
+            console.log("INPUT PORT ", this.inputPort);
+            console.log("OUTPUT PORT ", this.outputPort);
+            //this.disconnectCallback();
+        } else if ( port.state === "connected" && port.id !== "" && port.name.includes("GP-200") && port.id != this.portID && this.connectedPorts < 2 ) {
             // handle re-connection
-            if (port.type =="input" && port.name.includes("GP-200")) {
-                console.log(`Register ${port.name} INPUT`);
+            console.log(`Port ${port.type} (${port.id}) [${port.name}] connected`);
+            this.connectedPorts++;
+            if ( port.type == "input" ) {
+                console.log("set input port id to", port.id)
                 this.setInput(port.id);
-            }
-            if (port.type =="output" && port.name.includes("GP-200")) {
-                console.log(`Register (${port.id}) ${port.name} OUTPUT`);
+            } else {
+                console.log("set output port id to", port.id)
                 this.setOutput(port.id);
             }
+
+            if (this.connectedPorts == 2) {
+                console.log("Connected device should be set only once!");
+                console.log("set ports id to", this.portID)
+                console.log("INPUT PORT ", this.inputPort);
+                console.log("OUTPUT PORT ", this.outputPort);
+                this.portID = port.id;
+                //this.connectCallback();
+            }
+
         }
     }
 
     unSetInput() {
+        // Need to remove event onmidimessage handler so garbage collector can reuse memory
+        if (this.inputPort) {
+            //this.inputPort.onstatechange = null;
+            this.inputPort.onmidimessage = null;
+        }
+
         this.inputPort = undefined;
     }
 
     unSetOutput() {
+        if (this.outputPort) {
+            //this.outputPort.onstatechange = null;
+        }
         this.outputPort = undefined;
     }
 
-    setInput(input: string) {
-        this.inputPort = this.midiAccess?.inputs.get(input)
+    setInput(inputID: string) {
+        //this.unSetInput();
+        this.inputPort = this.midiAccess?.inputs.get(inputID);
+        // Should I add the event handler here?
+        if (this.inputPort && this.midiListener && !this.inputPort.onmidimessage) {
+            console.log("MIDI LISTENER ADDED");
+            this.inputPort.addEventListener("midimessage", this.midiListener);
+        }
     }
 
-    setOutput(output: string) {
-        this.outputPort = this.midiAccess?.outputs.get(output)
+    setOutput(outputID: string) {
+        //this.unSetOutput();
+        this.outputPort = this.midiAccess?.outputs.get(outputID);
     }
 
     sendMessage(message: Uint8Array | number[]) {
         console.log("Sending = ", message);
+        // if (!this.outputPort) {
+        //     throw new Error("Output Port should be defined when sending a message");
+        // }
         this.outputPort?.send(message);
     }
 
-    addMessageListener(listener: (e: MIDIMessageEvent)=> any) {
-        this.inputPort?.addEventListener("midimessage", listener);
+    addMIDIMessageListener(listener: (e: MIDIMessageEvent) => any) {
+        this.midiListener = listener;
     }
 
 }

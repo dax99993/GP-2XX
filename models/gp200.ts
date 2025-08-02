@@ -15,6 +15,7 @@ export class GP200Model {
     currentEffect: EffectModel | undefined;
     
     syncedPresets: number;
+    syncing: boolean;
 
 
     constructor() {
@@ -26,6 +27,7 @@ export class GP200Model {
         this.currentEffect = undefined;
 
         this.syncedPresets = 0;
+        this.syncing = false;
 
 
         makeObservable(this, {
@@ -36,6 +38,7 @@ export class GP200Model {
             currentEffect: observable,
             // test
             syncedPresets: observable,
+            syncing: observable,
 
             // Change preset actions
             changePreset: action,
@@ -69,6 +72,7 @@ export class GP200Model {
     addPreset(preset: PresetModel) {
       this.presets[preset.number] = preset;
       this.syncedPresets = this.presets.length;
+      this.syncing = false;
     }
 
     get presetBankCode(): string {

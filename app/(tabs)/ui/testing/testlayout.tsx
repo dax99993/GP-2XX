@@ -1,7 +1,6 @@
 
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 
-import SyncingModal from '@/components/syncingModal/Modal';
 import { Button, ButtonText } from '@/components/ui/button';
 import { useState } from 'react';
 
@@ -17,12 +16,6 @@ export default function TestScreen() {
         <Button onPress={() => setIsModalOpen(!isModalOpen)}> 
           <ButtonText>Open Modal</ButtonText>
         </Button>
-        <SyncingModal
-          isOpen={isModalOpen}
-          headerTitle='Sync Gp-200'
-          bodyText='Loading ...'
-          progressValue={20}
-          />
         <View style={styles.presetContainer}>
           <View style={styles.bannerContainer}></View>
           <View style={styles.viewButtons}></View>

@@ -17,6 +17,7 @@ export class GP200Actions implements IActions{
         this.midi = midi;
         this.gp200 = gp200;
 
+
         makeObservable(this, {
             gp200: observable,
             midi: observable,
@@ -30,10 +31,16 @@ export class GP200Actions implements IActions{
             ChangeEffectState: action,
             ChangeEffectParamValue: action,
             ChangeEffect: action,
+
+            SyncingNextPreset: action,
         });
+
     }
 
-
+    SyncingNextPreset() {
+        console.log("Start syncing Preset", this.gp200.syncedPresets);
+        this.AskPresetInfo(this.gp200.syncedPresets);
+    }
     
     //  --------------------------------------------------------------------------------
     //      UTIL METHODS

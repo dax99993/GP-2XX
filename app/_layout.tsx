@@ -1,3 +1,5 @@
+import DisconnectModal from "@/components/Modals/DisconnectModal";
+import SyncModal from "@/components/Modals/SyncModal";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
 import { useFonts } from 'expo-font';
@@ -22,6 +24,8 @@ export default function RootLayout() {
 
   return (
     <GluestackUIProvider mode={"dark"}>
+        <SyncModal/>
+        <DisconnectModal/>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />

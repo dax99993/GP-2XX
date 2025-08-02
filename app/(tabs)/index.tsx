@@ -7,64 +7,25 @@ import { VStack } from '@/components/ui/vstack';
 import { store } from '@/models/store';
 import { observer } from 'mobx-react-lite';
 
-import SyncingModal from '@/components/syncingModal/Modal';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 
 
 function HomeScreen() {
     const router = useRouter();
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [syncingProgress, setSyncingProgress] = useState(0);
-    const [modalBody, setModalBody] = useState("");
-    const [startSyncing, setStartSyncing] = useState(false);
-
     useEffect(() => {
-        store.midi.getMidiAccess();
-    }, [])
-
-    useEffect(() => {
-        if (store.midi.inputPort) {
-            // Start listening to midi messages
-            store.gpDeviceActions.setupReceivedSysEx();
-
-            // Load presets from device.
-            setIsModalOpen(true);
-            setStartSyncing(true);
+        if (store.gp200.syncedPresets == 5) {
+            router.replace('/ui/preset');
+            store.modals.closeModal('syncModal');
         }
-    }, [store.midi.inputPort])
-
-    useEffect(() => {
-        if (startSyncing) {
-            const totalPresets = 5;
-            setSyncingProgress(store.gp200.syncedPresets / totalPresets * 100);
-            setModalBody(`Loading preset ${store.gp200.presets.length}`)
-
-            if (store.gp200.presets.length == totalPresets) {
-                setIsModalOpen(false);
-                router.replace('/ui/preset');
-            } else {
-                store.gpActions.AskPresetInfo(store.gp200.syncedPresets);
-            }
-        }
-    }
-    , [store.gp200.syncedPresets, startSyncing]);
-
-
-
+    }, [store.gp200.syncedPresets])
 
 
     return (
         <VStack className="bg-secondary-0" style={{flex: 1}}>
-            <SyncingModal
-                isOpen={isModalOpen}
-                headerTitle='Sync Gp-200'
-                bodyText={modalBody}
-                progressValue={ syncingProgress }
-            />
             <Heading>Gp-200 controller</Heading>
             <Text>Please connect GP-200 device</Text>
             <Buttons></Buttons>
