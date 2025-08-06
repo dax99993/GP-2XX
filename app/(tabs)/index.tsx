@@ -20,7 +20,7 @@ function HomeScreen() {
     const router = useRouter();
 
     useEffect(() => {
-        if (store.gp200.syncedPresets == 256) {
+        if (store.gp200.syncedPresets > 1) {
             router.replace('/ui/preset');
             store.modals.closeModal('syncModal');
         }

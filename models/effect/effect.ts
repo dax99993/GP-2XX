@@ -72,6 +72,10 @@ export class EffectModel {
         });
     }
 
+    get typeName(): string {
+        return EffectType[this.type];
+    }
+
     changeState(state: boolean) {
         this.state = state;
     }

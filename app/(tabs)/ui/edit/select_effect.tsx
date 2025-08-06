@@ -4,8 +4,7 @@ import { VStack } from '@/components/ui/vstack';
 import { Platform, StatusBar, StyleSheet } from 'react-native';
 
 
-function SelectEffect() {
-
+function SelectEffectScreen() {
 
   return (
     <>
@@ -27,4 +26,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SelectEffect;
+export default SelectEffectScreen;

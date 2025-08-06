@@ -9,36 +9,23 @@ import { IEffectChangeInfo } from "@/models/effect/changeEffect/IEffectChangeInf
 import { EffectType } from "@/models/effect/effect";
 import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { FlatList, TouchableOpacity } from "react-native";
 
-type ListEffectProps = {
-    data: string[];
-}
-
-type EffectData = {
-    name: string;
-    id: number;
-}
 
 
-function ListEffect(props: ListEffectProps) {
-    const DATA = useMemo(() => {
-        //return EffectsNames[EffectType[store.gp200.current_effect.type] as keyof typeof EffectsNames];
-        return EffectsChangeInfo[EffectType[store.gp200.currentEffect.type] as keyof typeof EffectsChangeInfo];
-    }, [store.gp200.currentEffect]);
+function ListEffect() {
+    if (store.gp200.currentEffect == undefined) {return null}
 
-    //const [filteredData, setFilteredData] = useState<string[]>(DATA);
+    const DATA = EffectsChangeInfo[EffectType[store.gp200.currentEffect.type] as keyof typeof EffectsChangeInfo];
     const [filteredData, setFilteredData] = useState<IEffectChangeInfo[]>(DATA);
-
 
     const onSearchChange = (q: string) => {
         if (q === "") {
             setFilteredData(DATA);
         } else {
-            //const n = DATA.filter(e => e.toLocaleLowerCase().includes(q.toLocaleLowerCase()));
-            const n = DATA.filter(e => e.name.toLocaleLowerCase().includes(q.toLocaleLowerCase()));
-            setFilteredData(n);
+            const data = DATA.filter(e => e.name.toLocaleLowerCase().includes(q.toLocaleLowerCase()));
+            setFilteredData(data);
         }
     }
 
@@ -46,7 +33,7 @@ function ListEffect(props: ListEffectProps) {
         <VStack style={{flex:1}} className="bg-secondary-0">
             <FlatList
                 data={filteredData}
-                renderItem={(item) => <ListEffectItem name={item.item.name} id={item.item.id}/>}
+                renderItem={(item) => <ListEffectItem name={item.item.name} id={item.item.id} selected={item.item.name == store.gp200.currentEffect?.name}/>}
                 keyExtractor={item => item.name}
                 ListHeaderComponent={
                     <SearchBarEffect placeholder="Search effect" onChange={onSearchChange}/>
@@ -102,19 +89,14 @@ function SearchBarEffect(props: SearchProps) {
 type ListEffectItemProps = {
     name: string;
     id: number[];
+    selected: boolean
 }
 
 function ListEffectItem(props: ListEffectItemProps) {
-    const [selected, setSelected] = useState(store.gp200.currentEffect.name === props.name);
 
     const onPress = () => {
-        console.log("Selected ", props.name);
-        // update current effect in preset and var
-        //store.gp200.changeEffect(props.name, store.gp200.current_effect.type);
+        //console.log("Selected ", props.name);
         store.gpActions.ChangeEffect(props.id);
-
-        setSelected(store.gp200.currentEffect.name === props.name);
-        // on Press end
     };
 
     const onButtonPress = () => {
@@ -123,14 +105,14 @@ function ListEffectItem(props: ListEffectItemProps) {
 
     return (
         <Box className="bg-secondary-0">
-            <Box className={`${selected ? "bg-info-300" : "bg-secondary-300"} mx-5 my-3 rounded-md`}>
+            <Box className={`${props.selected ? "bg-info-300" : "bg-secondary-300"} mx-5 my-3 rounded-md`}>
                 <TouchableOpacity onPress={onPress}>
                     <HStack className="px-3 py-3" style={{justifyContent: 'space-between', alignItems: 'center'}}>
                         <VStack >
                             <Text size="md" bold={true}>{props.name}</Text>
                             <Text>{"Description"}</Text>
                         </VStack>
-                        <Button onPress={onButtonPress} size="md" variant="outline" className={`${selected ? "bg-info-200" : "bg-secondary-200"} rounded-md`}>
+                        <Button onPress={onButtonPress} size="md" variant="outline" className={`${props.selected ? "bg-info-200" : "bg-secondary-200"} rounded-md`}>
                             <ButtonText>!</ButtonText>
                         </Button>
                     </HStack>

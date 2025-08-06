@@ -1,22 +1,7 @@
-import { Box } from "@/components/ui/box";
-import { VStack } from "@/components/ui/vstack";
+import PickerSelector from "@/components/pickerSelector";
 import { SelectParameterModel } from "@/models/parameter/selectParameter";
 import { store } from "@/models/store";
-import { Picker } from "@react-native-picker/picker";
-// import {
-//     Select,
-//     SelectBackdrop,
-//     SelectContent,
-//     SelectDragIndicator,
-//     SelectDragIndicatorWrapper,
-//     SelectInput,
-//     SelectItem,
-//     SelectPortal,
-//     SelectTrigger
-// } from "@/components/ui/select";
-import { Text } from "@/components/ui/text";
 import { observer } from "mobx-react-lite";
-import { StyleSheet } from "react-native";
 
 type SelectParameterProps = {
     param: SelectParameterModel
@@ -24,91 +9,44 @@ type SelectParameterProps = {
 
 function SelectParameter({param}: SelectParameterProps) {
 
-    const onChangeNumber = (v:string, n: number) => {
-       //store.gp200.changeParamValue(param.name, n);
-       //store.gp200.changeParamValue(store.gp200.current_effect.type, param.id, n);
+    const onChange = (v:string, n: number) => {
        store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
        console.log(`Select assign value (${param.name})= ${v}, ${n}`);
     };
 
     const labelEntries = Object.entries(param.labels);
-    //console.log("Select labels = ", labelEntries);
-
-    const pickerItems = labelEntries.map(e => (
-        <Picker.Item key={e[0]} value={e[0]} label={e[1]}/>
-    ));
+    console.log("Select labels = ", labelEntries);
 
     return (
-        <VStack className="bg-secondary-0">
-            <Box className="bg-secondary-300 mx-3 my-2 px-2 pt-3 rounded-md">
-            <VStack style={styles.infoContainer}>
-                <Text size="lg" bold={true}>{param.name}</Text>
-            </VStack>
-            {
-                <Picker style={styles.controlContainer}
-                    mode="dropdown"
-                    selectedValue={param.current_value[0].toString()}
-                    onValueChange={onChangeNumber}
-                >
-                    {
-                        pickerItems
-                    }
-                </Picker>
-            }
-            </Box>
-        </VStack>
+        <PickerSelector
+            name={param.name}
+            currentValue={param.current_value[0].toString()}
+            labels={labelEntries}
+            onChange={onChange}
+        />
     );
 }
 
 // function SelectParameter({param}: SelectParameterProps) {
 
-//     const onChangeNumber = (v:string, n: number) => {
-//        //store.gp200.changeParamValue(param.name, n);
-//        store.gp200.changeParamValue(store.gp200.current_effect.type, param.id, n);
+//     const labelEntries = Object.entries(param.labels);
+//     console.log("Select labels = ", labelEntries);
+
+//     const onChange = (v: string) => {
+//        const n = Number.parseInt(v);
+
+//        store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
 //        console.log(`Select assign value (${param.name})= ${v}, ${n}`);
 //     };
 
-//     const labelEntries = Object.entries(param.labels);
-
-//     const Items = labelEntries.map(e => (
-//         <SelectItem key={e[0]} value={e[0]} label={e[1]}/>
-//     ));
-
 //     return (
-//         <View style={styles.container}>
-//             <Text style={styles.infoContainer}>{param.name}</Text>
-//             <Select style={styles.controlContainer} onValueChange={onChangeNumber}>
-//                 <SelectTrigger variant="outline" size="lg">
-//                     <SelectInput placeholder={param.current_value[0].toString()} />
-//                 </SelectTrigger>
-//                 <SelectPortal>
-//                     <SelectBackdrop />
-//                     <SelectContent>
-//                         <SelectDragIndicatorWrapper>
-//                             <SelectDragIndicator />
-//                         </SelectDragIndicatorWrapper>
-//                         {
-//                             Items
-//                         }
-//                     </SelectContent>
-//                 </SelectPortal>
-//             </Select>
-//         </View>
+//         <ActionSheetSelector
+//             name={param.name}
+//             placeholder={param.getStringValue()}
+//             labels={labelEntries}
+//             onChange={onChange}
+//         />
 //     );
 // }
-
-const styles = StyleSheet.create({
-    container: {
-        //flex:1,
-        flexDirection: 'column',
-    },
-    infoContainer: {
-        marginLeft: 15,
-    },
-    controlContainer: {
-        marginLeft: 15,
-        marginRight: 15,
-    }
-});
 
 export default observer(SelectParameter);

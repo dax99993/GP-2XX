@@ -32,7 +32,7 @@ type CenterProps = {
 
 function CenterItems({children}: CenterProps) {
     return (
-        <HStack style={styles.centerItem} className="mr-5 ml-5">
+        <HStack style={styles.centerItem} className="mr-2 ml-2">
             {children}
         </HStack>
     );

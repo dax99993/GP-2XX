@@ -4,6 +4,8 @@ import { Center } from "@/components/ui/center";
 import { Icon } from "@/components/ui/icon";
 import { Menu, MenuItem, MenuItemLabel, MenuSeparator } from "@/components/ui/menu";
 import { Text } from "@/components/ui/text";
+import { store } from "@/models/store";
+import { useRouter } from "expo-router";
 import { ArrowDownToLineIcon, ChevronLeftIcon, ChevronRightIcon, CircleArrowDownIcon, EllipsisVerticalIcon, FolderInputIcon, FolderOutputIcon, HomeIcon, SaveIcon } from "lucide-react-native";
 import { TouchableOpacity } from "react-native";
 
@@ -28,8 +30,10 @@ function EditEffectTopBar() {
 }
 
 function TopBarLeft() {
+  const router = useRouter();
   const goHome = () => {
     console.log("Go Home");
+    router.replace("/");
   };
 
     return (
@@ -42,10 +46,12 @@ function TopBarLeft() {
 function TopBarCenter() {
   const previousPreset = () => {
     console.log("Change to previous preset");
+    store.gpActions.PreviousPreset();
   }
 
   const nextPreset = () => {
     console.log("Change to next preset");
+    store.gpActions.NextPreset();
   }
 
   const savePreset = () => {
@@ -55,7 +61,7 @@ function TopBarCenter() {
   return (
     <>
     <TopBarPresetInfo/>
-    <ButtonGroup style={{ flexDirection: 'row' }}>
+    <ButtonGroup style={{ flexDirection: 'row', alignItems: 'center' }}>
       <Button size="lg" action="secondary" className='rounded-xl px-3' onPress={previousPreset}>
         <ButtonIcon as={ChevronLeftIcon} />
       </Button>
@@ -126,7 +132,8 @@ function TopBarPresetInfo() {
   return (
     <TouchableOpacity style={{flex:1, flexDirection: 'row'}} onPress={goChangePreset}>
     <Center className='bg-secondary-300 px-2 rounded-md'>
-        <Text>XX-A preset name</Text>
+        <Text>XX-A</Text>
+        <Text>preset name</Text>
     </Center>
       </TouchableOpacity>
   );

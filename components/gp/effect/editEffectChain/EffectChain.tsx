@@ -1,22 +1,24 @@
 import { useCallback } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import EffectChainUnit from "@/components/gp/effect/editEffectChain/EffectChainUnit";
+import { Center } from "@/components/ui/center";
 import { EffectType } from "@/models/effect/effect";
 import { store } from "@/models/store";
+import { observer } from "mobx-react-lite";
 import Sortable, { SortableGridRenderItem } from 'react-native-sortables';
 import { SortableGridDragEndParams } from "react-native-sortables/dist/typescript/types";
-
-const DATA: number[] = Object.values(EffectType).filter(e => typeof e === 'number');
 
 
 function EffectChain() {
 
+  const DATA = store.gp200.currentPreset ? store.gp200.currentPreset.effectsChainOrder : Object.values(EffectType).filter(e => typeof e === 'number');;
+  //console.log("Current chain order", DATA);
+
   const renderItem = useCallback<SortableGridRenderItem<number>>(
     ({ item }) => {
-      const s = EffectType[item];
-      return <EffectChainUnit title={s} type={item as EffectType}/>
+      return <EffectChainUnit chainID={item}/>
     },
     []
   );
@@ -30,37 +32,32 @@ function EffectChain() {
   }, []);
 
     return (
-      <GestureHandlerRootView style={{ flex: 1, }}>
-        <View style={styles.container}>
+      <GestureHandlerRootView style={styles.baseContainer}>
+        <Center className="bg-secondary-0" style={styles.sortableContainer}>
           <Sortable.Grid
-            columnGap={5}
+            rowGap={15}
+            columnGap={15}
             columns={4}
             data={DATA}
             renderItem={renderItem}
-            rowGap={10}
             showDropIndicator
+            dropIndicatorStyle={{borderColor: 'white'}}
             onDragEnd={onDragEnd}
           />
-        </View>
+        </Center>
       </GestureHandlerRootView>
     )
 } 
 
 const styles = StyleSheet.create({
-
-  container: {
+  baseContainer: {
+    flex:1,
+  },
+  sortableContainer: {
     flex: 1,
-    paddingVertical: 10,
-   // paddingHorizontal: 15,
     paddingLeft: 10,
     paddingRight: 5,
-    backgroundColor: 'pink',
-    justifyContent: 'space-evenly',
   },
-  text: {
-    color: 'white',
-    fontWeight: 'bold'
-  }
 });
 
-export default EffectChain;
+export default observer(EffectChain);
