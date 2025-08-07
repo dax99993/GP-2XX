@@ -23,22 +23,20 @@ function pickerSelector(props: pickerSelectorProps) {
     //const selectedValue = props.labels.filter(l => l.) 
 
     return (
-        <VStack className="bg-secondary-0">
-            <Box className="bg-secondary-300 mx-3 my-2 px-2 pt-3 rounded-md">
-                <VStack style={styles.infoContainer}>
-                    <Text size="lg" bold={true}>{props.name}</Text>
-                </VStack>
-                <Picker style={styles.controlContainer}
-                    mode="dialog"
-                    selectedValue={props.currentValue}
-                    onValueChange={props.onChange}
-                >
-                    {
-                        pickerItems
-                    }
-                </Picker>
-            </Box>
-        </VStack>
+        <Box className="bg-secondary-300 mx-3 my-2 px-2 pt-3 rounded-md">
+            <VStack style={styles.infoContainer}>
+                <Text size="lg" bold={true}>{props.name}</Text>
+            </VStack>
+            <Picker style={styles.controlContainer}
+                mode="dialog"
+                selectedValue={props.currentValue}
+                onValueChange={props.onChange}
+            >
+                {
+                    pickerItems
+                }
+            </Picker>
+        </Box>
     );
 }
 

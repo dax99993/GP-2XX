@@ -1,6 +1,10 @@
 import { makeAutoObservable } from "mobx";
 import { EffectModel } from "../effect/effect";
-import { IExpAssign, IFxLoop, ISyncPresetInfo } from "./ISyncPresetInfo";
+import { ICtrlSettings } from "./ICtrlSettings";
+import { IExpSettings } from "./IExpSettings";
+import { IFxLoopSettings } from "./IFxLoopSettings";
+import { IKnobSettings } from "./IKnobSettings";
+import { ISyncPresetInfo } from "./ISyncPresetInfo";
 
 // type FxLoop = {
 //     // 0-11
@@ -16,6 +20,7 @@ import { IExpAssign, IFxLoop, ISyncPresetInfo } from "./ISyncPresetInfo";
 // }
 
 export class PresetModel {
+    // General info
     name: string;
     number: number;
 
@@ -30,20 +35,35 @@ export class PresetModel {
     effectsChainOrder: number[];
 
     // FXLOOP
-    fxLoop: IFxLoop;
+    fxLoop: IFxLoopSettings;
+
     // EXP
-    exp1AParam1: IExpAssign;
-    // CTRL 
+    exp1A: [IExpSettings, IExpSettings, IExpSettings];
+    exp1B: [IExpSettings, IExpSettings, IExpSettings];
+    exp2: [IExpSettings, IExpSettings, IExpSettings];
 
-    // KNOBS
+    // KNOB
+    knob1: IKnobSettings;
+    knob2: IKnobSettings;
+    knob3: IKnobSettings;
 
+    // CTRL
+    ctrl1: ICtrlSettings;
+    ctrl2: ICtrlSettings;
+    ctrl3: ICtrlSettings;
+    ctrl4: ICtrlSettings;
+
+    ctrl5: ICtrlSettings;
+    ctrl6: ICtrlSettings;
+    ctrl7: ICtrlSettings;
+    ctrl8: ICtrlSettings;
 
     // EFFECTS
     effects: EffectModel[];
 
     // METHODS
     constructor(presetInfo: ISyncPresetInfo) {
-        
+        // General info
         this.name = presetInfo.name;
         this.number = presetInfo.number;
 
@@ -55,10 +75,28 @@ export class PresetModel {
 
         // FXLOOP
         this.fxLoop = presetInfo.fxloop;
+
         // EXP
-        this.exp1AParam1 = presetInfo.exp1AParam1;
-        // CTRL
+        this.exp1A = presetInfo.exp1A;
+        this.exp1B = presetInfo.exp1B;
+        this.exp2 = presetInfo.exp2;
+
         // KNOB
+        this.knob1 = presetInfo.knob1;
+        this.knob2 = presetInfo.knob2;
+        this.knob3 = presetInfo.knob3;
+
+        // CTRL
+        this.ctrl1 = presetInfo.ctrl1;
+        this.ctrl2 = presetInfo.ctrl2;
+        this.ctrl3 = presetInfo.ctrl3;
+        this.ctrl4 = presetInfo.ctrl4;
+
+        this.ctrl5 = presetInfo.ctrl5;
+        this.ctrl6 = presetInfo.ctrl6;
+        this.ctrl7 = presetInfo.ctrl7;
+        this.ctrl8 = presetInfo.ctrl8;
+
 
         // Create Effect object class from string name
         this.effects = presetInfo.effects.map((effectInfo) => EffectModel.fromEffectInfo(effectInfo));

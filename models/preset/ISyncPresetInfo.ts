@@ -1,33 +1,8 @@
+import { ICtrlSettings } from "./ICtrlSettings";
+import { IExpSettings } from "./IExpSettings";
+import { IFxLoopSettings } from "./IFxLoopSettings";
+import { IKnobSettings } from "./IKnobSettings";
 
-export interface IExpAssign {
-    id: number;
-    paramNumber: number;
-    module: number;
-    moduleParamID: number;
-    moduleParamNumberMin: number;
-    moduleParamNumberMax: number;
-}
-
-export interface ICtrlAssign {
-    number: number;
-    mode: number;
-    pedalsAssign: number[];
-}
-
-export interface IKnobAssign {
-    number: number;
-    module: number;
-    paramID: number;
-}
-
-export interface IFxLoop {
-    sendLevel: number;
-    returnLevel: number;
-    sendPosition: number;
-    returnPosition: number;
-    mode: number;
-    //mode: 0 | 1;
-}
 
 export interface ISyncEffectInfo {
     chainID: number;
@@ -37,6 +12,7 @@ export interface ISyncEffectInfo {
 }
 
 export interface ISyncPresetInfo {
+    // General info
     name: string;
     number: number;
 
@@ -47,36 +23,28 @@ export interface ISyncPresetInfo {
     effectsChainOrder: number[];
 
     // FXLOOP
-    fxloop: IFxLoop;
+    fxloop: IFxLoopSettings;
 
     // KNOB
-    knob1: IKnobAssign;
-    knob2: IKnobAssign;
-    knob3: IKnobAssign;
+    knob1: IKnobSettings;
+    knob2: IKnobSettings;
+    knob3: IKnobSettings;
 
     // CTRL
-    ctrl1: ICtrlAssign
-    ctrl2: ICtrlAssign
-    ctrl3: ICtrlAssign
-    ctrl4: ICtrlAssign
+    ctrl1: ICtrlSettings;
+    ctrl2: ICtrlSettings;
+    ctrl3: ICtrlSettings;
+    ctrl4: ICtrlSettings;
 
-    ctrl5: ICtrlAssign
-    ctrl6: ICtrlAssign
-    ctrl7: ICtrlAssign
-    ctrl8: ICtrlAssign
+    ctrl5: ICtrlSettings;
+    ctrl6: ICtrlSettings;
+    ctrl7: ICtrlSettings;
+    ctrl8: ICtrlSettings;
 
     // EXP
-    exp1AParam1: IExpAssign;
-    exp1AParam2: IExpAssign;
-    exp1AParam3: IExpAssign;
-
-    exp1BParam1: IExpAssign;
-    exp1BParam2: IExpAssign;
-    exp1BParam3: IExpAssign;
-
-    exp2Param1: IExpAssign;
-    exp2Param2: IExpAssign;
-    exp2Param3: IExpAssign;
+    exp1A: [IExpSettings, IExpSettings, IExpSettings];
+    exp1B: [IExpSettings, IExpSettings, IExpSettings];
+    exp2: [IExpSettings, IExpSettings, IExpSettings];
 
     // Effects
     effects: ISyncEffectInfo[];

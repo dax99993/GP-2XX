@@ -115,7 +115,7 @@ export class GP200Model {
           break;
       }
 
-      return bankNumber + '-' + bankLetter;
+      return bankNumber.toString().padStart(2, '0') + '-' + bankLetter;
     }
 
     // savePreset()

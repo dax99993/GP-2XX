@@ -7,6 +7,7 @@ import { Text } from "@/components/ui/text";
 import { store } from "@/models/store";
 import { useRouter } from "expo-router";
 import { ArrowDownToLineIcon, ChevronLeftIcon, ChevronRightIcon, CircleArrowDownIcon, EllipsisVerticalIcon, FolderInputIcon, FolderOutputIcon, HomeIcon, SaveIcon } from "lucide-react-native";
+import { observer } from "mobx-react-lite";
 import { TouchableOpacity } from "react-native";
 
 
@@ -124,19 +125,27 @@ function TopBarRightMenu() {
 
 }
 
-function TopBarPresetInfo() {
+
+
+const TopBarPresetInfo = observer(() => {
+  if (store.gp200.currentPreset == undefined) {return null};
+
+  const presetName = store.gp200.currentPreset.name.length > 10 ? 
+  store.gp200.currentPreset.name.slice(0, 10 - 3) + '...' :
+  store.gp200.currentPreset.name;
+
   const goChangePreset = () => {
     console.log("Go change preset");
   };
 
   return (
-    <TouchableOpacity style={{flex:1, flexDirection: 'row'}} onPress={goChangePreset}>
-    <Center className='bg-secondary-300 px-2 rounded-md'>
-        <Text>XX-A</Text>
-        <Text>preset name</Text>
-    </Center>
-      </TouchableOpacity>
+    <TouchableOpacity style={{ flex: 1, flexDirection: 'row' }} onPress={goChangePreset}>
+      <Center className='bg-secondary-300 px-2 rounded-md' style={{ minWidth: 100 }}>
+        <Text>{store.gp200.presetBankCode}</Text>
+        <Text>{presetName}</Text>
+      </Center>
+    </TouchableOpacity>
   );
-}
+});
 
 export default EditEffectTopBar;

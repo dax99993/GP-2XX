@@ -3,7 +3,10 @@ import { MIDIMessageEvent } from "@motiz88/react-native-midi";
 import { action, makeObservable, observable } from "mobx";
 import { GP200Model } from "../gp200";
 import { MidiDevice } from "../midiDevice";
-import { ICtrlAssign, IExpAssign, IKnobAssign, ISyncEffectInfo, ISyncPresetInfo } from "../preset/ISyncPresetInfo";
+import { ICtrlSettings } from "../preset/ICtrlSettings";
+import { IExpSettings } from "../preset/IExpSettings";
+import { IKnobSettings } from "../preset/IKnobSettings";
+import { ISyncEffectInfo, ISyncPresetInfo } from "../preset/ISyncPresetInfo";
 import { PresetModel } from "../preset/preset";
 import { IDeviceActions } from "./IActions";
 
@@ -397,6 +400,7 @@ export class GP200DeviceActions implements IDeviceActions {
 
         return chars.join("");
     }
+
     decodeEffectInfo(msg: number[]): ISyncEffectInfo {
         if (msg.length != 0x90) {
             throw new Error("Effect info msg has to be 0x90 bytes");
@@ -424,7 +428,7 @@ export class GP200DeviceActions implements IDeviceActions {
         }
     }
 
-    decodeExpAssignInfo(msg: number[]): IExpAssign {
+    decodeExpAssignInfo(msg: number[]): IExpSettings {
         const expPedalID = msg[0x8];
         const expPedalParamNumber = msg[0x9];
         const expPedalModule = this.nibblesToByte(msg[0xa], msg[0xb]);
@@ -445,7 +449,7 @@ export class GP200DeviceActions implements IDeviceActions {
         }
     }
 
-    decodeKnobAssignInfo(msg: number[]): IKnobAssign{
+    decodeKnobAssignInfo(msg: number[]): IKnobSettings {
         if (msg.length != 0x10) {
             throw new Error ("Knob assign msg has to be 0x10 bytes");
         }
@@ -463,7 +467,7 @@ export class GP200DeviceActions implements IDeviceActions {
         };
     }
 
-    decodeCtrlAssignInfo(msg: number[]): ICtrlAssign {
+    decodeCtrlAssignInfo(msg: number[]): ICtrlSettings {
         const ctrlNumber = msg[0x9];
         const ctrlMode = msg[0xb];
 
@@ -689,17 +693,9 @@ export class GP200DeviceActions implements IDeviceActions {
             ctrl8: ctrlAssign8,
 
             // EXP
-            exp1AParam1: exp1AParam1,
-            exp1AParam2: exp1AParam2,
-            exp1AParam3: exp1AParam3,
-
-            exp1BParam1: exp1BParam1,
-            exp1BParam2: exp1BParam2,
-            exp1BParam3: exp1BParam3,
-
-            exp2Param1: exp2Param1,
-            exp2Param2: exp2Param2,
-            exp2Param3: exp2Param3,
+            exp1A: [exp1AParam1, exp1AParam2, exp1AParam3],
+            exp1B: [exp1BParam1, exp1BParam2, exp1BParam3],
+            exp2: [exp2Param1, exp2Param2, exp2Param3],
 
             // Effects
             effects: [pre, wah, dst, amp, nr, cab, eq, mod, dly, rvb, vol],

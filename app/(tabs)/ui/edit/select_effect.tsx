@@ -10,7 +10,7 @@ function SelectEffectScreen() {
     <>
         <VStack style={styles.mainContainer} className='bg-secondary-0'>
           <ListEffectTopBar/>
-          <ListEffect data={[]}/>
+          <ListEffect />
         </VStack>
     </>
   );

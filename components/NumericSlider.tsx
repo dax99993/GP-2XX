@@ -25,8 +25,7 @@ function NumericParameter(props: NumericSliderProps) {
     const shownValue = props.shownValue != undefined ? props.shownValue : props.currentValue;
 
     return (
-        <VStack className="bg-secondary-0">
-            <Box className="bg-secondary-300 mx-3 my-2 px-2 pt-3 pb-5 rounded-md"> 
+        <Box className="bg-secondary-300 mx-3 my-2 px-2 pt-3 pb-5 rounded-md">
             <VStack style={styles.infoContainer}>
                 <Text size="lg" bold={true}>{props.name}</Text>
                 <Text>{shownValue}</Text>
@@ -47,8 +46,7 @@ function NumericParameter(props: NumericSliderProps) {
                 <SliderThumb />
             </Slider>
 
-            </Box>
-        </VStack>
+        </Box>
     );
 }
 

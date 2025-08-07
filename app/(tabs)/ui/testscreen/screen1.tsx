@@ -1,20 +1,27 @@
 
-import { Platform, StatusBar, StyleSheet } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 
+import FxLoopSettings from '@/components/gp/effectSettings/fxLoopAssignment/FxLoopSettings';
+import KnobAssign from '@/components/gp/effectSettings/knobAssignment/knobAsign';
 import { VStack } from '@/components/ui/vstack';
-import { useRouter } from 'expo-router';
+import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 
 
 
 
 export default function TestScreen() {
-  const router = useRouter();
 
   return (
-    <>
-        <VStack style={styles.maincontainer}>
+    <View style={styles.maincontainer}>
+    <GestureHandlerRootView>
+      <ScrollView>
+        <VStack space='md'>
+          <FxLoopSettings />
+          <KnobAssign />
         </VStack>
-    </>
+      </ScrollView>
+    </GestureHandlerRootView>
+    </View>
   );
 }
 
