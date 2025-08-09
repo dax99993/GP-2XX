@@ -1,8 +1,11 @@
 
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Platform, StatusBar, StyleSheet } from 'react-native';
 
-import FxLoopSettings from '@/components/gp/effectSettings/fxLoopAssignment/FxLoopSettings';
-import KnobAssign from '@/components/gp/effectSettings/knobAssignment/knobAsign';
+import CtrlSettings from '@/components/gp/presetSettings/ctrlSettings/CtrlSettings';
+import ExpSettings from '@/components/gp/presetSettings/expSettings/ExpSettings';
+import FxLoopSettings from '@/components/gp/presetSettings/fxLoopSettings/FxLoopSettings';
+import PresetSettings from '@/components/gp/presetSettings/generalSettings/PresetGeneralSettings';
+import KnobSettings from '@/components/gp/presetSettings/knobSettings/knobSettings';
 import { VStack } from '@/components/ui/vstack';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 
@@ -12,16 +15,19 @@ import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler
 export default function TestScreen() {
 
   return (
-    <View style={styles.maincontainer}>
+    <VStack style={styles.maincontainer} className='bg-secondary-0'>
     <GestureHandlerRootView>
       <ScrollView>
         <VStack space='md'>
+          <PresetSettings />
           <FxLoopSettings />
-          <KnobAssign />
+          <KnobSettings/>
+          <CtrlSettings/>
+          <ExpSettings/>
         </VStack>
       </ScrollView>
     </GestureHandlerRootView>
-    </View>
+    </VStack>
   );
 }
 
@@ -32,7 +38,7 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     //marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-    backgroundColor: 'pink',
+    //backgroundColor: 'pink',
   },
   presetContainer: {
     flex: 1,

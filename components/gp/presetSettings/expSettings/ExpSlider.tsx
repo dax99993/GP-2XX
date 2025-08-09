@@ -17,18 +17,25 @@ type SliderProps = {
     // onChange: (n:number) => void;
 }
 
-const Thumb = (type: "high" | "low") => (
-  <View
-    style={[styles.thumb, { backgroundColor: type === "high" ? Colors.fxLoop.outPosition : Colors.fxLoop.inPosition }]}
-  />
-);
+const Thumb = (type: "high" | "low") => {
+  return (
+    <View
+     style={[styles.thumb, { backgroundColor: type === "high" ? Colors.fxLoop.outPosition : Colors.fxLoop.inPosition}]}
+    />
+  )
+  // if (type == "high") {
+  //   return <Icon as={ArrowUpIcon} color="purple" size="xl"/>
+  // } else {
+  //   return <Icon as={ArrowDownIcon} color="blue" size="xl"/>
+  // }
+};
 const Rail = () => <View style={styles.rail} />;
 const RailSelected = () => <View style={styles.railSelected} />;
 
-function FxLoopPositionSlider(props: SliderProps) {
+function ExpSlider(props: SliderProps) {
     // Replace this with values from store
-    const [lowValue, setLowValue] = useState(3);
-    const [highValue, setHighValue] = useState(7);
+    const [lowValue, setLowValue] = useState(5);
+    const [highValue, setHighValue] = useState(70);
 
     const handleValueChange = useCallback((newLow: number, newHigh: number) => {
       // Update the model through action
@@ -44,14 +51,14 @@ function FxLoopPositionSlider(props: SliderProps) {
             </VStack>
             <RangeSlider style={styles.controlContainer}
                 min={0}
-                max={11}
+                max={100}
                 step={1}
                 low={lowValue}
                 high={highValue}
                 onValueChanged={handleValueChange}
                 renderThumb={Thumb}
-                renderLowValue={(value) => <Text style={styles.valueText}>{value+1}</Text>}
-                renderHighValue={(value) => <Text style={styles.valueText}>{value+1}</Text>}
+                renderLowValue={(value) => <Text style={styles.valueText}>{value}</Text>}
+                renderHighValue={(value) => <Text style={styles.valueText}>{value}</Text>}
                 renderRail={Rail}
                 renderRailSelected={RailSelected}
             />
@@ -107,4 +114,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default observer(FxLoopPositionSlider);
+export default observer(ExpSlider);

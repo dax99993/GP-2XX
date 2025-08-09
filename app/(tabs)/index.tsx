@@ -50,7 +50,9 @@ function Buttons() {
             <Button size="md" variant="solid" action="primary" onPress={() => { router.navigate('/about') }}>
                 <ButtonText>About</ButtonText>
             </Button>
-            <Button size="md" variant="solid" action="primary" onPress={() => { router.replace('/ui/preset') }}>
+            <Button size="md" variant="solid" action="primary" onPress={() => { 
+                router.replace('/ui/preset') 
+            }}>
                 <ButtonText>Go to UI</ButtonText>
             </Button>
         </HStack>

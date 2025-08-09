@@ -52,9 +52,10 @@ export class GP200DeviceActions implements IDeviceActions {
         });
     }
 
-    ChangePresetChainOrder(message: number[]): void {
+    ChangePresetChainOrder(message: Uint8Array): void {
         throw new Error("Method not implemented.");
     }
+
 
 
     // Setup MIDI listener
@@ -166,6 +167,9 @@ export class GP200DeviceActions implements IDeviceActions {
                 case 146: 
                     this.decodeSysEx146length(message);
                     break;
+                case 54:
+                    this.decodeSysEx54length(message);
+                    break;
                 case 46: 
                     this.decodeSysEx46length(message);
                     break;
@@ -232,6 +236,15 @@ export class GP200DeviceActions implements IDeviceActions {
         }
     }
 
+    decodeSysEx54length(message: Uint8Array) {
+        const changeChainOrder = BaseSysExMsg.PresetSettingsAction.changeChainOrder;
+        //if ( compareArrays(message.slice(0, 18+1), changeParameterValue.slice(0, 18+1))) {
+        if ( this.isSameMessage(message, changeChainOrder)) {
+            console.log("Change Chain Order message received!.");
+            this.ChangePresetEffectsChainOrder(message);
+        }
+    }
+
     decodeSysEx46length(message: Uint8Array) {
         const changeParameterValue = BaseSysExMsg.EffectActions.changeParameterValue;
         //if ( compareArrays(message.slice(0, 18+1), changeParameterValue.slice(0, 18+1))) {
@@ -287,6 +300,7 @@ export class GP200DeviceActions implements IDeviceActions {
     // DECODE
     // PRESET ACTIONS
     ChangePreset(message: number[] | Uint8Array) {
+
         // bytes 0x19 and 0x1a encode the preset/patch number (Hex digits)
         let baseSysEx = message;
         const high_byte = baseSysEx[0x19] 
@@ -298,6 +312,32 @@ export class GP200DeviceActions implements IDeviceActions {
         this.gp200.changePreset(num);
     }
 
+    ChangePresetEffectsChainOrder(message: Uint8Array): void {
+        if (this.gp200.currentPreset === undefined) { return; }
+        // bytes 0x15 and 0x16 have the preset number
+        // bytes 0x19 and 0x1a have the Fx loop send position
+        // bytes 0x1b and 0x1c have the Fx loop return position
+        // bytes 0x1d to 0x32 have the effect chain order
+        // set preset number
+        const presetNumber = this.nibblesToByte(message[0x15], message[0x16]);
+
+        // set fx loop send pos (since value is in range 0-11) the high byte is always 0
+        //const sendPosition = message[0x1a];
+        // set fx loop return pos (since value is in range 0-11) the high byte is always 0
+        //const returnPosition = message[0x1c];
+
+        // set effect chain Order;
+        const effectsChainOrder = [...message.slice(0x1d, 0x32 + 1)];
+
+        // Update model
+        // This should modify a given preset not only the current, change later
+        // Actually should update preset
+        if (presetNumber === this.gp200.currentPresetNumber) {
+            this.gp200.changePresetChainOrder(effectsChainOrder);
+        }
+        //this.gp200.presets[presetNumber].changeEffectsChainOrder(effectsChainOrder)
+        //this.gp200.presets[presetNumber].changeFxLoopPosition(sendPosition, returnPosition);
+    }
     //PRESET SETTINGS ACTIONS
 
     // EFFECT ACTIONS

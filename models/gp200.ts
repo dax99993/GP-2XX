@@ -21,8 +21,9 @@ export class GP200Model {
 
     constructor() {
 
-        this.presets = []
         // initialize internal values
+        this.presets = []
+
         this.currentPresetNumber = undefined;
         this.currentPreset = undefined;
         this.currentEffect = undefined;
@@ -132,6 +133,13 @@ export class GP200Model {
       if (!this.currentPreset) { return }
 
       this.currentPreset.changeEffectsChainOrder(order);
+    }
+
+    changePresetFxLoopPosition(sendPosition: number, returnPosition: number) {
+      // check fxloop positions
+      if (!this.currentPreset) { return }
+
+      this.currentPreset.changeFxLoopPosition(sendPosition, returnPosition);
     }
 
     changeEffectState(state: boolean) {

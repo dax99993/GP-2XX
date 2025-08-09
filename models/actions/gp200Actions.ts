@@ -27,6 +27,7 @@ export class GP200Actions implements IActions{
             PreviousPreset: action,
 
             ChangePresetChainOrder: action,
+            ChangePresetFxLoopPosition: action,
 
             ChangeEffectState: action,
             ChangeEffectParamValue: action,
@@ -184,6 +185,46 @@ export class GP200Actions implements IActions{
         this.gp200.currentPreset.changeEffectsChainOrder(effectsChainOrder);
         // Also update FX send and return position
         //this.gp200.current_effect.
+
+        // Send message        
+        this.midi.sendMessage(msg);
+    }
+
+    ChangePresetFxLoopPosition(sendPosition: number, returnPosition: number) {
+        if (this.gp200.currentPresetNumber === undefined) { return; }
+        if (this.gp200.currentPreset === undefined) { return; }
+
+        const preset_num = this.gp200.currentPresetNumber;
+
+        // bytes 0x15 and 0x16 have the preset number
+        // bytes 0x19 and 0x1a have the Fx loop send position
+        // bytes 0x1b and 0x1c have the Fx loop return position
+        // bytes 0x1d to 0x32 have the effect chain order
+        let msg = BaseSysExMsg.PresetSettingsAction.changeChainOrder;
+        // set preset number
+        const [high_byte, low_byte] = this.byteToNibbles(preset_num);
+        msg[0x15] = high_byte;
+        msg[0x16] = low_byte;
+
+        // set fx loop send pos (since value is in range 0-11) the high byte is always 0
+        msg[0x19] = 0
+        msg[0x1a] = sendPosition;
+
+        // set fx loop return pos (since value is in range 0-11) the high byte is always 0
+        msg[0x1b] = 0
+        msg[0x1c] = returnPosition;
+
+        // set effect chain Order;
+        const effectsChainOrder = this.gp200.currentPreset.effectsChainOrder;
+        for(let p=0x1d; p <= 0x32; p=p+2) {
+            msg[p] = 0;
+            // maybe should round the index in chain
+            msg[p+1] = effectsChainOrder[(p-0x1d)/2];
+        }
+
+        // Update model
+        // This should modify a given preset not only the current, change later
+        this.gp200.currentPreset.changeFxLoopPosition(sendPosition, returnPosition);
 
         // Send message        
         this.midi.sendMessage(msg);

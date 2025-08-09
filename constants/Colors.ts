@@ -27,6 +27,5 @@ export const Colors = {
   fxLoop: {
     inPosition: '#3399ff',
     outPosition: '#a64dff',
-
   }
 };

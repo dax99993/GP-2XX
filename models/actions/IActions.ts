@@ -16,7 +16,7 @@ export interface IDeviceActions {
     // PRESET ACTIONS
     ChangePreset(message: number[]): void;
 
-    ChangePresetChainOrder(message: number[]): void;
+    ChangePresetChainOrder(message: Uint8Array): void;
     // PRESET SETTINGS ACITONS
 
     // EFFECT ACTIONS
