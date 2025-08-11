@@ -43,20 +43,13 @@ export class PresetModel {
     exp2: [IExpSettings, IExpSettings, IExpSettings];
 
     // KNOB
-    knob1: IKnobSettings;
-    knob2: IKnobSettings;
-    knob3: IKnobSettings;
+    knobs: [IKnobSettings, IKnobSettings, IKnobSettings];
 
     // CTRL
-    ctrl1: ICtrlSettings;
-    ctrl2: ICtrlSettings;
-    ctrl3: ICtrlSettings;
-    ctrl4: ICtrlSettings;
-
-    ctrl5: ICtrlSettings;
-    ctrl6: ICtrlSettings;
-    ctrl7: ICtrlSettings;
-    ctrl8: ICtrlSettings;
+    ctrls: [
+        ICtrlSettings, ICtrlSettings, ICtrlSettings, ICtrlSettings,
+        ICtrlSettings, ICtrlSettings, ICtrlSettings, ICtrlSettings
+    ];
 
     // EFFECTS
     effects: EffectModel[];
@@ -82,20 +75,13 @@ export class PresetModel {
         this.exp2 = presetInfo.exp2;
 
         // KNOB
-        this.knob1 = presetInfo.knob1;
-        this.knob2 = presetInfo.knob2;
-        this.knob3 = presetInfo.knob3;
+        this.knobs = [presetInfo.knob1, presetInfo.knob2, presetInfo.knob3];
 
         // CTRL
-        this.ctrl1 = presetInfo.ctrl1;
-        this.ctrl2 = presetInfo.ctrl2;
-        this.ctrl3 = presetInfo.ctrl3;
-        this.ctrl4 = presetInfo.ctrl4;
-
-        this.ctrl5 = presetInfo.ctrl5;
-        this.ctrl6 = presetInfo.ctrl6;
-        this.ctrl7 = presetInfo.ctrl7;
-        this.ctrl8 = presetInfo.ctrl8;
+        this.ctrls = [
+            presetInfo.ctrl1, presetInfo.ctrl2, presetInfo.ctrl3, presetInfo.ctrl4,
+            presetInfo.ctrl5, presetInfo.ctrl6, presetInfo.ctrl7, presetInfo.ctrl8
+        ];
 
 
         // Create Effect object class from string name
@@ -123,13 +109,32 @@ export class PresetModel {
     }
     // savePreset(save_number, name)
 
+    // actions
     changeEffectsChainOrder(order: number[]) {
         this.effectsChainOrder = order
+    }
+
+    // settings
+    changeVolume(vol: number) {
+        this.volume = vol;
+    }
+
+    changePan(pan: number) {
+        this.pan = pan;
+    }
+
+    changeBPM(bpm: number) {
+        this.bpm = bpm;
     }
 
     changeFxLoopPosition(sendPosition: number, returnPosition: number) {
         this.fxLoop.sendPosition = sendPosition;
         this.fxLoop.returnPosition = returnPosition;
+    }
+
+    changeKnobSettings(knobID: number, knobModule: KnobModule, knobParameter: number) {
+        this.knobs[knobID].module = knobModule;
+        this.knobs[knobID].paramID = knobParameter;
     }
 
 }

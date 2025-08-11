@@ -21,9 +21,15 @@ export const BaseSysExMsg = {
 
     //
     PresetSettingsAction: {
-        changePresetVolume: [],
-        changePresetPan: [],
-        changeBPM: [],
+        // byte 0x16 contains which parameter to change 0 -> volume; 1->BPM; 6 -> Pan
+        // bytes 0x19 and 0x1a contain the volume and BPM value split in hex
+        // bytes 0x19 to 0x1c contain the PAN value encoded in two's complement
+        changePresetVolumePanBPM: [
+            0xf0, 0x21, 0x25, 0x7e, 0x47, 0x50, 0x2d, 0x32,
+            0x12, 0x08, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00,
+            0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x03, 0x02, 0x00, 0x00, 0xf7
+        ],
 
         changeChainOrder: [
             // bytes 0x15 and 0x16 have the preset number
@@ -40,7 +46,15 @@ export const BaseSysExMsg = {
         ],
 
         // Knobs assign
-        assignKnob: [],
+        KnobSettings: [
+            // byte 0x16 Knob number: Number in range (0 to 2)
+            // bytes 0x17 and 0x18 Module number split in nibbles
+            // byte 0x1a Parameter number: Number in range (0 to 14)
+            0xf0, 0x21, 0x25, 0x7e, 0x47, 0x50, 0x2d, 0x32,
+            0x12, 0x08, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00,
+            0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x02, 0x00,
+            0x05, 0x00, 0x06, 0x00, 0x00, 0xf7
+        ],
 
         // EXP settings
         ExpSetting: {

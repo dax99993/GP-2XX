@@ -3,6 +3,8 @@ import NumericSlider from "@/components/NumericSlider";
 import { Center } from "@/components/ui/center";
 import { Heading } from "@/components/ui/heading";
 import { VStack } from "@/components/ui/vstack";
+import { store } from "@/models/store";
+import { observer } from "mobx-react-lite";
 import React from "react";
 
 
@@ -19,8 +21,9 @@ function PresetGeneralSettings() {
                     minValue={0}
                     maxValue={100}
                     step={1}
-                    currentValue={50}
+                    currentValue={store.gp200.currentPreset?.volume ?? 0}
                     onChange={function (n: number): void {
+                        store.gpActions.ChangePresetVolume(n);
                     }}                
                 />
                 <NumericSlider 
@@ -28,8 +31,9 @@ function PresetGeneralSettings() {
                     minValue={40}
                     maxValue={250}
                     step={1}
-                    currentValue={120}
+                    currentValue={store.gp200.currentPreset?.bpm ?? 0}
                     onChange={function (n: number): void {
+                        store.gpActions.ChangePresetBPM(n);
                     }}                
                 />
                 <NumericSlider 
@@ -37,8 +41,9 @@ function PresetGeneralSettings() {
                     minValue={-50}
                     maxValue={50}
                     step={1}
-                    currentValue={0}
+                    currentValue={store.gp200.currentPreset?.pan ?? 0}
                     onChange={function (n: number): void {
+                        store.gpActions.ChangePresetPan(n);
                     }}                
                 />
             </VStack>
@@ -46,4 +51,4 @@ function PresetGeneralSettings() {
     );
 }
 
-export default PresetGeneralSettings;
+export default observer(PresetGeneralSettings);

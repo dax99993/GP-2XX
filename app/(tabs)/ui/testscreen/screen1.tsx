@@ -5,7 +5,7 @@ import CtrlSettings from '@/components/gp/presetSettings/ctrlSettings/CtrlSettin
 import ExpSettings from '@/components/gp/presetSettings/expSettings/ExpSettings';
 import FxLoopSettings from '@/components/gp/presetSettings/fxLoopSettings/FxLoopSettings';
 import PresetSettings from '@/components/gp/presetSettings/generalSettings/PresetGeneralSettings';
-import KnobSettings from '@/components/gp/presetSettings/knobSettings/knobSettings';
+import KnobsSettings from '@/components/gp/presetSettings/knobSettings/knobsSettings';
 import { VStack } from '@/components/ui/vstack';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 
@@ -21,7 +21,7 @@ export default function TestScreen() {
         <VStack space='md'>
           <PresetSettings />
           <FxLoopSettings />
-          <KnobSettings/>
+          <KnobsSettings/>
           <CtrlSettings/>
           <ExpSettings/>
         </VStack>

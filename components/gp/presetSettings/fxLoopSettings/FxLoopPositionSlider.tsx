@@ -2,8 +2,9 @@ import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { Colors } from "@/constants/Colors";
+import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 import RangeSlider from "react-native-sticky-range-slider";
 
@@ -33,14 +34,12 @@ const Rail = () => <View style={styles.rail} />;
 const RailSelected = () => <View style={styles.railSelected} />;
 
 function FxLoopPositionSlider(props: SliderProps) {
-    // Replace this with values from store
-    const [lowValue, setLowValue] = useState(3);
-    const [highValue, setHighValue] = useState(7);
+    const lowValue = store.gp200.currentPreset?.fxLoop.sendPosition;
+    const highValue = store.gp200.currentPreset?.fxLoop.returnPosition;
 
     const handleValueChange = useCallback((newLow: number, newHigh: number) => {
-      // Update the model through action
-        setLowValue(newLow);
-        setHighValue(newHigh);
+        // Update the model through action
+        store.gpActions.ChangePresetFxLoopPosition(newLow, newHigh);
     }, []);
 
     return (

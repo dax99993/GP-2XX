@@ -1,62 +1,71 @@
-import BoundBox from "@/components/BoundBox";
 import PickerSelector from "@/components/pickerSelector";
-import { Button, ButtonGroup, ButtonText } from "@/components/ui/button";
-import { Center } from "@/components/ui/center";
-import { Divider } from "@/components/ui/divider";
-import { Heading } from "@/components/ui/heading";
-import { VStack } from "@/components/ui/vstack";
 import { KnobModule } from "@/models/preset/IKnobSettings";
+import { store } from "@/models/store";
+import { observer } from "mobx-react-lite";
 import React from "react";
 
+const MODULE_LABELS: [string, string][] = Object.entries(KnobModule)
+  .filter(([key, value]) => typeof value === 'number') // Filter out the reverse mappings (numeric keys)
+  .map(([key, value]) => ( [value.toString(), key ]) );
 
-function KnobSettings() {
-    const names: string[] = Object.keys(KnobModule).filter(
-        (key) => isNaN(Number(key))
-    );
-    console.log(names);
-    const values: number[] = Object.values(KnobModule).filter(
-        (value) => typeof value === 'number'
-    );
-    console.log(values);
-    const labels: [string, string][] = values.map((item, index) => [item.toString(), names[index]]);
-    console.log(labels);
-    //const labels = Object.values(KnobModule)
+
+interface KnobSettingsProps {
+    knobID: number
+}
+
+function GetParamLabels(module: KnobModule): [string, string][] {
+    switch (module) {
+        case KnobModule.BPM:
+        case KnobModule.PATCHVOL:
+        case KnobModule.OFF:
+            return [["0", "OFF"]];
+        default:
+            // get params in module
+            if (store.gp200.currentPreset) {
+                console.log(store.gp200.currentPreset.effects[module as number].type);
+                const l: [string, string][] = store.gp200.currentPreset.effects[module as number]
+                .parameters.map(
+                    p => {
+                        return [p.id.toString(), p.name]
+                    }
+                )
+                return l;
+            } else {
+                return [["0", "OFF"]]
+            }
+    }
+}
+
+function KnobSettings({knobID}: KnobSettingsProps) {
+    if (store.gp200.currentPreset == undefined) {return null};
+
+    console.log(knobID);
+    // Get param names of modules
+    const knobModule = store.gp200.currentPreset?.knobs[knobID].module;
+    const knobValue = store.gp200.currentPreset?.knobs[knobID].paramID;
+    const param_labels = GetParamLabels(knobModule);
+    console.log(knobID, knobModule, knobValue, param_labels);
 
     return (
-        <BoundBox>
-            <VStack space="lg">
-                <Center>
-                    <Heading>Knob Settings</Heading>
-                </Center>
-                <ButtonGroup space="md" flexDirection="row" style={{alignItems: 'center', justifyContent: 'space-around'}}>
-                    <Button>
-                        <ButtonText>Knob 1</ButtonText>
-                    </Button>
-                    <Button>
-                        <ButtonText>Knob 2</ButtonText>
-                    </Button>
-                    <Button>
-                        <ButtonText>Knob 3</ButtonText>
-                    </Button>
-                </ButtonGroup>
-                <Divider/>
+        <>
             <PickerSelector name={"Module"}
-                currentValue={""}
-                labels={labels}
+                currentValue={knobModule.toString()}
+                labels={MODULE_LABELS}
                 onChange={function (s: string, n: number): void {
                     console.log("selected Knob Module", s, n);
+                    store.gpActions.ChangePresetKnobSettings(knobID, parseInt(s) as KnobModule);
                 }}
             />
             <PickerSelector name={"Param Name"}
-                currentValue={""}
-                labels={[["0", "Param0"], ["1", "Param1"]]}
+                currentValue={knobValue?.toString()}
+                labels={param_labels}
                 onChange={function (s: string, n: number): void {
                     console.log("selected Param", s, n);
+                    store.gpActions.ChangePresetKnobSettings(knobID, knobModule, parseInt(s));
                 }}
             />
-            </VStack>
-        </BoundBox>
+        </>
     );
 }
 
-export default KnobSettings;
+export default observer(KnobSettings);

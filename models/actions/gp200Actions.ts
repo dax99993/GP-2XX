@@ -4,6 +4,8 @@ import { action, makeObservable, observable } from "mobx";
 import { EffectType } from "../effect/effect";
 import { GP200Model } from "../gp200";
 import { MidiDevice } from "../midiDevice";
+import { FxLoopMode } from "../preset/IFxLoopSettings";
+import { KnobModule } from "../preset/IKnobSettings";
 import { IActions } from "./IActions";
 
 
@@ -90,6 +92,36 @@ export class GP200Actions implements IActions{
         return nibbles; 
     }
 
+    encode16BitTwosComplementBytes(num: number) {
+        // Ensure the number is within the 16-bit signed integer range
+        // if (num < -32768 || num > 32767) {
+        //     throw new Error("Number out of 16-bit signed integer range.");
+        // }
+        const n = num & 0xFFFF;
+
+        // Use a DataView to handle the two's complement representation directly
+        // Create a 2-byte (16-bit) ArrayBuffer
+        const buffer = new ArrayBuffer(2);
+        // Create a DataView to manipulate the buffer
+        const view = new DataView(buffer);
+
+        // Write the number as a 16-bit signed integer (Int16)
+        // The second argument (false) specifies little-endian byte order.
+        // Set to true for big-endian.
+        view.setInt16(0, n, false);
+
+        // Extract the bytes
+        const lowByte = view.getUint8(0); // First byte (low byte in little-endian)
+        const highByte = view.getUint8(1); // Second byte (high byte in little-endian)
+
+        console.log(highByte.toString(16), lowByte.toString(16)); // Return as [highByte, lowByte] for common usage
+        const [highByteHighNible, highByteLowNible] = this.byteToNibbles(lowByte);
+        const [lowByteHighNible, lowByteLowNible] = this.byteToNibbles(highByte);
+
+        console.log(lowByteHighNible, lowByteLowNible, highByteHighNible, highByteLowNible);
+        return [lowByteHighNible, lowByteLowNible, highByteHighNible, highByteLowNible];
+    }
+
     //  --------------------------------------------------------------------------------
     //      MIDI/MODEL ENCODE ACTIONS
     //  ---------------------------------------------------------------------------------
@@ -140,6 +172,59 @@ export class GP200Actions implements IActions{
     }
 
     // PRESET SETTINGS ACTIONS
+    ChangePresetVolume(volume: number) {
+        // byte 0x16 contains which parameter to change 0 -> volume; 1->BPM; 6 -> Pan
+        // bytes 0x19 and 0x1a contain the volume and BPM value split in hex
+        let BaseSysEx= BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
+        BaseSysEx[0x16] = 0;
+        const [highNibble, lowNibble] = this.byteToNibbles(volume);
+
+        BaseSysEx[0x19] = highNibble;
+        BaseSysEx[0x1a] = lowNibble;
+
+        //Update Model
+        this.gp200.currentPreset?.changeVolume(volume);
+
+        //Send message
+        this.midi.sendMessage(BaseSysEx);
+    }
+
+    ChangePresetBPM(bpm: number) {
+        // byte 0x16 contains which parameter to change 0 -> volume; 1->BPM; 6 -> Pan
+        // bytes 0x19 and 0x1a contain the volume and BPM value split in hex
+        let BaseSysEx= BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
+        BaseSysEx[0x16] = 1;
+        const [highNibble, lowNibble] = this.byteToNibbles(bpm);
+
+        BaseSysEx[0x19] = highNibble;
+        BaseSysEx[0x1a] = lowNibble;
+
+        //Update Model
+        this.gp200.currentPreset?.changeBPM(bpm);
+
+        //Send message
+        this.midi.sendMessage(BaseSysEx);
+    }
+
+    ChangePresetPan(pan: number) {
+        // byte 0x16 contains which parameter to change 0 -> volume; 1->BPM; 6 -> Pan
+        // bytes 0x19 to 0x1c contain the PAN value encoded in two's complement
+        let BaseSysEx= BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
+        BaseSysEx[0x16] = 6;
+        const encodedValue = this.encode16BitTwosComplementBytes(pan);
+        //const [highNibble, lowNibble] = this.byteToNibbles(bpm);
+
+        for (let i = 0; i<4; i=i+1) {
+            BaseSysEx[0x19] = encodedValue[i];
+        }
+
+        // //Update Model
+        this.gp200.currentPreset?.changePan(pan);
+
+        // //Send message
+        this.midi.sendMessage(BaseSysEx);
+    }
+
     //ChangePresetChainOrder(preset_num:number, fxSendPos: number, fxReturnPos: number, effectsChainOrder: number[]) {
     //ChangePresetChainOrder(fxSendPos: number, fxReturnPos: number, effectsChainOrder: number[]) {
     ChangePresetChainOrder(effectsChainOrder: number[]) {
@@ -190,6 +275,7 @@ export class GP200Actions implements IActions{
         this.midi.sendMessage(msg);
     }
 
+    // FXLOOP Settings
     ChangePresetFxLoopPosition(sendPosition: number, returnPosition: number) {
         if (this.gp200.currentPresetNumber === undefined) { return; }
         if (this.gp200.currentPreset === undefined) { return; }
@@ -228,6 +314,39 @@ export class GP200Actions implements IActions{
 
         // Send message        
         this.midi.sendMessage(msg);
+    }
+
+    ChangePresetFxLoopSettings(sendLevel: number, returnLevel: number, mode: FxLoopMode) {
+    }
+
+    // CTRL Settings
+    ChangePresetCtrlSettings(ctrlID: number, ) {
+
+    }
+
+    // EXP Settings
+    ChangePresetExpSettings(expID: number, ) {
+
+    }
+
+    // Knob Settings
+    ChangePresetKnobSettings(knobID: number, knobModule: KnobModule, knobParameter: number = 0) {
+        // byte 0x16 Knob number: Number in range (0 to 2)
+        // bytes 0x17 and 0x18 Module number split in nibbles
+        // byte 0x1a Parameter number: Number in range (0 to 14)
+        let BaseSysEx= BaseSysExMsg.PresetSettingsAction.KnobSettings;
+        BaseSysEx[0x16] = knobID;
+        const [highNibble, lowNibble] = this.byteToNibbles(knobModule);
+        BaseSysEx[0x17] = highNibble;
+        BaseSysEx[0x18] = lowNibble;
+
+        BaseSysEx[0x1a] = knobParameter;
+
+        // //Update Model
+        this.gp200.currentPreset?.changeKnobSettings(knobID, knobModule, knobParameter);
+
+        // //Send message
+        this.midi.sendMessage(BaseSysEx);
     }
 
 
@@ -273,6 +392,7 @@ export class GP200Actions implements IActions{
         // Send physical device
         this.midi.sendMessage(SysExMsg);
 
+        // When changing AMP implementations, also CAB needs to be changed
         if (effectChangeInfo.associated != undefined) { 
             const associated = effectChangeInfo.associated;
             const t: EffectType = EffectType[associated.type as keyof typeof EffectType];
