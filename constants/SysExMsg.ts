@@ -70,13 +70,21 @@ export const BaseSysExMsg = {
             exp2Param2: [],
             exp2Param3: [],
         },
+
         // CTRL settings
-        CTRLSettings: {
-            assignCtrl1: [],
-            assignCtrl2: [],
-            assignCtrl3: [],
-            assignCtrl4: [],
-        },
+        CTRLSettings: [
+            // byte 0x16 CTRL number: number with range (0 to 7)
+            // byte 0x18 CTRL mode: number with values 00 -> Yellow ; 01 -> Red
+            // byte 0x1d Pedals with id 4 to 7 bind: bitflags in low nibble		     (0000 MOD;EQ;CAB;NR)
+            // byte 0x1e Pedals with id 0 to 3 bind: bitflags in low nibble 		 (0000 AMP;DST;WAH;PRE)
+            // byte 0x20 Pedals with id 8 to 10 bind: bitflags in low nibble 		 (0000 0;VOL;RVB;DLY)
+            0xf0, 0x21, 0x25, 0x7e, 0x47, 0x50, 0x2d, 0x32,
+            0x12, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x0f, 0x00,
+            0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x01, 0x03, 0x0d, 0x08, 0x00, 0x00, 0x01, 0x03,
+            0x00, 0x02, 0x02, 0x02, 0x00, 0xf7
+        ],
+
         // FX Loop
         FxLoop: {
             changeSendPosition: [],

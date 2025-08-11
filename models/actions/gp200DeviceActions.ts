@@ -133,6 +133,32 @@ export class GP200DeviceActions implements IDeviceActions {
         this.gp200.currentPreset?.changeKnobSettings(knobID, knobModule, knobParameter);
     }
 
+    ChangePresetCtrlSettings(message: Uint8Array) {
+        // byte 0x16 CTRL number: number with range (0 to 7)
+        // byte 0x18 CTRL mode: number with values 00 -> Yellow ; 01 -> Red
+        // byte 0x1d Pedals with id 4 to 7 bind: bitflags in low nibble		     (0000 MOD;EQ;CAB;NR)
+        // byte 0x1e Pedals with id 0 to 3 bind: bitflags in low nibble 		 (0000 AMP;DST;WAH;PRE)
+        // byte 0x20 Pedals with id 8 to 10 bind: bitflags in low nibble 		 (0000 0;VOL;RVB;DLY)
+        const ctrlID = message[0x16];
+        const ctrlMode = message[0x18];
+
+        // Get all pedal binding in a single integer
+        const pedals4to7 = message[0x1d] & 0x0F;
+        const pedals0to3 = message[0x1e] & 0x0F;
+        const pedals8to10 = message[0x20] & 0x0F;
+
+        const pedals = (pedals8to10 << 8) | (pedals4to7) << 4 | pedals0to3;
+
+        let pedalBinding = [];
+        for(let i = 0; i < 12; i=i+1) {
+            pedalBinding[i] = (pedals & (1<<i)) != 0 ? 1 : 0;
+        }
+
+        // //Update Model
+        this.gp200.currentPreset?.changeCtrlSettings(ctrlID, pedalBinding);
+
+    }
+
     // EFFECT ACTIONS
     ChangeEffect(message: Uint8Array) {
         // 38 bytes 
@@ -740,10 +766,16 @@ export class GP200DeviceActions implements IDeviceActions {
 
     decodeSysEx38length(message: Uint8Array) {
         const changeEffect = BaseSysExMsg.EffectActions.changeEffect;
+        const changePresetCtrlSettings = BaseSysExMsg.PresetSettingsAction.CTRLSettings;
+        
         //if ( compareArrays(message.slice(0, 18+1), changeParameterValue.slice(0, 18+1))) {
         if ( this.isSameMessage(message, changeEffect)) {
             console.log("Change Effect message received!.");
             this.ChangeEffect(message);
+        } else if (this.isSameMessage(message, changePresetCtrlSettings)) {
+            console.log("Change Preset Ctrl Settings message received!.");
+            // decode and update model
+            this.ChangePresetCtrlSettings(message);
         }
     }
 

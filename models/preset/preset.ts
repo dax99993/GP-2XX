@@ -137,6 +137,11 @@ export class PresetModel {
         this.knobs[knobID].paramID = knobParameter;
     }
 
+    changeCtrlSettings(ctrlID: number, pedalBinding: number[]) {
+        this.ctrls[ctrlID].pedalsAssign = pedalBinding;
+        this.ctrls[ctrlID].mode = 0; //fixed for now
+    }
+
 }
 
 

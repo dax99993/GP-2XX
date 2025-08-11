@@ -320,8 +320,38 @@ export class GP200Actions implements IActions{
     }
 
     // CTRL Settings
-    ChangePresetCtrlSettings(ctrlID: number, ) {
+    ChangePresetCtrlSettings(ctrlID: number, pedalBinding: number[]) {
+        // byte 0x16 CTRL number: number with range (0 to 7)
+        // byte 0x18 CTRL mode: number with values 00 -> Yellow ; 01 -> Red
+        // byte 0x1d Pedals with id 4 to 7 bind: bitflags in low nibble		     (0000 MOD;EQ;CAB;NR)
+        // byte 0x1e Pedals with id 0 to 3 bind: bitflags in low nibble 		 (0000 AMP;DST;WAH;PRE)
+        // byte 0x20 Pedals with id 8 to 10 bind: bitflags in low nibble 		 (0000 0;VOL;RVB;DLY)
+        let BaseSysEx= BaseSysExMsg.PresetSettingsAction.CTRLSettings;
+        BaseSysEx[0x16] = ctrlID;
+        BaseSysEx[0x18] = 0; //force yellow for the moment
 
+        const pedals4to7 = pedalBinding.slice(4, 8)
+        .map((v, i) => v * Math.pow(2, i))
+        .reduce((accumulator, currentValue) => accumulator + currentValue, 0) & 0x0F;
+
+        const pedals0to3 = pedalBinding.slice(0, 4)
+        .map((v, i) => v * Math.pow(2, i))
+        .reduce((accumulator, currentValue) => accumulator + currentValue, 0) & 0x0F;
+
+
+        const pedals8to10 = pedalBinding.slice(8, 11)
+        .map((v, i) => v * Math.pow(2, i))
+        .reduce((accumulator, currentValue) => accumulator + currentValue, 0) & 0x0F;
+
+        BaseSysEx[0x1d] = pedals4to7;
+        BaseSysEx[0x1e] = pedals0to3;
+        BaseSysEx[0x20] = pedals8to10;
+
+        // //Update Model
+        this.gp200.currentPreset?.changeCtrlSettings(ctrlID, pedalBinding);
+
+        // //Send message
+        this.midi.sendMessage(BaseSysEx);
     }
 
     // EXP Settings

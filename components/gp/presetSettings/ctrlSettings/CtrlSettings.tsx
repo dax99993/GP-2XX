@@ -1,55 +1,62 @@
-import BoundBox from "@/components/BoundBox";
-import { Button, ButtonGroup, ButtonText } from "@/components/ui/button";
 import { Center } from "@/components/ui/center";
-import { Divider } from "@/components/ui/divider";
-import { Heading } from "@/components/ui/heading";
+import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
-import CtrlEffectUnit from "./CtrlEffectUnit";
+import { store } from "@/models/store";
+import { observer } from "mobx-react-lite";
+import { useCallback } from "react";
+import { TouchableOpacity } from "react-native";
+import EffectImage from "../../effect/EffectImage";
 
+const DATA = ["PRE", "WAH", "DST", "AMP", "NR", "CAB", "EQ", "MOD", "DLY", "RVB", "VOL"];
 
-
-function CtrlSettings() {
-
-    return (
-        <BoundBox>
-            <VStack space="lg">
-                <Center>
-                    <Heading>Ctrl Settings</Heading>
-                </Center>
-                <ButtonGroup space="md" flexDirection="row" style={{alignItems: 'center', justifyContent: 'space-around'}}>
-                    <Button>
-                        <ButtonText>CTRL 1</ButtonText>
-                    </Button>
-                    <Button>
-                        <ButtonText>CTRL 2</ButtonText>
-                    </Button>
-                    <Button>
-                        <ButtonText>CTRL 3</ButtonText>
-                    </Button>
-                    <Button>
-                        <ButtonText>CTRL 4</ButtonText>
-                    </Button>
-                </ButtonGroup>
-                <ButtonGroup space="md" flexDirection="row" style={{alignItems: 'center', justifyContent: 'space-around'}}>
-                    <Button>
-                        <ButtonText>CTRL 5</ButtonText>
-                    </Button>
-                    <Button>
-                        <ButtonText>CTRL 6</ButtonText>
-                    </Button>
-                    <Button>
-                        <ButtonText>CTRL 7</ButtonText>
-                    </Button>
-                    <Button>
-                        <ButtonText>CTRL 8</ButtonText>
-                    </Button>
-                </ButtonGroup>
-                <Divider/>
-                <CtrlEffectUnit/>
-            </VStack>
-        </BoundBox>
-    )
+interface CtrlSettingsProps {
+    ctrlID: number;
 }
 
+function CtrlSettings({ctrlID}: CtrlSettingsProps) {
+    if (store.gp200.currentPreset == undefined) {return null};
 
-export default CtrlSettings;
+    console.log(ctrlID);
+
+    const effects = store.gp200.currentPreset.effects;
+    const pedals = store.gp200.currentPreset.ctrls[ctrlID].pedalsAssign;
+    console.log(pedals);
+
+    const renderItem = useCallback((item: string)  => {
+        const index = DATA.indexOf(item);
+        const selected = index !== -1 ? pedals[index] != 0 : false;
+        const state = index !== -1 ? effects[index].state : false;
+        console.log(index, state, selected);
+
+        const changeBinding = () => {
+            //console.log(item, "pressed!");
+            let newPedalBinding: number[] = pedals;
+            newPedalBinding[index] = 1 - newPedalBinding[index];
+            //console.log(newPedalBinding);
+            store.gpActions.ChangePresetCtrlSettings(ctrlID, newPedalBinding);
+        };
+
+        return (
+            <TouchableOpacity key={item} onPress={changeBinding} style={{alignItems: 'center'}}>
+                <Center style={{ width: 50, height: 50 }}>
+                        <EffectImage type={item} state={state} selected={selected}/>
+                </Center>
+            </TouchableOpacity>
+        );
+    }, [pedals, effects]);
+
+    return (
+        <Center>
+            <VStack space="md">
+                <HStack space="md">
+                    { DATA.slice(0, 6).map(s => renderItem(s))}
+                </HStack>
+                <HStack space="md">
+                    { DATA.slice(6).map(s => renderItem(s))}
+                </HStack>
+            </VStack>
+        </Center>
+    );
+}
+
+export default observer(CtrlSettings);

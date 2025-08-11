@@ -33,9 +33,7 @@ function KnobsSettings() {
                     </Button>
                 </ButtonGroup>
                 <Divider/>
-                { selectedKnob == 0 && <KnobSettings knobID={0}/>}
-                { selectedKnob == 1 && <KnobSettings knobID={1}/>}
-                { selectedKnob == 2 && <KnobSettings knobID={2}/>}
+                <KnobSettings knobID={selectedKnob}/>
             </VStack>
         </BoundBox>
     );
