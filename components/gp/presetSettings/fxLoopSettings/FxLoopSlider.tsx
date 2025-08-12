@@ -22,7 +22,8 @@ interface Props {
 const Thumb = (t: {value: number, thumb: "min" | "max"}) => {
   return (
     <Center
-     style={[styles.thumb, { backgroundColor: t.thumb=== "max" ? Colors.fxLoop.outPosition : Colors.fxLoop.inPosition, alignItems:'center'}]}
+     style={[styles.thumb,
+      { backgroundColor: t.thumb=== "max" ? Colors.fxLoop.outPosition : Colors.fxLoop.inPosition, alignItems:'center'}]}
     >
       <Text size='xl'>{t.value + 1}</Text>
     </Center>
@@ -66,15 +67,11 @@ const StepMarker = (props: IStepMarker) => {
   );
 }
 
-const Rail = () => <View style={styles.rail} />;
-const RailSelected = () => <View style={styles.railSelected} />;
-
 function FxLoopSlider(props: Props) {
     return (
         <Box className="bg-secondary-300 mx-3 my-2 px-2 pt-3 pb-5 rounded-md">
             <VStack style={styles.infoContainer}>
                 <Text size="lg" bold={true}>{props.name}</Text>
-                <Text></Text>
             </VStack>
         <RangeSlider style={styles.controlContainer}
             minimumValue={props.minValue}
@@ -109,25 +106,14 @@ const styles = StyleSheet.create({
         //paddingLeft:20,
         //paddingRight: 20,
         marginLeft: 20,
-        marginRight: 20,
+        marginRight: 35,
     },
   thumb: {
     width: THUMB_RADIUS * 2,
     height: THUMB_RADIUS * 2,
     borderRadius: THUMB_RADIUS,
-    //borderWidth: 3,
-    //borderColor: "white",
-    //backgroundColor: "red",
-  },
-  rail: {
-    flex: 1,
-    height: 5,
-    borderRadius: 3,
-    backgroundColor: "grey",
-  },
-  railSelected: {
-    height: 5,
-    backgroundColor: "pink",
+    borderWidth: 3,
+    borderColor: "white",
   },
 });
 

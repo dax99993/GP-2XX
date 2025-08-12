@@ -32,12 +32,6 @@ function GetParamLabels(module: ExpModule): [string, string][] {
     }
 }
 
-interface ExpParam {
-    minValue: number,
-    maxValue: number,
-    step: number, //only for numeric
-    labels: [string, string][],
-}
 
 function GetParam(module: ExpModule, paramID: number): IParameter | undefined {
     switch (module) {
@@ -80,6 +74,16 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
     const paramMax = param?.getMaxValue();
     console.log("Module min and max", paramMin, paramMax);
 
+    // Labels
+    const getLabel = (n: number) => {
+        if (param == undefined) return "";
+        if (n in param.labels) {
+            return param.labels[n];
+        } else {
+            return `${n} ${param.units}` 
+        }
+    }
+
     return (
         <VStack space="lg">
             <PickerSelector name={"Module"}
@@ -97,7 +101,7 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
                     }
                 }}
             />
-            <PickerSelector name={"Param Name"}
+            <PickerSelector name={"Parameter"}
                 currentValue={expParam.toString()}
                 labels={GetParamLabels(expModule)}
                 onChange={function (s: string, n: number): void {
@@ -118,24 +122,26 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
             <>
             <ExpParamSetter
                 name={"Param Min"}
+                shownValue={getLabel}
                 minValue={paramMin ?? 0}
                 maxValue={paramMax ?? 100}
                 step={1}
                 currentValue={currentParamMin}
                 onNumericChange={function (n: number): void {
-                    console.log("Change value:", n);
+                    console.log("Change max value:", n);
                     store.gpActions.ChangePresetExpSettings(expID, expParamID,
                         expModule, expParam, n, currentParamMax);
                 }}
             />
             <ExpParamSetter
                 name={"Param Max"}
+                shownValue={getLabel}
                 minValue={paramMin ?? 0}
                 maxValue={paramMax ?? 100}
                 step={1}
                 currentValue={currentParamMax}
                 onNumericChange={function (n: number): void {
-                    console.log("Change value:", n);
+                    console.log("Change min value:", n);
                     store.gpActions.ChangePresetExpSettings(expID, expParamID,
                         expModule, expParam, currentParamMin, n);
                 }}

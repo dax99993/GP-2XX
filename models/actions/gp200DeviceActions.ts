@@ -4,7 +4,7 @@ import { action, makeObservable, observable } from "mobx";
 import { GP200Model } from "../gp200";
 import { MidiDevice } from "../midiDevice";
 import { ICtrlSettings } from "../preset/ICtrlSettings";
-import { IExpSettings } from "../preset/IExpSettings";
+import { ExpModule, IExpSettings } from "../preset/IExpSettings";
 import { IKnobSettings } from "../preset/IKnobSettings";
 import { ISyncEffectInfo, ISyncPresetInfo } from "../preset/ISyncPresetInfo";
 import { PresetModel } from "../preset/preset";
@@ -161,6 +161,25 @@ export class GP200DeviceActions implements IDeviceActions {
     }
 
     // FX Loop
+    ChangePresetExpSettings(message: Uint8Array) {
+        // byte 0x15 EXP pedal to bind: values in range 0 -> 1A; 1 -> 1B; 2 -> 2
+        // byte 0x16 EXP parameter number to bind: 0 -> param 1; 1 -> param 2; 2 -> param 3
+        // byte 0x17 and 0x18 Module ID
+        // byte 0x1a Module parameter id to bind: with values in range (0 to 14)
+        // bytes 0x1d to 0x24 Parameter maximum value encoded
+        // bytes 0x25 to 0x2c Parameter minimum value encoded
+        const expID = message[0x15];
+        const expParamID = message[0x16];
+        const expModule = this.nibblesToByte(message[0x17], message[0x18]) as ExpModule;
+        const moduleParamID = message[0x1a];
+        
+        const paramMax = this.decodeParamValueFloat([...message.slice(0x1d, 0x24 + 1)]);
+        const paramMin = this.decodeParamValueFloat([...message.slice(0x25, 0x2c + 1)]);
+
+        // //Update Model
+        this.gp200.currentPreset?.changeExpSettings(expID, expParamID, expModule, moduleParamID, paramMin, paramMax);
+    }
+
 
     // Knob
     ChangePresetKnobSettings(message: Uint8Array) {
@@ -819,10 +838,15 @@ export class GP200DeviceActions implements IDeviceActions {
 
     decodeSysEx46length(message: Uint8Array) {
         const changeParameterValue = BaseSysExMsg.EffectActions.changeParameterValue;
+        const changePresetExpSettings = BaseSysExMsg.PresetSettingsAction.ExpSetting;
         //if ( compareArrays(message.slice(0, 18+1), changeParameterValue.slice(0, 18+1))) {
         if ( this.isSameMessage(message, changeParameterValue)) {
             console.log("Change Parameter Value message received!.");
             this.ChangeEffectParamValue(message);
+        } else if (this.isSameMessage(message, changePresetExpSettings)) {
+            console.log("Change Preset Exp Settings message received!.");
+            // decode and update model
+            this.ChangePresetExpSettings(message);
         }
     }
 

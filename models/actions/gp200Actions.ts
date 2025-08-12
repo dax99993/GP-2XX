@@ -306,45 +306,6 @@ export class GP200Actions implements IActions{
         this.midi.sendMessage(msg);
     }
 
-    ChangePresetFxLoopReturnPosition(returnPosition: number) {
-        if (this.gp200.currentPresetNumber === undefined) { return; }
-        if (this.gp200.currentPreset === undefined) { return; }
-
-        const preset_num = this.gp200.currentPresetNumber;
-
-        // bytes 0x15 and 0x16 have the preset number
-        // bytes 0x19 and 0x1a have the Fx loop send position
-        // bytes 0x1b and 0x1c have the Fx loop return position
-        // bytes 0x1d to 0x32 have the effect chain order
-        let msg = BaseSysExMsg.PresetSettingsAction.changeChainOrder;
-        // set preset number
-        const [high_byte, low_byte] = this.byteToNibbles(preset_num);
-        msg[0x15] = high_byte;
-        msg[0x16] = low_byte;
-
-        // set fx loop send pos (since value is in range 0-11) the high byte is always 0
-        msg[0x19] = 0
-        msg[0x1a] = this.gp200.currentPreset.fxLoop.sendPosition;
-
-        // set fx loop return pos (since value is in range 0-11) the high byte is always 0
-        msg[0x1b] = 0
-        msg[0x1c] = returnPosition;
-
-        // set effect chain Order;
-        const effectsChainOrder = this.gp200.currentPreset.effectsChainOrder;
-        for(let i=0; i < 2 *effectsChainOrder.length; i=i+2) {
-            msg[0x1d + i] = 0;
-            msg[0x1d + i + 1] = effectsChainOrder[i/2];
-        }
-
-        // Update model
-        // This should modify a given preset not only the current, change later
-        //this.gp200.currentPreset.changeFxLoopPosition(sendPosition, returnPosition);
-
-        // Send message        
-        this.midi.sendMessage(msg);
-    }
-
     ChangePresetFxLoopSendLevel(sendLevel: number){
         // byte 0x16 FxLoop Parameter ID: 3 -> sendLevel; 4 -> returnLevel; 5 -> mode
         // bytes 0x19 and 0x1a Parameter Value: split in hex digits (nibbles)
@@ -453,16 +414,14 @@ export class GP200Actions implements IActions{
 
         //console.log(encodedMax.length, encodedMax);
 
-        for(let i=0; i < encodedMax.length; i=i+1) {
+        // write both params
+        for(let i = 0; i < encodedMax.length; i=i+1) {
             BaseSysEx[0x1d + i] = encodedMax[i];
-        }
-
-        for(let i=0; i < encodedMin.length; i=i+1) {
             BaseSysEx[0x25 + i] = encodedMin[i];
         }
 
         // //Update Model
-        this.gp200.currentPreset?.changeExpSettings(expID, expParamID, expModule, paramID, paramMin, paramMax);
+        //this.gp200.currentPreset?.changeExpSettings(expID, expParamID, expModule, paramID, paramMin, paramMax);
 
         // //Send message
         this.midi.sendMessage(BaseSysEx);
