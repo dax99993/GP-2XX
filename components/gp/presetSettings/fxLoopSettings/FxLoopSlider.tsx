@@ -1,4 +1,5 @@
 import { Box } from '@/components/ui/box';
+import { Center } from '@/components/ui/center';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { Colors } from '@/constants/Colors';
@@ -20,9 +21,11 @@ interface Props {
 
 const Thumb = (t: {value: number, thumb: "min" | "max"}) => {
   return (
-    <View
-     style={[styles.thumb, { backgroundColor: t.thumb=== "max" ? Colors.fxLoop.outPosition : Colors.fxLoop.inPosition}]}
-    />
+    <Center
+     style={[styles.thumb, { backgroundColor: t.thumb=== "max" ? Colors.fxLoop.outPosition : Colors.fxLoop.inPosition, alignItems:'center'}]}
+    >
+      <Text size='xl'>{t.value + 1}</Text>
+    </Center>
   )
 }
 
@@ -39,6 +42,28 @@ const Track = (t: ITrack) => {
     return (
         <></>
     );
+}
+
+interface IStepMarker {
+  stepMarked: boolean;
+  currentValue: [number, number];
+  index: number;
+  min: number;
+  max: number;
+  markValue: number;
+}
+
+const StepMarker = (props: IStepMarker) => {
+  console.log("Step props", props);
+  return (
+    <View>
+      {!props.stepMarked &&
+        <Center style={{ width:20, height: 20 , backgroundColor: '' }}>
+          <Text size='md'>{props.markValue + 1}</Text>
+        </Center>
+      }
+    </View>
+  );
 }
 
 const Rail = () => <View style={styles.rail} />;
@@ -60,13 +85,15 @@ function FxLoopSlider(props: Props) {
             onSlidingComplete={props.onChange}
             inboundColor={'white'}
             outboundColor={'gray'}
+            trackHeight={5}
             CustomThumb={Thumb}
+            StepMarker={StepMarker}
         />
         </Box>
     );
 }
 
-const THUMB_RADIUS = 12;
+const THUMB_RADIUS = 15;
 
 const styles = StyleSheet.create({
   container: {

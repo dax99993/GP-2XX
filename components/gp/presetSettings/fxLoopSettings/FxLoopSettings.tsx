@@ -5,7 +5,6 @@ import { Center } from "@/components/ui/center";
 import { Heading } from "@/components/ui/heading";
 import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
-import FxLoopPositionSlider from "./FxLoopPositionSlider";
 import FxLoopSlider from "./FxLoopSlider";
 
 function FxLoopSettings() {
@@ -19,12 +18,7 @@ function FxLoopSettings() {
 
     console.log(sendLevel, returnLevel, mode);
 
-    const onChange = (l: number, h: number) => {
-        console.log("New values low, high", l, h);
-        store.gpActions.ChangePresetFxLoopPosition(l, h);
-    }
-
-    const onChange2 = (values: number []) => {
+    const onChange = (values: number []) => {
         console.log("New values", values);
         store.gpActions.ChangePresetFxLoopPosition(values[0], values[1]);
     }
@@ -38,29 +32,11 @@ function FxLoopSettings() {
                 name={"Send & Return position"}
                 minValue={0}
                 maxValue={11}
-                step={0}
-                lowValue={sendPosition}
-                highValue={returnPosition}
-                onChange={onChange2}            
-            />
-            <FxLoopPositionSlider
-                name={"Send & Return position"}
-                minValue={0}
-                maxValue={11}
                 step={1}
                 lowValue={sendPosition}
                 highValue={returnPosition}
-                onChange={function (low: number, high: number): void {
-                    // Update the model through action
-                    if (low !== sendPosition) {
-
-                    }
-                    if(high !== returnPosition) {
-                        //store.gpActions.ChangePresetFxLoopPosition(low, high);
-                        store.gpActions.ChangePresetFxLoopReturnPosition(high);
-                    }
-                }}            
-                />
+                onChange={onChange}            
+            />
             <NumericSlider
                 name={"Send level"}
                 minValue={0}
