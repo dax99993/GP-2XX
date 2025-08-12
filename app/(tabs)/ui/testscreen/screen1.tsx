@@ -2,7 +2,7 @@
 import { Platform, StatusBar, StyleSheet } from 'react-native';
 
 import CtrlsSettings from '@/components/gp/presetSettings/ctrlSettings/CtrlsSettings';
-import ExpSettings from '@/components/gp/presetSettings/expSettings/ExpSettings';
+import ExpsSettings from '@/components/gp/presetSettings/expSettings/ExpsSettings';
 import FxLoopSettings from '@/components/gp/presetSettings/fxLoopSettings/FxLoopSettings';
 import PresetSettings from '@/components/gp/presetSettings/generalSettings/PresetGeneralSettings';
 import KnobsSettings from '@/components/gp/presetSettings/knobSettings/knobsSettings';
@@ -23,7 +23,7 @@ export default function TestScreen() {
           <FxLoopSettings />
           <KnobsSettings/>
           <CtrlsSettings/>
-          <ExpSettings/>
+          <ExpsSettings/>
         </VStack>
       </ScrollView>
     </GestureHandlerRootView>

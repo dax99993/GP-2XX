@@ -16,21 +16,18 @@ interface CtrlSettingsProps {
 function CtrlSettings({ctrlID}: CtrlSettingsProps) {
     if (store.gp200.currentPreset == undefined) {return null};
 
-    console.log(ctrlID);
-
     const effects = store.gp200.currentPreset.effects;
     const pedals = store.gp200.currentPreset.ctrls[ctrlID].pedalsAssign;
-    console.log(pedals);
+    //console.log(ctrlID, pedals);
 
     const renderItem = useCallback((item: string)  => {
         const index = DATA.indexOf(item);
         const selected = index !== -1 ? pedals[index] != 0 : false;
         const state = index !== -1 ? effects[index].state : false;
-        console.log(index, state, selected);
+        //console.log(index, state, selected);
 
         const changeBinding = () => {
-            //console.log(item, "pressed!");
-            let newPedalBinding: number[] = pedals;
+            let newPedalBinding: number[] = [...pedals];
             newPedalBinding[index] = 1 - newPedalBinding[index];
             //console.log(newPedalBinding);
             store.gpActions.ChangePresetCtrlSettings(ctrlID, newPedalBinding);

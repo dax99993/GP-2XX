@@ -9,6 +9,7 @@ import React from "react";
 
 
 function PresetGeneralSettings() {
+    if (store.gp200.currentPreset == undefined) {return null};
 
     return (
         <BoundBox>
@@ -21,7 +22,7 @@ function PresetGeneralSettings() {
                     minValue={0}
                     maxValue={100}
                     step={1}
-                    currentValue={store.gp200.currentPreset?.volume ?? 0}
+                    currentValue={store.gp200.currentPreset.volume}
                     onChange={function (n: number): void {
                         store.gpActions.ChangePresetVolume(n);
                     }}                
@@ -31,17 +32,17 @@ function PresetGeneralSettings() {
                     minValue={40}
                     maxValue={250}
                     step={1}
-                    currentValue={store.gp200.currentPreset?.bpm ?? 0}
+                    currentValue={store.gp200.currentPreset.bpm}
                     onChange={function (n: number): void {
                         store.gpActions.ChangePresetBPM(n);
                     }}                
                 />
                 <NumericSlider 
                     name={"Pan"}
-                    minValue={-50}
-                    maxValue={50}
+                    minValue={-100}
+                    maxValue={100}
                     step={1}
-                    currentValue={store.gp200.currentPreset?.pan ?? 0}
+                    currentValue={store.gp200.currentPreset.pan}
                     onChange={function (n: number): void {
                         store.gpActions.ChangePresetPan(n);
                     }}                

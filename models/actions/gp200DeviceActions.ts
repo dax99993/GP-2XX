@@ -54,9 +54,6 @@ export class GP200DeviceActions implements IDeviceActions {
 
     // DECODE - ACTIONS
 
-    ChangePresetChainOrder(message: Uint8Array): void {
-        throw new Error("Method not implemented.");
-    }
 
     SyncPresetInfo() {
         // Extract Preset Information
@@ -88,7 +85,7 @@ export class GP200DeviceActions implements IDeviceActions {
         this.gp200.changePreset(num);
     }
 
-    ChangePresetEffectsChainOrder(message: Uint8Array): void {
+    ChangePresetChainOrder(message: Uint8Array): void {
         if (this.gp200.currentPreset === undefined) { return; }
         // bytes 0x15 and 0x16 have the preset number
         // bytes 0x19 and 0x1a have the Fx loop send position
@@ -121,6 +118,51 @@ export class GP200DeviceActions implements IDeviceActions {
     }
 
     //PRESET SETTINGS ACTIONS
+    ChangePresetVolumePanBPMFxLoopSettings(message: Uint8Array) {
+        // byte 0x16 contains which parameter to change 0 -> volume; 1->BPM; 6 -> Pan
+        // bytes 0x19 and 0x1a contain the volume and BPM value split in hex
+        // bytes 0x19 to 0x1c contain the PAN value encoded in two's complement
+        const param = message[0x16];
+
+        switch (param) {
+            case 0:
+                const volume = this.nibblesToByte(message[0x19], message[0x1a]);
+                // //Update Model
+                this.gp200.currentPreset?.changeVolume(volume);
+                break
+            case 1:
+                const bpm = this.nibblesToByte(message[0x19], message[0x1a]);
+                // //Update Model
+                this.gp200.currentPreset?.changeBPM(bpm);
+                break
+            case 3:
+                const sendLevel = this.nibblesToByte(message[0x19], message[0x1a]);
+                // //Update Model
+                this.gp200.currentPreset?.changeFXLoopSendLevel(sendLevel);
+                break;
+            case 4:
+                const returnLevel = this.nibblesToByte(message[0x19], message[0x1a]);
+                // //Update Model
+                this.gp200.currentPreset?.changeFxLoopReturnLevel(returnLevel);
+                break
+            case 5:
+                const mode = this.nibblesToByte(message[0x19], message[0x1a]);
+                // //Update Model
+                this.gp200.currentPreset?.changeFxLoopMode(mode);
+                break;
+            case 6:
+                const pan = this.decodeNibblesTo16BitTwosComplement([...message.slice(0x19, 0x1c + 1)]);
+                // //Update Model
+                this.gp200.currentPreset?.changePan(pan);
+                break;
+            default:
+                break;
+        }
+    }
+
+    // FX Loop
+
+    // Knob
     ChangePresetKnobSettings(message: Uint8Array) {
         // byte 0x16 Knob number: Number in range (0 to 2)
         // bytes 0x17 and 0x18 Module number split in nibbles
@@ -133,6 +175,7 @@ export class GP200DeviceActions implements IDeviceActions {
         this.gp200.currentPreset?.changeKnobSettings(knobID, knobModule, knobParameter);
     }
 
+    // CTRL
     ChangePresetCtrlSettings(message: Uint8Array) {
         // byte 0x16 CTRL number: number with range (0 to 7)
         // byte 0x18 CTRL mode: number with values 00 -> Yellow ; 01 -> Red
@@ -640,6 +683,25 @@ export class GP200DeviceActions implements IDeviceActions {
         return numberValue;
     }
 
+    decodeNibblesTo16BitTwosComplement(nibbles: number[]): number {
+        // convert nibbles to bytes
+        const lowByte = this.nibblesToByte(nibbles[0], nibbles[1]);
+        const highByte = this.nibblesToByte(nibbles[2], nibbles[3]);
+
+        // Use a DataView to handle the two's complement representation directly
+        // Create a 2-byte (16-bit) ArrayBuffer
+        const buffer = new ArrayBuffer(2);
+        // Create a DataView to manipulate the buffer
+        const view = new DataView(buffer);
+
+        view.setUint8(0, lowByte);
+        view.setUint8(1, highByte);
+
+        // Ensure the number is within the 16-bit signed integer range
+        //const n = num & 0xFFFF;
+        return view.getInt16(0, true);
+    }
+
     // MIDI utils
     _isSysEx(message: number[] | Uint8Array) {
        return message[0] == 0xf0 && message[message.length - 1] == 0xf7;
@@ -751,7 +813,7 @@ export class GP200DeviceActions implements IDeviceActions {
         //if ( compareArrays(message.slice(0, 18+1), changeParameterValue.slice(0, 18+1))) {
         if ( this.isSameMessage(message, changeChainOrder)) {
             console.log("Change Chain Order message received!.");
-            this.ChangePresetEffectsChainOrder(message);
+            this.ChangePresetChainOrder(message);
         }
     }
 
@@ -782,7 +844,10 @@ export class GP200DeviceActions implements IDeviceActions {
     decodeSysEx30length(message: Uint8Array) {
         const changePresetSysEx = BaseSysExMsg.PresetAction.changePreset;
         const changeEffectState = BaseSysExMsg.EffectActions.changeState;
-        const ChangePresetKnobSettings = BaseSysExMsg.PresetSettingsAction.KnobSettings;
+        const changePresetKnobSettings = BaseSysExMsg.PresetSettingsAction.KnobSettings;
+        // this message is the same as changeFxLoopSettings so only declare it here and decode both
+        const changePresetVolumePanBPM = BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
+
         // Compare to change preset message
         //if ( compareArrays(message.slice(0, 18+1), changePresetSysEx.slice(0, 18+1))) {
         if ( this.isSameMessage(message, changePresetSysEx) ) {
@@ -793,7 +858,11 @@ export class GP200DeviceActions implements IDeviceActions {
             console.log("Change Effect state message received!.");
             // decode and update model
             this.ChangeEffectState(message);
-        } else if (this.isSameMessage(message, ChangePresetKnobSettings)) {
+        } else if (this.isSameMessage(message, changePresetVolumePanBPM)) {
+            console.log("Change Preset Vol BPM PAN or FXLoop Settings message received!.");
+            // decode and update model
+            this.ChangePresetVolumePanBPMFxLoopSettings(message);
+        } else if (this.isSameMessage(message, changePresetKnobSettings)) {
             console.log("Change Preset Knpb Settings message received!.");
             // decode and update model
             this.ChangePresetKnobSettings(message);

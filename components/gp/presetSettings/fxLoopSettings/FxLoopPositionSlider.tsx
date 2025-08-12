@@ -2,20 +2,18 @@ import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { Colors } from "@/constants/Colors";
-import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
-import { useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 import RangeSlider from "react-native-sticky-range-slider";
 
 type SliderProps = {
     name: string;
-    shownValue?: string;
-    // minValue: number;
-    // maxValue: number;
-    // step: number;
-    currentValue: number;
-    // onChange: (n:number) => void;
+    minValue: number;
+    maxValue: number;
+    step: number;
+    lowValue: number;
+    highValue: number;
+    onChange: (low: number, high: number) => void;
 }
 
 const Thumb = (type: "high" | "low") => {
@@ -34,13 +32,6 @@ const Rail = () => <View style={styles.rail} />;
 const RailSelected = () => <View style={styles.railSelected} />;
 
 function FxLoopPositionSlider(props: SliderProps) {
-    const lowValue = store.gp200.currentPreset?.fxLoop.sendPosition;
-    const highValue = store.gp200.currentPreset?.fxLoop.returnPosition;
-
-    const handleValueChange = useCallback((newLow: number, newHigh: number) => {
-        // Update the model through action
-        store.gpActions.ChangePresetFxLoopPosition(newLow, newHigh);
-    }, []);
 
     return (
         <Box className="bg-secondary-300 mx-3 my-2 px-2 pt-3 pb-5 rounded-md">
@@ -49,12 +40,12 @@ function FxLoopPositionSlider(props: SliderProps) {
                 <Text></Text>
             </VStack>
             <RangeSlider style={styles.controlContainer}
-                min={0}
-                max={11}
-                step={1}
-                low={lowValue}
-                high={highValue}
-                onValueChanged={handleValueChange}
+                min={props.minValue}
+                max={props.maxValue}
+                step={props.step}
+                low={props.lowValue}
+                high={props.highValue}
+                onValueChanged={ props.onChange }
                 renderThumb={Thumb}
                 renderLowValue={(value) => <Text style={styles.valueText}>{value+1}</Text>}
                 renderHighValue={(value) => <Text style={styles.valueText}>{value+1}</Text>}
@@ -65,7 +56,7 @@ function FxLoopPositionSlider(props: SliderProps) {
     );
 }
 
-const THUMB_RADIUS = 10;
+const THUMB_RADIUS = 15;
 
 const styles = StyleSheet.create({
   container: {
@@ -113,4 +104,5 @@ const styles = StyleSheet.create({
   },
 });
 
+//export default FxLoopPositionSlider;
 export default observer(FxLoopPositionSlider);

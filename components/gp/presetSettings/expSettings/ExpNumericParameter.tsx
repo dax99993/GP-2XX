@@ -1,19 +1,18 @@
 import { NumericParameterModel } from "@/models/parameter/numericParameter";
-import { store } from "@/models/store";
 //import Slider from "@react-native-community/slider";
 import NumericSlider from "@/components/NumericSlider";
 import { observer } from "mobx-react-lite";
 
 type NumericParameterProps = {
     param: NumericParameterModel
-    //onChange: (n: number) => void;
+    onChange: (n: number) => void;
 }
 
-function NumericParameter({param}: NumericParameterProps) {
+function NumericParameter({param, onChange}: NumericParameterProps) {
 
-    const onChange = (n: number) => {
-       store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
-       console.log(`Numeric assign value (${param.name})= ${n}`);
+    const onNumericChange = (n: number) => {
+       param.setValue(n);
+       onChange(n);
     };
 
     return (
@@ -24,7 +23,7 @@ function NumericParameter({param}: NumericParameterProps) {
             maxValue={param.max_value[0]}
             step={param.step_size[0]}
             currentValue={param.current_value[0]}
-            onChange={ onChange }
+            onChange={ onChange ?? onNumericChange }
         />
     );
 }

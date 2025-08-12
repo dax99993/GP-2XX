@@ -50,6 +50,27 @@ export class NumericParameterModel implements IParameter {
         makeAutoObservable(this);
     }
 
+    getMinValue(): number {
+        return this.min_value[0];
+    }
+    getMinStringValue(): string {
+        if (this.min_value[0].toString() in this.labels) {
+            return `${this.labels[this.min_value[0]]}`
+        } else {
+            return `${this.min_value[0]} ${this.units}`
+        }
+    }
+    getMaxValue(): number {
+        return this.max_value[0];
+    }
+    getMaxStringValue(): string {
+        if (this.max_value[0].toString() in this.labels) {
+            return `${this.labels[this.max_value[0]]}`
+        } else {
+            return `${this.max_value[0]} ${this.units}`
+        }
+    }
+
     getValue(): number {
         return this.current_value[0];
     }
@@ -76,5 +97,11 @@ export class NumericParameterModel implements IParameter {
 
     clampValue(value: number): number {
         return Math.max(this.min_value[0], Math.min(value, this.max_value[0]));
+    }
+
+    clone(): NumericParameterModel {
+        return new NumericParameterModel(this.name, this.id,
+            this.min_value[0], this.max_value[0], this.step_size[0], this.default_value[0],
+            this.units, this.labels, this.numeric_type, this.changes_param)
     }
 }

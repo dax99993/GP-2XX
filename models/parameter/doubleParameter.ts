@@ -41,6 +41,32 @@ export class DoubleParameterModel implements IParameter {
         makeAutoObservable(this);
     }
 
+    getMinValue(): number {
+        return this.min_value[this.current_range_idx];
+    }
+
+    getMinStringValue(): string {
+        const min = this.getMinValue();
+        if (min.toString() in this.labels) {
+            return `${this.labels[min]}`
+        } else {
+            return `${min} ${this.units}`
+        }
+    }
+
+    getMaxValue(): number {
+        return this.max_value[this.current_range_idx];
+    }
+
+    getMaxStringValue(): string {
+        const max = this.getMaxValue();
+        if (max.toString() in this.labels) {
+            return `${this.labels[max]}`
+        } else {
+            return `${max} ${this.units}`
+        }
+    }
+
     setValue(value: number): number {
         const clamped_value = this.clampValue(value);
         // set on currently active range

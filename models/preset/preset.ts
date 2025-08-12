@@ -38,9 +38,11 @@ export class PresetModel {
     fxLoop: IFxLoopSettings;
 
     // EXP
-    exp1A: [IExpSettings, IExpSettings, IExpSettings];
-    exp1B: [IExpSettings, IExpSettings, IExpSettings];
-    exp2: [IExpSettings, IExpSettings, IExpSettings];
+    exps: [
+        [IExpSettings, IExpSettings, IExpSettings],
+        [IExpSettings, IExpSettings, IExpSettings],
+        [IExpSettings, IExpSettings, IExpSettings],
+    ]
 
     // KNOB
     knobs: [IKnobSettings, IKnobSettings, IKnobSettings];
@@ -70,9 +72,7 @@ export class PresetModel {
         this.fxLoop = presetInfo.fxloop;
 
         // EXP
-        this.exp1A = presetInfo.exp1A;
-        this.exp1B = presetInfo.exp1B;
-        this.exp2 = presetInfo.exp2;
+        this.exps = [presetInfo.exp1A, presetInfo.exp1B, presetInfo.exp2];
 
         // KNOB
         this.knobs = [presetInfo.knob1, presetInfo.knob2, presetInfo.knob3];
@@ -127,19 +127,51 @@ export class PresetModel {
         this.bpm = bpm;
     }
 
+    // FxLoop
     changeFxLoopPosition(sendPosition: number, returnPosition: number) {
+        console.log("Changing position", sendPosition, returnPosition);
         this.fxLoop.sendPosition = sendPosition;
         this.fxLoop.returnPosition = returnPosition;
     }
 
+    changeFxLoopReturnPosition(returnPosition: number) {
+        console.log("Changing RETURN position", returnPosition);
+        this.fxLoop.returnPosition = returnPosition;
+    }
+
+    changeFXLoopSendLevel(sendLevel: number) {
+        if (this.fxLoop.sendLevel != sendLevel) {
+            this.fxLoop.sendLevel = sendLevel;
+        }
+    }
+
+    changeFxLoopReturnLevel(returnLevel: number) {
+        this.fxLoop.returnLevel= returnLevel;
+    }
+
+    changeFxLoopMode(mode: number) {
+        this.fxLoop.mode = mode;
+    }
+
+
+    // Knob
     changeKnobSettings(knobID: number, knobModule: KnobModule, knobParameter: number) {
         this.knobs[knobID].module = knobModule;
         this.knobs[knobID].paramID = knobParameter;
     }
 
+    // CTRL
     changeCtrlSettings(ctrlID: number, pedalBinding: number[]) {
         this.ctrls[ctrlID].pedalsAssign = pedalBinding;
         this.ctrls[ctrlID].mode = 0; //fixed for now
+    }
+
+    // EXP
+    changeExpSettings(expID: number, expParamID:number, expModule: ExpModule, paramID: number, paramMin: number, paramMax: number) {
+        this.exps[expID][expParamID].module = expModule ;
+        this.exps[expID][expParamID].paramNumber = paramID;
+        this.exps[expID][expParamID].moduleParamNumberMin = paramMin;
+        this.exps[expID][expParamID].moduleParamNumberMax = paramMax;
     }
 
 }

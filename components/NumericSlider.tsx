@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/slider";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { observer } from "mobx-react-lite";
 import { StyleSheet } from "react-native";
 
 type NumericSliderProps = {
@@ -21,7 +20,7 @@ type NumericSliderProps = {
     onChange: (n:number) => void;
 }
 
-function NumericParameter(props: NumericSliderProps) {
+function NumericSlider(props: NumericSliderProps) {
     const shownValue = props.shownValue != undefined ? props.shownValue : props.currentValue;
 
     return (
@@ -66,4 +65,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default observer(NumericParameter);
+export default NumericSlider;

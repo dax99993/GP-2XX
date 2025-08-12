@@ -33,6 +33,12 @@ export interface IParameter {
 
     // util methods
     clampValue(value: number): number;
+
+    // for exp settings
+    getMinValue(): number;
+    getMinStringValue(): string;
+    getMaxValue(): number;
+    getMaxStringValue(): string;
 }
 
 

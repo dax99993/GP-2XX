@@ -19,7 +19,6 @@ export const BaseSysExMsg = {
     
     },
 
-    //
     PresetSettingsAction: {
         // byte 0x16 contains which parameter to change 0 -> volume; 1->BPM; 6 -> Pan
         // bytes 0x19 and 0x1a contain the volume and BPM value split in hex
@@ -56,20 +55,21 @@ export const BaseSysExMsg = {
             0x05, 0x00, 0x06, 0x00, 0x00, 0xf7
         ],
 
-        // EXP settings
-        ExpSetting: {
-            exp1AParam1: [],
-            exp1AParam2: [],
-            exp1AParam3: [],
-
-            exp1BParam1: [],
-            exp1BParam2: [],
-            exp1BParam3: [],
-
-            exp2Param1: [],
-            exp2Param2: [],
-            exp2Param3: [],
-        },
+        // EXP settings 46 bytes
+        ExpSetting: [
+            // byte 0x15 EXP pedal to bind: values in range 0 -> 1A; 1 -> 1B; 2 -> 2
+            // byte 0x16 EXP parameter number to bind: 0 -> param 1; 1 -> param 2; 2 -> param 3
+            // byte 0x17 and 0x18 Module ID
+            // byte 0x1a Module parameter id to bind: with values in range (0 to 14)
+            // bytes 0x1d to 0x24 Parameter maximum value encoded
+            // bytes 0x25 to 0x2c Parameter minimum value encoded
+            0xf0, 0x21, 0x25, 0x7e, 0x47, 0x50, 0x2d, 0x32,
+            0x12, 0x10, 0x00, 0x00, 0x00, 0x00, 0x0c, 0x00,
+            0x00, 0x00, 0x0c, 0x00, 0x00, 0x02, 0x01, 0x00,
+            0x05, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x0c, 0x08, 0x04, 0x02, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0xf7
+        ],
 
         // CTRL settings
         CTRLSettings: [
@@ -86,13 +86,17 @@ export const BaseSysExMsg = {
         ],
 
         // FX Loop
-        FxLoop: {
-            changeSendPosition: [],
-            changeReturnPosition: [],
-            changeSendLevel: [],
-            changeReturnLevel: [],
-            changeMode: [],
-        }
+        // This only chances 3 of the 5 parameters in FxLoop, the other two are changed in
+        // chainOrder
+        // SAME message as changePresetFxLoopSettings just different param ids
+        FxLoopSettings: [
+            // byte 0x16 FxLoop Parameter ID: 3 -> sendLevel; 4 -> returnLevel; 5 -> mode
+            // bytes 0x19 and 0x1a Parameter Value: split in hex digits (nibbles)
+            0xf0, 0x21, 0x25, 0x7e, 0x47, 0x50, 0x2d, 0x32,
+            0x12, 0x08, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00,
+            0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x03, 0x00,
+            0x00, 0x01, 0x03, 0x00, 0x00, 0xf7
+        ]
     },
 
     //
