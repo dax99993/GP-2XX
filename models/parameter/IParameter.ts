@@ -35,6 +35,7 @@ export interface IParameter {
     clampValue(value: number): number;
 
     // for exp settings
+    getCurrentStep(): number;
     getMinValue(): number;
     getMinStringValue(): string;
     getMaxValue(): number;

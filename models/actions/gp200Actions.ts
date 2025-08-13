@@ -87,8 +87,8 @@ export class GP200Actions implements IActions{
         // Split bytes into nibbles
         const nibbles = this.byteArrayToNibbleArray(uint8Array);
 
-        console.log(uint8Array);
-        console.log(nibbles)
+        //console.log(uint8Array);
+        //console.log(nibbles)
 
         return nibbles; 
     }
@@ -412,7 +412,6 @@ export class GP200Actions implements IActions{
         const encodedMin = this.encodeParamValueFloat(paramMin);
         const encodedMax = this.encodeParamValueFloat(paramMax);
 
-        //console.log(encodedMax.length, encodedMax);
 
         // write both params
         for(let i = 0; i < encodedMax.length; i=i+1) {

@@ -41,6 +41,10 @@ export class DoubleParameterModel implements IParameter {
         makeAutoObservable(this);
     }
 
+    getCurrentStep(): number {
+        return this.step_size[this.current_range_idx];
+    }
+
     getMinValue(): number {
         return this.min_value[this.current_range_idx];
     }

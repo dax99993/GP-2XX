@@ -1,5 +1,5 @@
 import { DefaultEffectsInfo } from "@/constants/DefaultEffects";
-import { action, makeObservable, observable } from "mobx";
+import { makeAutoObservable } from "mobx";
 import { DoubleParameterModel } from "../parameter/doubleParameter";
 import { DeserializeParam, IParameter } from "../parameter/IParameter";
 import { ISyncEffectInfo } from "../preset/ISyncPresetInfo";
@@ -63,13 +63,14 @@ export class EffectModel {
         this.state = state;
         this.parameters = parameters;
 
-        makeObservable(this, {
-            state: observable,
-            parameters: observable,
+        // makeObservable(this, {
+        //     state: observable,
+        //     parameters: observable,
 
-            changeState: action,
-            setParameterValue: action,
-        });
+        //     changeState: action,
+        //     setParameterValue: action,
+        // });
+        makeAutoObservable(this);
     }
 
     get typeName(): string {
@@ -95,6 +96,7 @@ export class EffectModel {
         }
 
         p[0].setValue(value);
+        console.log("setting param", p[0].name, "value to", value);
 
         // check for double parameters
         const other_param_name = p[0].changes_param;

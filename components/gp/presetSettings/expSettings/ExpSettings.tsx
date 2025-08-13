@@ -1,11 +1,13 @@
+import NumericSlider from "@/components/NumericSlider";
 import PickerSelector from "@/components/pickerSelector";
 import { Divider } from "@/components/ui/divider";
 import { VStack } from "@/components/ui/vstack";
+import { DoubleParameterModel } from "@/models/parameter/doubleParameter";
 import { IParameter } from "@/models/parameter/IParameter";
 import { ExpModule } from "@/models/preset/IExpSettings";
 import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
-import ExpParamSetter from "./ExpParamSetter";
+import { useCallback } from "react";
 
 const MODULE_LABELS: [string, string][] = Object.entries(ExpModule)
   .filter(([key, value]) => typeof value === 'number') // Filter out the reverse mappings (numeric keys)
@@ -18,7 +20,7 @@ function GetParamLabels(module: ExpModule): [string, string][] {
         default:
             // get params in module
             if (store.gp200.currentPreset) {
-                console.log(store.gp200.currentPreset.effects[module as number].type);
+                console.log("Get Param Labels", store.gp200.currentPreset.effects[module as number].type);
                 const l: [string, string][] = store.gp200.currentPreset.effects[module as number]
                 .parameters.map(
                     p => {
@@ -40,12 +42,31 @@ function GetParam(module: ExpModule, paramID: number): IParameter | undefined {
         default:
             // get params in module
             if (store.gp200.currentPreset) {
-                console.log(store.gp200.currentPreset.effects[module as number].type);
+                console.log("Get Param type",store.gp200.currentPreset.effects[module as number].type);
+                // get param with given id
                 return store.gp200.currentPreset.effects[module as number].parameters
-                .find(p => p.id == paramID)
+                .find(p => p.id === paramID)
             } else {
                 return undefined;
             }
+    }
+}
+
+function GetParamRange(module: ExpModule, paramID: number): [number, number, number]{
+    const DefaultRange: [number, number, number] = [0, 100, 1];
+
+    if (store.gp200.currentPreset == undefined) {return DefaultRange;}
+
+    switch (module) {
+        case ExpModule.OFF:
+            return DefaultRange;
+        default:
+            //console.log("Effect module Type:", store.gp200.currentPreset.effects[module as number].type);
+            // get param with given id
+            let p = store.gp200.currentPreset.effects[module as number].parameters
+                .find(p => p.id === paramID);
+
+            return p != undefined ? [p.getMinValue(), p.getMaxValue(), p.getCurrentStep()] : DefaultRange;
     }
 }
 
@@ -64,25 +85,61 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
     const currentParamMin = store.gp200.currentPreset.exps[expID][expParamID].moduleParamNumberMin;
     const currentParamMax = store.gp200.currentPreset.exps[expID][expParamID].moduleParamNumberMax;
 
-    console.log(expModule, expParam, currentParamMin, currentParamMax);
+    console.log("ExpModule:", expModule, "ExpParam:", expParam, "ExpParamMin:", currentParamMin, "ExpParamMax:", currentParamMax);
 
     // Get ranges of value
+    const paramRange = GetParamRange(expModule, expParam);
+    console.log("param Default Range", paramRange);
+    const [paramMin, paramMax, paramStep] = paramRange;
+
+
+    // Show correct param value
+    // const getStringValue = useCallback( (n: number): string => {
+    //     const param = GetParam(expModule, expParam);
+
+    //     if (param == undefined) return n.toString();
+
+    //     if (param.type == "Double") {
+    //         const q = param as DoubleParameterModel;
+    //         if (q.current_range_idx !== 0 && n in param.labels) {
+    //             return param.labels[n];
+    //         } else {
+    //             return `${n} ${param.units}` 
+    //         }
+    //     } else if (param.type == "Numeric") {
+    //         if (n in param.labels) {
+    //             return param.labels[n];
+    //         } else {
+    //             return `${n} ${param.units}` 
+    //         }
+    //     } else {
+    //         return param.labels[n];
+    //     }
+    // }, [expModule, expParam]);
+
     const param = GetParam(expModule, expParam);
-    console.log("param", param);
+    const getStringValue = useCallback( (n: number): string => {
+        //const param = GetParam(expModule, expParam);
 
-    const paramMin = param?.getMinValue();
-    const paramMax = param?.getMaxValue();
-    console.log("Module min and max", paramMin, paramMax);
+        if (param == undefined) return n.toString();
 
-    // Labels
-    const getLabel = (n: number) => {
-        if (param == undefined) return "";
-        if (n in param.labels) {
-            return param.labels[n];
+        if (param.type == "Double") {
+            const q = param as DoubleParameterModel;
+            if (q.current_range_idx !== 0 && n in param.labels) {
+                return param.labels[n];
+            } else {
+                return `${n} ${param.units}` 
+            }
+        } else if (param.type == "Numeric") {
+            if (n in param.labels) {
+                return param.labels[n];
+            } else {
+                return `${n} ${param.units}` 
+            }
         } else {
-            return `${n} ${param.units}` 
+            return param.labels[n];
         }
-    }
+    }, [param]);
 
     return (
         <VStack space="lg">
@@ -90,14 +147,16 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
                 currentValue={expModule.toString()}
                 labels={MODULE_LABELS}
                 onChange={function (s: string, n: number): void {
-                    console.log("selected EXP Module", s, n);
                     if (store.gp200.currentPreset){
-                        // have to check what is the first paramID in effect! (not always 0)
-                        // Get minimum and maximum of current effect to set them
                         const module = parseInt(s) as ExpModule;
-                        //const [min, max] = GetParamRange(module)[0];
+                        // All effects except CAB have a parameter with ID 0
+                        const paramID = module == ExpModule.CAB ? 1 : 0;
+                        //console.log("Set EXP MODULE ", s, "paramID", paramID);
+                        // Get range of current effect to set them
+                        const [min, max, step]= GetParamRange(module, paramID);
+                        //console.log("Range",min, max, step);
                         store.gpActions.ChangePresetExpSettings(expID, expParamID,
-                            module, 0, 0, 100);
+                            module, paramID, min, max);
                     }
                 }}
             />
@@ -105,43 +164,42 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
                 currentValue={expParam.toString()}
                 labels={GetParamLabels(expModule)}
                 onChange={function (s: string, n: number): void {
-                    console.log("selected EXP Param", s, n);
                     if (store.gp200.currentPreset){
                         const moduleParamID = parseInt(s);
-                        const param = GetParam(expModule, expParam);
-                        const min = param?.getMinValue() ?? 0;
-                        const max = param?.getMaxValue() ?? 100;
-                        console.log(min, max);
+                        //console.log("Set EXP MODULE ", expModule, moduleParamID);
+                        const [min, max, _]= GetParamRange(expModule, moduleParamID);
+                        //console.log("Ranges: ", min, max, step);
                         store.gpActions.ChangePresetExpSettings(expID, expParamID,
                             expModule, moduleParamID, min, max);
                     }
                 }}
             />
             <Divider/>
-            {param != undefined &&
+            {expModule != ExpModule.OFF &&
             <>
-            <ExpParamSetter
+            <NumericSlider
+                key={currentParamMin}
                 name={"Param Min"}
-                shownValue={getLabel}
-                minValue={paramMin ?? 0}
-                maxValue={paramMax ?? 100}
-                step={1}
+                shownValue={getStringValue}
+                minValue={paramMin}
+                maxValue={paramMax}
+                step={paramStep}
                 currentValue={currentParamMin}
-                onNumericChange={function (n: number): void {
-                    console.log("Change max value:", n);
+                onChange={function (n: number): void {
+                    console.log("Change Exp Param Min value:", n);
                     store.gpActions.ChangePresetExpSettings(expID, expParamID,
                         expModule, expParam, n, currentParamMax);
                 }}
             />
-            <ExpParamSetter
+            <NumericSlider
                 name={"Param Max"}
-                shownValue={getLabel}
-                minValue={paramMin ?? 0}
-                maxValue={paramMax ?? 100}
-                step={1}
+                shownValue={getStringValue}
+                minValue={paramMin}
+                maxValue={paramMax}
+                step={paramStep}
                 currentValue={currentParamMax}
-                onNumericChange={function (n: number): void {
-                    console.log("Change min value:", n);
+                onChange={function (n: number): void {
+                    console.log("Change Exp Param Max value:", n);
                     store.gpActions.ChangePresetExpSettings(expID, expParamID,
                         expModule, expParam, currentParamMin, n);
                 }}

@@ -16,10 +16,10 @@ function FxLoopSettings() {
     const returnLevel = store.gp200.currentPreset.fxLoop.returnLevel;
     const mode = store.gp200.currentPreset.fxLoop.mode;
 
-    console.log(sendLevel, returnLevel, mode);
+    console.log("FxLoop SendLevel", sendLevel, "ReturnLevel", returnLevel, "Mode",mode);
 
     const onChange = (values: number []) => {
-        console.log("New values", values);
+        console.log("New FxLoop position values", values);
         store.gpActions.ChangePresetFxLoopPosition(values[0], values[1]);
     }
 
@@ -44,7 +44,7 @@ function FxLoopSettings() {
                 step={1}
                 currentValue={sendLevel}
                 onChange={function (n: number): void {
-                    console.log(n);
+                    //console.log(n);
                     store.gpActions.ChangePresetFxLoopSendLevel(n);
                 }}
             />
@@ -63,7 +63,7 @@ function FxLoopSettings() {
                 currentValue={mode.toString()}
                 labels={[["0", "Parallel"], ["1", "Series"]]}
                 onChange={function (s: string, n: number): void {
-                    console.log(s);
+                    //console.log(s);
                     store.gpActions.ChangePresetFxLoopMode(n);
                 }}            
             />

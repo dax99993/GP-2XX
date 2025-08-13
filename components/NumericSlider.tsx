@@ -9,12 +9,13 @@ import { Slider } from '@react-native-assets/slider';
 // } from "@/components/ui/slider";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { observer } from "mobx-react-lite";
 import { useMemo, useState } from "react";
 import { StyleSheet } from "react-native";
 
 type NumericSliderProps = {
     name: string;
-    shownValue?: string;
+    shownValue?: (n: number) => string;
     minValue: number;
     maxValue: number;
     step: number;
@@ -24,12 +25,18 @@ type NumericSliderProps = {
 
 function NumericSlider(props: NumericSliderProps) {
     const [value, setValue] = useState(props.currentValue);
+    const [isSliding, setIsSliding] = useState(false);
 
-    const shownValue = useMemo(()=>{
-        const v = value !== props.currentValue ? value : props.currentValue;
-        const shownValue = props.shownValue != undefined ? props.shownValue : v.toString();
+    const shownValue = useMemo(() => {
+        let v;
+        if (isSliding) {
+            v = value;
+        } else {
+            v = props.currentValue;
+        }
+        const shownValue = props.shownValue != undefined ? props.shownValue(v) : v.toString();
         return shownValue;
-    }, [props.shownValue, props.currentValue, value])
+    }, [props.shownValue, props.currentValue, value, isSliding])
 
     return (
         <Box className="bg-secondary-300 mx-3 my-2 px-2 pt-3 pb-5 rounded-md">
@@ -43,8 +50,14 @@ function NumericSlider(props: NumericSliderProps) {
                 maximumValue={props.maxValue}
                 step={props.step}
                 value={props.currentValue}
-                onValueChange={(n : number) => setValue(n)}
-                onSlidingComplete={props.onChange}
+                onValueChange={(n: number) => {
+                    setValue(n);
+                    setIsSliding(true);
+                }}
+                onSlidingComplete={(n: number) => {
+                    props.onChange(n);
+                    setIsSliding(false);
+                }}
                 thumbTintColor="white"
                 minimumTrackTintColor="white"
                 trackHeight={5}
@@ -54,34 +67,6 @@ function NumericSlider(props: NumericSliderProps) {
     );
 }
 
-// function NumericSlider(props: NumericSliderProps) {
-//     const shownValue = props.shownValue != undefined ? props.shownValue : props.currentValue;
-
-//     return (
-//         <Box className="bg-secondary-300 mx-3 my-2 px-2 pt-3 pb-5 rounded-md">
-//             <VStack style={styles.infoContainer}>
-//                 <Text size="lg" bold={true}>{props.name}</Text>
-//                 <Text>{shownValue}</Text>
-//             </VStack>
-//             <Slider
-//                 style={styles.controlContainer}
-//                 size="lg"
-//                 sliderTrackHeight={15}
-//                 minValue={props.minValue}
-//                 maxValue={props.maxValue}
-//                 step={props.step}
-//                 value={props.currentValue}
-//                 onChange={props.onChange}
-//             >
-//                 <SliderTrack>
-//                     <SliderFilledTrack />
-//                 </SliderTrack>
-//                 <SliderThumb />
-//             </Slider>
-
-//         </Box>
-//     );
-// }
 
 const styles = StyleSheet.create({
     container: {
@@ -99,4 +84,5 @@ const styles = StyleSheet.create({
 });
 
 
-export default NumericSlider;
+//export default NumericSlider;
+export default observer(NumericSlider);

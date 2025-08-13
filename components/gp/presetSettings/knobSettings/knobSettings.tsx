@@ -39,12 +39,11 @@ function GetParamLabels(module: KnobModule): [string, string][] {
 function KnobSettings({knobID}: KnobSettingsProps) {
     if (store.gp200.currentPreset == undefined) {return null};
 
-    console.log(knobID);
     // Get param names of modules
     const knobModule = store.gp200.currentPreset?.knobs[knobID].module;
     const knobValue = store.gp200.currentPreset?.knobs[knobID].paramID;
     const param_labels = GetParamLabels(knobModule);
-    console.log(knobID, knobModule, knobValue, param_labels);
+    console.log("KnobSettings", knobID, knobModule, knobValue, param_labels);
 
     return (
         <>
@@ -60,7 +59,7 @@ function KnobSettings({knobID}: KnobSettingsProps) {
                 currentValue={knobValue?.toString()}
                 labels={param_labels}
                 onChange={function (s: string, n: number): void {
-                    console.log("selected Param", s, n);
+                    console.log("selected Knob Param", s, n);
                     store.gpActions.ChangePresetKnobSettings(knobID, knobModule, parseInt(s));
                 }}
             />

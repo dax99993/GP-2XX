@@ -50,6 +50,9 @@ export class SelectParameterModel implements IParameter {
 
         makeAutoObservable(this);
     }
+    getCurrentStep(): number {
+        return this.step_size[0];
+    }
 
     getMinValue(): number {
         return this.min_value[0];

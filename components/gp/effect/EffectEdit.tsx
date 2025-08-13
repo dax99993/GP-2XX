@@ -23,7 +23,7 @@ function EffectEdit() {
             <ScrollView style={styles.parametersContainer}>
                 { store.gp200.currentEffect && store.gp200.currentEffect.parameters.map(p => {
                     if (p.type === "Numeric") {
-                        return <NumericParameter key={p.name} param={p as NumericParameterModel}/>
+                        return <NumericParameter key={p.name + p.id} param={p as NumericParameterModel}/>
                     } else if (p.type === "Select" ) {
                         return <SelectParameter key={p.name} param={p as SelectParameterModel}/>
                     } else {

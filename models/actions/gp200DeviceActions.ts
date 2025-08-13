@@ -162,6 +162,7 @@ export class GP200DeviceActions implements IDeviceActions {
 
     // FX Loop
     ChangePresetExpSettings(message: Uint8Array) {
+        if (this.gp200.currentPreset == undefined) return;
         // byte 0x15 EXP pedal to bind: values in range 0 -> 1A; 1 -> 1B; 2 -> 2
         // byte 0x16 EXP parameter number to bind: 0 -> param 1; 1 -> param 2; 2 -> param 3
         // byte 0x17 and 0x18 Module ID
@@ -173,11 +174,25 @@ export class GP200DeviceActions implements IDeviceActions {
         const expModule = this.nibblesToByte(message[0x17], message[0x18]) as ExpModule;
         const moduleParamID = message[0x1a];
         
-        const paramMax = this.decodeParamValueFloat([...message.slice(0x1d, 0x24 + 1)]);
-        const paramMin = this.decodeParamValueFloat([...message.slice(0x25, 0x2c + 1)]);
+        const paramMaxEncoded = [...message.slice(0x1d, 0x24 + 1)];
+        const paramMinEncoded = [...message.slice(0x25, 0x2c + 1)];
+
+        // Get parameter type for correct decoding format
+        let paramType = "";
+        if (expModule == ExpModule.OFF) {
+            paramType = "int";
+        } else {
+            this.gp200.currentPreset.effects[expModule].parameters.forEach(p => {
+                if (p.id === moduleParamID) {
+                    paramType = p.numeric_type[0];
+                }
+            });
+        }
+        const paramMax = this.decodeParamValue(paramMaxEncoded, paramType);
+        const paramMin = this.decodeParamValue(paramMinEncoded, paramType);
 
         // //Update Model
-        this.gp200.currentPreset?.changeExpSettings(expID, expParamID, expModule, moduleParamID, paramMin, paramMax);
+        this.gp200.currentPreset.changeExpSettings(expID, expParamID, expModule, moduleParamID, paramMin, paramMax);
     }
 
 
@@ -268,16 +283,7 @@ export class GP200DeviceActions implements IDeviceActions {
                 }
         });
 
-        let decodedValue: number;
-        if (paramType === "float") {
-            decodedValue = this.decodeParamValueFloat(encoded);
-            // round value to one decimal
-            decodedValue = Math.round(decodedValue * 10) / 10;
-        } else {
-            decodedValue = this.decodeParamValueFloat(encoded);
-            // remove decimals
-            decodedValue = Math.round(decodedValue);
-        }
+        const decodedValue = this.decodeParamValue(encoded, paramType);
 
         //console.log(`Change parameter ${paramType} :`, effectChainID, paramId, decodedValue);
 
@@ -632,7 +638,7 @@ export class GP200DeviceActions implements IDeviceActions {
 
             const incomingMessage = [...event.data];
             const messageHex = incomingMessage.map((b) => b.toString(16).toUpperCase().padStart(2, "0")).join(" ");
-            console.log(`Midievent (${this.message_received_counter}) [${event.receivedTime}] {${incomingMessage.length}}: ${messageHex}`);
+            console.log(`MidiEvent (${this.message_received_counter}) [${event.receivedTime}] {${incomingMessage.length}}: ${messageHex}`);
             //this.message_received_counter++;
             this.decodeReceivedSysEx(event.data);
         };
@@ -702,6 +708,19 @@ export class GP200DeviceActions implements IDeviceActions {
         return numberValue;
     }
 
+    decodeParamValue(encoded: number[], type: string): number {
+        let decodedValue = this.decodeParamValueFloat(encoded);
+        if (type === "float") {
+            // round value to one decimal
+            decodedValue = Math.round(decodedValue * 10) / 10;
+        } else {
+            // remove decimals
+            decodedValue = Math.round(decodedValue);
+        }
+
+        return decodedValue;
+    }
+
     decodeNibblesTo16BitTwosComplement(nibbles: number[]): number {
         // convert nibbles to bytes
         const lowByte = this.nibblesToByte(nibbles[0], nibbles[1]);
@@ -745,11 +764,8 @@ export class GP200DeviceActions implements IDeviceActions {
 
     // MIDI DECODE METHODS
     decodeReceivedSysEx(message: Uint8Array) {
-       // Parse the message
-       // execute corresponding action 
+       // Parse the message and execute corresponding action 
         if (this._isGPSysEx(message)) {
-            //console.log("GP SysEx received");
-            //console.log(message);
             const messageLength = message.length;
             switch (messageLength) {
                 case 384: 
@@ -771,7 +787,7 @@ export class GP200DeviceActions implements IDeviceActions {
                     this.decodeSysEx30length(message);
                     break;
                 default:
-                    console.log("Decode", messageLength, message);
+                    console.log(`DECODE (${messageLength}):\t${message}`);
                     break;
             }
         }
@@ -829,7 +845,7 @@ export class GP200DeviceActions implements IDeviceActions {
 
     decodeSysEx54length(message: Uint8Array) {
         const changeChainOrder = BaseSysExMsg.PresetSettingsAction.changeChainOrder;
-        //if ( compareArrays(message.slice(0, 18+1), changeParameterValue.slice(0, 18+1))) {
+
         if ( this.isSameMessage(message, changeChainOrder)) {
             console.log("Change Chain Order message received!.");
             this.ChangePresetChainOrder(message);
@@ -839,7 +855,7 @@ export class GP200DeviceActions implements IDeviceActions {
     decodeSysEx46length(message: Uint8Array) {
         const changeParameterValue = BaseSysExMsg.EffectActions.changeParameterValue;
         const changePresetExpSettings = BaseSysExMsg.PresetSettingsAction.ExpSetting;
-        //if ( compareArrays(message.slice(0, 18+1), changeParameterValue.slice(0, 18+1))) {
+
         if ( this.isSameMessage(message, changeParameterValue)) {
             console.log("Change Parameter Value message received!.");
             this.ChangeEffectParamValue(message);
@@ -854,7 +870,6 @@ export class GP200DeviceActions implements IDeviceActions {
         const changeEffect = BaseSysExMsg.EffectActions.changeEffect;
         const changePresetCtrlSettings = BaseSysExMsg.PresetSettingsAction.CTRLSettings;
         
-        //if ( compareArrays(message.slice(0, 18+1), changeParameterValue.slice(0, 18+1))) {
         if ( this.isSameMessage(message, changeEffect)) {
             console.log("Change Effect message received!.");
             this.ChangeEffect(message);
@@ -873,7 +888,6 @@ export class GP200DeviceActions implements IDeviceActions {
         const changePresetVolumePanBPM = BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
 
         // Compare to change preset message
-        //if ( compareArrays(message.slice(0, 18+1), changePresetSysEx.slice(0, 18+1))) {
         if ( this.isSameMessage(message, changePresetSysEx) ) {
             console.log("Change preset message received!.");
             this.ChangePreset(message);

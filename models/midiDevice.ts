@@ -178,7 +178,7 @@ export class MidiDevice {
     }
 
     sendMessage(message: Uint8Array | number[]) {
-        console.log("Sending = ", message);
+        console.log(`SEND (${message.length}):\t[${message}]`);
         // if (!this.outputPort) {
         //     throw new Error("Output Port should be defined when sending a message");
         // }

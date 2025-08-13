@@ -49,6 +49,9 @@ export class NumericParameterModel implements IParameter {
 
         makeAutoObservable(this);
     }
+    getCurrentStep(): number {
+        return this.step_size[0];
+    }
 
     getMinValue(): number {
         return this.min_value[0];
@@ -99,9 +102,4 @@ export class NumericParameterModel implements IParameter {
         return Math.max(this.min_value[0], Math.min(value, this.max_value[0]));
     }
 
-    clone(): NumericParameterModel {
-        return new NumericParameterModel(this.name, this.id,
-            this.min_value[0], this.max_value[0], this.step_size[0], this.default_value[0],
-            this.units, this.labels, this.numeric_type, this.changes_param)
-    }
 }

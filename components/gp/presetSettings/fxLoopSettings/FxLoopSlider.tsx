@@ -55,7 +55,7 @@ interface IStepMarker {
 }
 
 const StepMarker = (props: IStepMarker) => {
-  console.log("Step props", props);
+  //console.log("Step props", props);
   return (
     <View>
       {!props.stepMarked &&
@@ -103,10 +103,8 @@ const styles = StyleSheet.create({
   },
     controlContainer: {
         marginTop: 10,
-        //paddingLeft:20,
-        //paddingRight: 20,
-        marginLeft: 20,
-        marginRight: 35,
+        marginLeft: 25,
+        marginRight: 25,
     },
   thumb: {
     width: THUMB_RADIUS * 2,

@@ -114,6 +114,7 @@ export class PresetModel {
         this.effectsChainOrder = order
     }
 
+
     // settings
     changeVolume(vol: number) {
         this.volume = vol;
@@ -168,6 +169,7 @@ export class PresetModel {
 
     // EXP
     changeExpSettings(expID: number, expParamID:number, expModule: ExpModule, paramID: number, paramMin: number, paramMax: number) {
+        console.log("Update EXP",expID, expParamID, expModule, paramID, paramMin, paramMax );
         this.exps[expID][expParamID].module = expModule ;
         this.exps[expID][expParamID].paramNumber = paramID;
         this.exps[expID][expParamID].moduleParamNumberMin = paramMin;

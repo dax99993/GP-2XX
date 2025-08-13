@@ -10,21 +10,27 @@ type DoubleParameterProps = {
 
 function DoubleParameter({param}: DoubleParameterProps) {
 
-    const isSecondRangeActive = param.current_range_idx === 1;
-    //console.log("second range activated? = ", isSecondRangeActive);
-
     const onChangeNumeric = (n: number) => {
-       //store.gp200.changeParamValue(store.gp200.current_effect.type, param.id, v);
        store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
-       //console.log("Numeric new value = ", v);
-       //console.log(`Numeric assign value (${param.name})= ${n}`);
     };
 
     const onChangeSelect = (v:string, n: number) => {
-        //console.log("param picker new value = ", v, n);
         store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
-        //console.log(`Select assign value (${param.name}) = ${n}, ${v}`);
     };
+
+    const isSecondRangeActive = param.current_range_idx !== 0;
+
+    const getStringValue = (n: number): string => {
+        if (param == undefined) return "";
+
+        if (!isSecondRangeActive){
+            console.log("second range active?", isSecondRangeActive);
+            // double params never use labels on numeric range
+            return `${n} ${param.units}` 
+        }
+
+        return "";
+    }
 
     const labels = Object.entries(param.labels);
 
@@ -34,7 +40,7 @@ function DoubleParameter({param}: DoubleParameterProps) {
                 !isSecondRangeActive &&
                 <NumericSlider
                     name={param.name}
-                    shownValue={param.getStringValue()}
+                    shownValue={getStringValue}
                     minValue={param.min_value[0]}
                     maxValue={param.max_value[0]}
                     step={param.step_size[0]}

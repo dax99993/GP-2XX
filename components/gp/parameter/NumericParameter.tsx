@@ -6,25 +6,32 @@ import { observer } from "mobx-react-lite";
 
 type NumericParameterProps = {
     param: NumericParameterModel
-    //onChange: (n: number) => void;
 }
 
 function NumericParameter({param}: NumericParameterProps) {
 
     const onChange = (n: number) => {
        store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
-       console.log(`Numeric assign value (${param.name})= ${n}`);
     };
+
+    const getStringValue = (n: number): string => {
+        if (param == undefined) return "";
+        if (n in param.labels) {
+            return param.labels[n];
+        } else {
+            return `${n} ${param.units}` 
+        }
+    }
 
     return (
         <NumericSlider 
             name={param.name}
-            shownValue={param.getStringValue()}
+            shownValue={getStringValue}
             minValue={param.min_value[0]}
             maxValue={param.max_value[0]}
             step={param.step_size[0]}
             currentValue={param.current_value[0]}
-            onChange={ onChange }
+            onChange={onChange}
         />
     );
 }
