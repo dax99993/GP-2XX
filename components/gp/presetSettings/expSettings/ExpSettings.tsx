@@ -7,12 +7,14 @@ import { IParameter } from "@/models/parameter/IParameter";
 import { ExpModule } from "@/models/preset/IExpSettings";
 import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
-import { useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 const MODULE_LABELS: [string, string][] = Object.entries(ExpModule)
   .filter(([key, value]) => typeof value === 'number') // Filter out the reverse mappings (numeric keys)
   .map(([key, value]) => ( [value.toString(), key ]) );
   
+
+// This can be shorten by using param as input and memoing
 function GetParamLabels(module: ExpModule): [string, string][] {
     switch (module) {
         case ExpModule.OFF:
@@ -34,21 +36,18 @@ function GetParamLabels(module: ExpModule): [string, string][] {
     }
 }
 
-
 function GetParam(module: ExpModule, paramID: number): IParameter | undefined {
+    if (store.gp200.currentPreset == undefined) {return undefined;}
+
     switch (module) {
         case ExpModule.OFF:
             return undefined;
         default:
             // get params in module
-            if (store.gp200.currentPreset) {
-                console.log("Get Param type",store.gp200.currentPreset.effects[module as number].type);
-                // get param with given id
-                return store.gp200.currentPreset.effects[module as number].parameters
+            console.log("Get Param",store.gp200.currentPreset.effects[module as number].type);
+            // get param with given id
+            return store.gp200.currentPreset.effects[module as number].parameters
                 .find(p => p.id === paramID)
-            } else {
-                return undefined;
-            }
     }
 }
 
@@ -61,7 +60,7 @@ function GetParamRange(module: ExpModule, paramID: number): [number, number, num
         case ExpModule.OFF:
             return DefaultRange;
         default:
-            //console.log("Effect module Type:", store.gp200.currentPreset.effects[module as number].type);
+            console.log("Get Param Range:", store.gp200.currentPreset.effects[module as number].type);
             // get param with given id
             let p = store.gp200.currentPreset.effects[module as number].parameters
                 .find(p => p.id === paramID);
@@ -80,6 +79,8 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
     if (store.gp200.currentPreset == undefined) {return null};
 
     console.log("ExpID", expID, "paramID", expParamID);
+
+    // Store values required for expSettings
     const expModule = store.gp200.currentPreset.exps[expID][expParamID].module;
     const expParam = store.gp200.currentPreset.exps[expID][expParamID].paramNumber;
     const currentParamMin = store.gp200.currentPreset.exps[expID][expParamID].moduleParamNumberMin;
@@ -87,40 +88,45 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
 
     console.log("ExpModule:", expModule, "ExpParam:", expParam, "ExpParamMin:", currentParamMin, "ExpParamMax:", currentParamMax);
 
+
+    // Parameter info used for setting info
+    const PARAM_LABELS: [string, string][] = useMemo(()=>{
+        return GetParamLabels(expModule);
+    }, [expModule]);
+
+    const paramRange = useMemo(() => 
+        GetParamRange(expModule, expParam),
+    [expModule, expParam]);
+
+    const param = useMemo(() =>
+        GetParam(expModule, expParam),
+    [expModule, expParam]);
+
+
+    // Slider values to show correct info
+    const [min, setMin] = useState(currentParamMin);
+    // Prevent flicker in value
+    useEffect(()=> {
+        //console.log("Setting min", currentParamMin);
+        if (min != currentParamMin) {
+            setMin(currentParamMin)
+        }
+    }, [currentParamMin]);
+
+    const [max, setMax] = useState(currentParamMax);
+    useEffect(()=> {
+        //console.log("Setting max", currentParamMax);
+        if (max != currentParamMax) {
+            setMax(currentParamMax)
+        }
+    }, [currentParamMax]);
+
     // Get ranges of value
-    const paramRange = GetParamRange(expModule, expParam);
     console.log("param Default Range", paramRange);
     const [paramMin, paramMax, paramStep] = paramRange;
 
-
-    // Show correct param value
-    // const getStringValue = useCallback( (n: number): string => {
-    //     const param = GetParam(expModule, expParam);
-
-    //     if (param == undefined) return n.toString();
-
-    //     if (param.type == "Double") {
-    //         const q = param as DoubleParameterModel;
-    //         if (q.current_range_idx !== 0 && n in param.labels) {
-    //             return param.labels[n];
-    //         } else {
-    //             return `${n} ${param.units}` 
-    //         }
-    //     } else if (param.type == "Numeric") {
-    //         if (n in param.labels) {
-    //             return param.labels[n];
-    //         } else {
-    //             return `${n} ${param.units}` 
-    //         }
-    //     } else {
-    //         return param.labels[n];
-    //     }
-    // }, [expModule, expParam]);
-
-    const param = GetParam(expModule, expParam);
+    // Get correct value to show as current slider value
     const getStringValue = useCallback( (n: number): string => {
-        //const param = GetParam(expModule, expParam);
-
         if (param == undefined) return n.toString();
 
         if (param.type == "Double") {
@@ -141,6 +147,7 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
         }
     }, [param]);
 
+
     return (
         <VStack space="lg">
             <PickerSelector name={"Module"}
@@ -153,7 +160,7 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
                         const paramID = module == ExpModule.CAB ? 1 : 0;
                         //console.log("Set EXP MODULE ", s, "paramID", paramID);
                         // Get range of current effect to set them
-                        const [min, max, step]= GetParamRange(module, paramID);
+                        const [min, max, _] = GetParamRange(module, paramID);
                         //console.log("Range",min, max, step);
                         store.gpActions.ChangePresetExpSettings(expID, expParamID,
                             module, paramID, min, max);
@@ -162,7 +169,7 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
             />
             <PickerSelector name={"Parameter"}
                 currentValue={expParam.toString()}
-                labels={GetParamLabels(expModule)}
+                labels={PARAM_LABELS}
                 onChange={function (s: string, n: number): void {
                     if (store.gp200.currentPreset){
                         const moduleParamID = parseInt(s);
@@ -184,11 +191,12 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
                 minValue={paramMin}
                 maxValue={paramMax}
                 step={paramStep}
-                currentValue={currentParamMin}
+                currentValue={min}
                 onChange={function (n: number): void {
                     console.log("Change Exp Param Min value:", n);
+                    setMin(n);
                     store.gpActions.ChangePresetExpSettings(expID, expParamID,
-                        expModule, expParam, n, currentParamMax);
+                        expModule, expParam, n, max);
                 }}
             />
             <NumericSlider
@@ -197,11 +205,12 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
                 minValue={paramMin}
                 maxValue={paramMax}
                 step={paramStep}
-                currentValue={currentParamMax}
+                currentValue={max}
                 onChange={function (n: number): void {
                     console.log("Change Exp Param Max value:", n);
+                    setMax(n);
                     store.gpActions.ChangePresetExpSettings(expID, expParamID,
-                        expModule, expParam, currentParamMin, n);
+                        expModule, expParam, min, n);
                 }}
             />
             </>

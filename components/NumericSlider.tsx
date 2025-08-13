@@ -1,15 +1,7 @@
 import { Box } from "@/components/ui/box";
-//import Slider from "@react-native-community/slider";
-import { Slider } from '@react-native-assets/slider';
-// import {
-//     Slider,
-//     SliderFilledTrack,
-//     SliderThumb,
-//     SliderTrack,
-// } from "@/components/ui/slider";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { observer } from "mobx-react-lite";
+import { Slider } from '@react-native-assets/slider';
 import { useMemo, useState } from "react";
 import { StyleSheet } from "react-native";
 
@@ -84,5 +76,4 @@ const styles = StyleSheet.create({
 });
 
 
-//export default NumericSlider;
-export default observer(NumericSlider);
+export default NumericSlider;
