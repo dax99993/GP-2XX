@@ -9,16 +9,36 @@ import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 import Sortable, { SortableGridRenderItem } from 'react-native-sortables';
 import { SortableGridDragEndParams } from "react-native-sortables/dist/typescript/types";
+import SettingsChainUnit from "./settingsUnit";
 
 
 function EffectChain() {
+  if (store.gp200.currentPreset == undefined) {return null};
 
-  const DATA = store.gp200.currentPreset ? store.gp200.currentPreset.effectsChainOrder : Object.values(EffectType).filter(e => typeof e === 'number');;
-  //console.log("Current chain order", DATA);
+  const DATA = 
+    store.gp200.currentPreset ? 
+      store.gp200.currentPreset.effectsChainOrder
+      : Object.values(EffectType).filter(e => typeof e === 'number');
+  
+  // Add index of Fixed settings
+  if (!DATA.includes(-1)) {
+    DATA.push(-1);
+  }
+
+  console.log("Current chain order", DATA);
 
   const renderItem = useCallback<SortableGridRenderItem<number>>(
     ({ item }) => {
-      return <EffectChainUnit chainID={item}/>
+      const isFixed = item == -1;
+
+      return <Sortable.Handle mode={isFixed ? 'fixed' : 'draggable'}>
+        {isFixed &&
+          <SettingsChainUnit/>
+        }
+        {!isFixed &&
+          <EffectChainUnit chainID={item} />
+        }
+      </Sortable.Handle>
     },
     []
   );
@@ -26,8 +46,9 @@ function EffectChain() {
   const onDragEnd = useCallback((params: SortableGridDragEndParams<number>) => {
     //'worklet';
     const ids = params.indexToKey.map(i => Number(i));
-    console.log("New chain order = ", ids);
-    // store.gp200.changePresetChainOrder(ids);
+    // remove the -1 for fixed item 
+    const chainOrder = ids.filter(i => i !== -1);
+    console.log("New chain order = ", chainOrder);
     store.gpActions.ChangePresetChainOrder(ids);
   }, []);
 
@@ -43,6 +64,7 @@ function EffectChain() {
             showDropIndicator
             dropIndicatorStyle={{borderColor: 'white'}}
             onDragEnd={onDragEnd}
+            customHandle
           />
         </Center>
       </GestureHandlerRootView>

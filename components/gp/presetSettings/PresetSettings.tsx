@@ -1,18 +1,29 @@
-
 import { Platform, StatusBar, StyleSheet } from 'react-native';
 
-import PresetSettings from '@/components/gp/presetSettings/PresetSettings';
+import CtrlsSettings from '@/components/gp/presetSettings/ctrlSettings/CtrlsSettings';
+import ExpsSettings from '@/components/gp/presetSettings/expSettings/ExpsSettings';
+import FxLoopSettings from '@/components/gp/presetSettings/fxLoopSettings/FxLoopSettings';
+import GeneralSettings from '@/components/gp/presetSettings/generalSettings/GeneralSettings';
+import KnobsSettings from '@/components/gp/presetSettings/knobSettings/knobsSettings';
 import { VStack } from '@/components/ui/vstack';
+import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 
 
 
-
-export default function TestScreen() {
+export default function PresetSettings() {
 
   return (
-    <VStack style={styles.maincontainer} className='bg-secondary-0'>
-      <PresetSettings/>
-    </VStack>
+    <GestureHandlerRootView>
+      <ScrollView>
+        <VStack space='md' className='bg-secondary-0'>
+          <GeneralSettings/>
+          <FxLoopSettings/>
+          <KnobsSettings/>
+          <CtrlsSettings/>
+          <ExpsSettings/>
+        </VStack>
+      </ScrollView>
+    </GestureHandlerRootView>
   );
 }
 

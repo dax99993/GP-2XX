@@ -15,6 +15,8 @@ class Store {
 
     modals: ModalStore;
 
+    showPatchSettings: boolean;
+
     constructor() {
         this.gp200 = new GP200Model();
         this.modals = new ModalStore();
@@ -39,14 +41,24 @@ class Store {
         // Start to get midi access
         this.midi.getMidiAccess();
 
+        // Helper properties
+        this.showPatchSettings = false;
 
         makeObservable(this,{
             gp200: observable,
             gpActions: observable,
 
+            showPatchSettings: observable,
+
             SyncGP: action,
+            changeShowPatchSettings: action
         });
     }
+
+    changeShowPatchSettings(state: boolean) {
+        this.showPatchSettings = state;
+    }
+
 
     SyncGP() {
         // Reset state to start Syncing again

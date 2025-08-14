@@ -8,7 +8,7 @@ import { observer } from "mobx-react-lite";
 import React from "react";
 
 
-function PresetGeneralSettings() {
+function GeneralSettings() {
     if (store.gp200.currentPreset == undefined) {return null};
 
     return (
@@ -52,4 +52,4 @@ function PresetGeneralSettings() {
     );
 }
 
-export default observer(PresetGeneralSettings);
+export default observer(GeneralSettings);

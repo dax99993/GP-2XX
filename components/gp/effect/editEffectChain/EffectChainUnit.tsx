@@ -22,6 +22,7 @@ function EffectChainUnit(props: EffectUnitProps) {
   }
 
   const select_unit = () => {
+    store.changeShowPatchSettings(false);
     store.gp200.changeSelectedEffect(effect.type);
   }
 
