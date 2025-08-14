@@ -130,12 +130,15 @@ function TopBarRightMenu() {
 const TopBarPresetInfo = observer(() => {
   if (store.gp200.currentPreset == undefined) {return null};
 
+  const router = useRouter();
+
   const presetName = store.gp200.currentPreset.name.length > 10 ? 
   store.gp200.currentPreset.name.slice(0, 10 - 3) + '...' :
   store.gp200.currentPreset.name;
 
   const goChangePreset = () => {
     console.log("Go change preset");
+        router.push("/ui/edit/select_preset");
   };
 
   return (

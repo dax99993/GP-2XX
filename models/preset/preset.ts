@@ -6,18 +6,6 @@ import { FxLoopMode, IFxLoopSettings } from "./IFxLoopSettings";
 import { IKnobSettings, KnobModule } from "./IKnobSettings";
 import { ISyncPresetInfo } from "./ISyncPresetInfo";
 
-// type FxLoop = {
-//     // 0-11
-//     sendPosition: number;
-//     // 0-11
-//     returnPosition: number;
-//     // 0-100
-//     sendLevel: number;
-//     // 0-100
-//     returnLevel: number;
-//     // 0 -> parallel ; 1 -> series
-//     mode: number;
-// }
 
 export class PresetModel {
     // General info
@@ -107,6 +95,34 @@ export class PresetModel {
     static default(): PresetModel {
         return new PresetModel(itsGP200);
     }
+
+    get bankCode(): string {
+      const number = this.number;
+
+      if (number === undefined) {
+          return "";
+      }
+
+      const bankNumber = Math.floor(number / 4) + 1;
+      let bankLetter: string = "";
+      switch (number % 4) {
+        case 0:
+          bankLetter = 'A';
+          break;
+        case 1:
+          bankLetter = 'B';
+          break;
+        case 2:
+          bankLetter = 'C';
+          break;
+        case 3:
+          bankLetter = 'D';
+          break;
+      }
+
+      return bankNumber.toString().padStart(2, '0') + '-' + bankLetter;
+    }
+
     // savePreset(save_number, name)
 
     // actions

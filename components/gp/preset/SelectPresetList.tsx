@@ -1,23 +1,31 @@
 import { Box } from "@/components/ui/box";
-import { Button, ButtonText } from "@/components/ui/button";
 import { HStack } from "@/components/ui/hstack";
 import { Input, InputField } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { EffectsChangeInfo } from "@/constants/EffectsChangeInfo";
-import { IEffectChangeInfo } from "@/models/effect/changeEffect/IEffectChangeInfo";
-import { EffectType } from "@/models/effect/effect";
 import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FlatList, TouchableOpacity } from "react-native";
 
+interface IChangePreset {
+    name: string,
+    number: number,
+    code: string,
+}
 
-function ListEffect() {
-    if (store.gp200.currentEffect == undefined) {return null}
+function SelectPresetList() {
+    //if (store.gp200.currentEffect == undefined) {return null}
 
-    const DATA = EffectsChangeInfo[EffectType[store.gp200.currentEffect.type] as keyof typeof EffectsChangeInfo];
-    const [filteredData, setFilteredData] = useState<IEffectChangeInfo[]>(DATA);
+    const DATA : IChangePreset[] = store.gp200.presets.map(prst => {
+        return {   
+            name: prst.name,
+            number: prst.number,
+            code: prst.bankCode
+        }
+    })
+
+    const [filteredData, setFilteredData] = useState<IChangePreset[]>(DATA);
 
     const onSearchChange = (q: string) => {
         if (q === "") {
@@ -32,10 +40,14 @@ function ListEffect() {
         <VStack style={{flex:1}} className="bg-secondary-0">
             <FlatList
                 data={filteredData}
-                renderItem={(item) => <ListEffectItem name={item.item.name} id={item.item.id} selected={item.item.name == store.gp200.currentEffect?.name}/>}
+                renderItem={(item) => <SelectPresetListItem
+                    name={item.item.name} code={item.item.code}
+                    number={item.item.number} 
+                    //selected={item.item.name == store.gp200.currentPreset?.name}
+                />}
                 keyExtractor={item => item.name}
                 ListHeaderComponent={
-                    <SearchBarEffect placeholder="Search effect" onChange={onSearchChange}/>
+                    <SearchBar placeholder="Search preset" onChange={onSearchChange}/>
                 }
             />
         </VStack>
@@ -48,7 +60,7 @@ type SearchProps = {
     onChange: (s: string) => void;
 }
 
-function SearchBarEffect(props: SearchProps) {
+function SearchBar(props: SearchProps) {
     const [query, setQuery] = useState("");
 
     const onChangeText = (q: string) => {
@@ -85,41 +97,44 @@ function SearchBarEffect(props: SearchProps) {
 }
 
 // List item
-type ListEffectItemProps = {
+type ListItemProps = {
     name: string;
-    id: number[];
-    selected: boolean
+    number: number;
+    code: string;
+    //selected: boolean
 }
 
-function ListEffectItem(props: ListEffectItemProps) {
+const SelectPresetListItem = observer((props: ListItemProps) => {
 
     const onPress = () => {
         //console.log("Selected ", props.name);
-        store.gpActions.ChangeEffect(props.id);
+        store.gpActions.ChangePreset(props.number);
     };
 
-    const onButtonPress = () => {
-        console.log("Button pressed!");
-    }
+    // const onButtonPress = () => {
+    //     console.log("Button pressed!");
+    // }
+
+    const isSelected = props.name == store.gp200.currentPreset?.name;
 
     return (
         <Box className="bg-secondary-0">
-            <Box className={`${props.selected ? "bg-info-300" : "bg-secondary-300"} mx-5 my-3 rounded-md`}>
+            <Box className={`${isSelected ? "bg-info-300" : "bg-secondary-300"} mx-5 my-3 rounded-md`}>
                 <TouchableOpacity onPress={onPress}>
                     <HStack className="px-3 py-3" style={{justifyContent: 'space-between', alignItems: 'center'}}>
                         <VStack >
-                            <Text size="md" bold={true}>{props.name}</Text>
-                            <Text>{"Description"}</Text>
+                            <Text size="md" bold={true}>{props.code}</Text>
+                            <Text>{props.name}</Text>
                         </VStack>
-                        <Button onPress={onButtonPress} size="md" variant="outline" className={`${props.selected ? "bg-info-200" : "bg-secondary-200"} rounded-md`}>
+                        {/* <Button onPress={onButtonPress} size="md" variant="outline" className={`${isSelected ? "bg-info-200" : "bg-secondary-200"} rounded-md`}>
                             <ButtonText>!</ButtonText>
-                        </Button>
+                        </Button> */}
                     </HStack>
                 </TouchableOpacity>
             </Box>
         </Box>
     );
-}
+});
 
 
-export default observer(ListEffect);
+export default observer(SelectPresetList);
