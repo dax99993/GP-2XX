@@ -9,7 +9,7 @@ import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 import Sortable, { SortableGridRenderItem } from 'react-native-sortables';
 import { SortableGridDragEndParams } from "react-native-sortables/dist/typescript/types";
-import SettingsChainUnit from "./settingsUnit";
+import SettingsChainUnit from "./SettingsUnit";
 
 
 function EffectChain() {
@@ -73,12 +73,14 @@ function EffectChain() {
 
 const styles = StyleSheet.create({
   baseContainer: {
-    flex:1,
+    //flex:1,
   },
   sortableContainer: {
-    flex: 1,
+    //flex: 1,
     paddingLeft: 10,
     paddingRight: 5,
+    paddingTop: 15,
+    paddingBottom: 15,
   },
 });
 

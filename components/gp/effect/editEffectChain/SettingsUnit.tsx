@@ -2,6 +2,7 @@ import { Center } from "@/components/ui/center";
 import { store } from "@/models/store";
 //import { observer } from "mobx-react-lite";
 import { Text } from "@/components/ui/text";
+import { observer } from "mobx-react-lite";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
 
@@ -11,17 +12,18 @@ function SettingsChainUnit() {
     return null;
   }
 
-
   const select_unit = () => {
     //store.gp200.changeSelectedEffect(effect.type);
     console.log("Show settings");
     store.changeShowPatchSettings(true);
   }
 
+  const isSelected = store.showPatchSettings;
+
     return (
       <TouchableOpacity onPress={select_unit} style={styles.baseContainer}>
-        <Center className="bg-secondary-300 rounded-lg" style={styles.unitContainer}>
-            <Text>Patch</Text>
+        <Center className="bg-secondary-300 rounded-lg" style={[styles.unitContainer, isSelected ? styles.selected : {}]}>
+            <Text>Preset</Text>
             <Text>Settings</Text>
         </Center>
       </TouchableOpacity>
@@ -36,8 +38,12 @@ const styles = StyleSheet.create({
     height: 70,
     width: 70,
   },
+  selected: {
+    borderWidth: 3,
+    borderColor: 'cyan',
+  }
 })
 
 
-//export default observer(EffectChainUnit);
-export default SettingsChainUnit;
+//export default SettingsChainUnit;
+export default observer(SettingsChainUnit);

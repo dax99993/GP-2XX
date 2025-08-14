@@ -1,17 +1,20 @@
 
 import { Platform, StatusBar, StyleSheet } from 'react-native';
 
-import PresetSettings from '@/components/gp/presetSettings/PresetSettings';
 import { VStack } from '@/components/ui/vstack';
 
+import GradientBackground, { Coloring } from '@/components/gp/effect/editEffectChain/GradientBackground';
+import React from 'react';
 
+
+//export default GradientBackground;
 
 
 export default function TestScreen() {
 
   return (
     <VStack style={styles.maincontainer} className='bg-secondary-0'>
-      <PresetSettings/>
+        <GradientBackground leftColoring={Coloring.Send} rightColoring={Coloring.Return}/>
     </VStack>
   );
 }
@@ -25,27 +28,4 @@ const styles = StyleSheet.create({
     //marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     //backgroundColor: 'pink',
   },
-  presetContainer: {
-    flex: 1,
-    backgroundColor: 'red',
-    flexDirection: 'column',
-  },
-  controlContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'yellow',
-  },
-  bannerContainer: {
-    flex: 1,
-    backgroundColor: 'red',
-    flexDirection: 'row',
-  },
-  viewButtons: {
-    flex: 2,
-    backgroundColor: 'green',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    //maxWidth: 500,
-  }
 });

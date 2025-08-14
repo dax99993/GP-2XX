@@ -1,10 +1,12 @@
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Platform, StatusBar, StyleSheet } from 'react-native';
 
 
 import EffectChain from '@/components/gp/effect/editEffectChain/EffectChain';
 import EditEffectTopBar from '@/components/gp/effect/editEffectTopBar/TopBar';
 import EffectEdit from '@/components/gp/effect/EffectEdit';
 import PresetSettings from '@/components/gp/presetSettings/PresetSettings';
+import { Divider } from '@/components/ui/divider';
+import { VStack } from '@/components/ui/vstack';
 import { store } from '@/models/store';
 import { observer } from 'mobx-react-lite';
 
@@ -12,18 +14,17 @@ import { observer } from 'mobx-react-lite';
 function EditScreen() {
 
   return (
-    <>
-      <View style={styles.mainContainer}>
+      <VStack space='md' className="bg-secondary-0" style={styles.mainContainer}>
         <EditEffectTopBar/>
         <EffectChain/>
+        <Divider/>
         {!store.showPatchSettings &&
           <EffectEdit/>
         }
         {store.showPatchSettings &&
           <PresetSettings/>
         }
-      </View>
-    </>
+      </VStack>
   );
 }
 

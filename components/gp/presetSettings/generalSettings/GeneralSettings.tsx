@@ -15,7 +15,7 @@ function GeneralSettings() {
         <BoundBox>
             <VStack space="lg">
                 <Center>
-                    <Heading>Preset Settings</Heading>
+                    <Heading>Preset General Settings</Heading>
                 </Center>
                 <NumericSlider 
                     name={"Volume"}

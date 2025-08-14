@@ -1,10 +1,13 @@
 import { Platform, StatusBar, StyleSheet } from 'react-native';
 
+import BoundBox from '@/components/BoundBox';
 import CtrlsSettings from '@/components/gp/presetSettings/ctrlSettings/CtrlsSettings';
 import ExpsSettings from '@/components/gp/presetSettings/expSettings/ExpsSettings';
 import FxLoopSettings from '@/components/gp/presetSettings/fxLoopSettings/FxLoopSettings';
 import GeneralSettings from '@/components/gp/presetSettings/generalSettings/GeneralSettings';
 import KnobsSettings from '@/components/gp/presetSettings/knobSettings/knobsSettings';
+import { Center } from '@/components/ui/center';
+import { Heading } from '@/components/ui/heading';
 import { VStack } from '@/components/ui/vstack';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 
@@ -13,17 +16,27 @@ import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler
 export default function PresetSettings() {
 
   return (
-    <GestureHandlerRootView>
-      <ScrollView>
-        <VStack space='md' className='bg-secondary-0'>
-          <GeneralSettings/>
-          <FxLoopSettings/>
-          <KnobsSettings/>
-          <CtrlsSettings/>
-          <ExpsSettings/>
-        </VStack>
-      </ScrollView>
-    </GestureHandlerRootView>
+    <VStack space='md' className='bg-secondary-0' style={{flex:1}}>
+        <BoundBox>
+            <Center>
+                  <Heading>
+                      Preset Settings
+                  </Heading>
+            </Center>
+        </BoundBox>
+
+        <GestureHandlerRootView>
+            <ScrollView>
+                <VStack space='md' className='bg-secondary-0'>
+                <GeneralSettings/>
+                <FxLoopSettings/>
+                <KnobsSettings/>
+                <CtrlsSettings/>
+                <ExpsSettings/>
+                </VStack>
+            </ScrollView>
+        </GestureHandlerRootView>
+    </VStack>
   );
 }
 
