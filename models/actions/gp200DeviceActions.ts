@@ -117,6 +117,27 @@ export class GP200DeviceActions implements IDeviceActions {
         //this.gp200.presets[presetNumber].changeFxLoopPosition(sendPosition, returnPosition);
     }
 
+    savePreset(message: Uint8Array): void {
+        if (this.gp200.currentPreset === undefined) { return; }
+        
+        // byte 0x15 and 0x16 Preset ID to save current preset: id is split in hex digits
+        // ** bytes 0x1b and 0x1c must be 0x00 and 0x02 repectively IDK what they do
+        // bytes 0x1d to 0x3c Preset Name: ASCII encoded split in hex digits
+        const highByte = message[0x15];
+        const lowByte = message[0x16];
+        const presetNumberToSave = this.nibblesToByte(highByte, lowByte)
+
+        // sanity check presetName should be at most 16 ASCII characters
+        // Enforce only ASCII characters
+        const encodedName = [...message.slice(0x1d, 0x3c + 1)];
+        const presetName = this.decodePresetName(encodedName);
+
+        console.log(presetNumberToSave, presetName);
+
+        //Update Model
+        this.gp200.savePreset(presetNumberToSave, presetName);
+    }
+
     //PRESET SETTINGS ACTIONS
     ChangePresetVolumePanBPMFxLoopSettings(message: Uint8Array) {
         // byte 0x16 contains which parameter to change 0 -> volume; 1->BPM; 6 -> Pan

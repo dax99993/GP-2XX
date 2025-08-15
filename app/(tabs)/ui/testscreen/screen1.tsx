@@ -3,7 +3,8 @@ import { Platform, StatusBar, StyleSheet } from 'react-native';
 
 import { VStack } from '@/components/ui/vstack';
 
-import GradientBackground, { Coloring } from '@/components/gp/effect/editEffectChain/GradientBackground';
+import { Button, ButtonText } from '@/components/ui/button';
+import { store } from '@/models/store';
 import React from 'react';
 
 
@@ -14,7 +15,9 @@ export default function TestScreen() {
 
   return (
     <VStack style={styles.maincontainer} className='bg-secondary-0'>
-        <GradientBackground leftColoring={Coloring.Send} rightColoring={Coloring.Return}/>
+      <Button size="xl" action='primary' onPress={()=> {store.modals.openModal("savePresetModal")}}>
+        <ButtonText>Open Save Preset Modal</ButtonText>
+      </Button>
     </VStack>
   );
 }

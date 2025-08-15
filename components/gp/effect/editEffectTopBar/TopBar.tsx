@@ -57,6 +57,7 @@ function TopBarCenter() {
 
   const savePreset = () => {
     console.log("save preset");
+    store.modals.openModal("savePresetModal");
   }
 
   return (

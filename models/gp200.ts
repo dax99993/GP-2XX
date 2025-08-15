@@ -75,19 +75,6 @@ export class GP200Model {
       this.syncing = false;
     }
 
-    // -- PRESET ACTIONS --
-    changePreset(preset_number: number) {
-        // Clamp to valid range
-        const num = Math.min(Math.max(preset_number, 0), 255);
-        this.currentPresetNumber = num;
-        this.currentPreset = this.presets[num];
-
-        // select to pre by default
-        this.changeSelectedEffect(0);
-
-        console.log("Current preset",this.currentPreset);
-    }
-
     addPreset(preset: PresetModel) {
       this.presets[preset.number] = preset;
     }
@@ -119,13 +106,38 @@ export class GP200Model {
       return bankNumber.toString().padStart(2, '0') + '-' + bankLetter;
     }
 
-    // savePreset()
+    // -- PRESET ACTIONS --
+    changePreset(preset_number: number) {
+        // Clamp to valid range
+        const num = Math.min(Math.max(preset_number, 0), 255);
+        this.currentPresetNumber = num;
+        // clone the preset
+        this.currentPreset = this.presets[num].clone();
+
+        // select to pre by default
+        this.changeSelectedEffect(0);
+
+        console.log("Current preset",this.currentPreset);
+    }
+
+
+    savePreset(presetNumber: number, presetName: string) {
+        if (!this.currentPreset) { return }
+
+        this.currentPreset.name = presetName;
+        this.currentPreset.number = presetNumber;
+        this.presets[presetNumber] = this.currentPreset;
+    }
+
 
     // -- PATCH/PRESET SETTINGS --
-    // changeKnobAssignment() 
-    // changeEXPSettings()
-    // changeCTRLSettings() 
-    // changePresetFXLoop()
+    changePresetFxLoopPosition(sendPosition: number, returnPosition: number) {
+      // check fxloop positions
+      if (!this.currentPreset) { return }
+
+      this.currentPreset.changeFxLoopPosition(sendPosition, returnPosition);
+    }
+
 
     // -- EFFECT CHAIN ACTIONS
     changePresetChainOrder(order: number[]) {
@@ -135,12 +147,6 @@ export class GP200Model {
       this.currentPreset.changeEffectsChainOrder(order);
     }
 
-    changePresetFxLoopPosition(sendPosition: number, returnPosition: number) {
-      // check fxloop positions
-      if (!this.currentPreset) { return }
-
-      this.currentPreset.changeFxLoopPosition(sendPosition, returnPosition);
-    }
 
     changeEffectState(state: boolean) {
         // should select current preset and current pedal

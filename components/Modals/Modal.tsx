@@ -1,17 +1,19 @@
 import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
+import { StyleProp, ViewStyle } from "react-native";
 import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader } from "../ui/modal";
 
 
 export interface ModalProps {
     id: string;
+    headerStyle?: StyleProp<ViewStyle>,
     headerElements?: ReactNode,
     bodyElements?: ReactNode,
     footerElements?: ReactNode,
 }
 
-function MyModal({id, headerElements, bodyElements, footerElements} : ModalProps) {
+function MyModal({id, headerStyle, headerElements, bodyElements, footerElements} : ModalProps) {
     const isOpen = store.modals.modals[id];
 
     //if(!isOpen) return null;
@@ -25,7 +27,7 @@ function MyModal({id, headerElements, bodyElements, footerElements} : ModalProps
             <ModalContent>
                 {
                     headerElements && 
-                    <ModalHeader>
+                    <ModalHeader style={[headerStyle]}>
                         {headerElements}
                     </ModalHeader>
                 }

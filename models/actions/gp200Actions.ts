@@ -120,6 +120,13 @@ export class GP200Actions implements IActions{
         return [lowByteHighNible, lowByteLowNible, highByteHighNible, highByteLowNible];
     }
 
+    encodePresetName(name: string) {
+        // convert to ASCII byte array
+        const ascii = Array.from(name).map(char => char.charCodeAt(0));
+        // split in nibbles
+        return this.byteArrayToNibbleArray(ascii);
+    }
+
     //  --------------------------------------------------------------------------------
     //      MIDI/MODEL ENCODE ACTIONS
     //  ---------------------------------------------------------------------------------
@@ -167,6 +174,38 @@ export class GP200Actions implements IActions{
         }
 
         this.ChangePreset(num);
+    }
+
+    SaveCurrentPreset(presetNumberToSave: number, presetName: string) {
+        if (this.gp200.currentPreset === undefined) { return; }
+        
+        // byte 0x15 and 0x16 Preset ID to save current preset: id is split in hex digits
+        // ** bytes 0x1b and 0x1c must be 0x00 and 0x02 repectively IDK what they do
+        // bytes 0x1d to 0x3c Preset Name: ASCII encoded split in hex digits
+        let BaseSysEx = BaseSysExMsg.PresetAction.savePreset;
+        const [highByte, lowByte] = this.byteToNibbles(presetNumberToSave);
+        BaseSysEx[0x15] = highByte;
+        BaseSysEx[0x16] = lowByte;
+
+        // sanity check presetName should be at most 16 ASCII characters
+        // Enforce only ASCII characters
+        presetName.replace(/[^\x00-\x7F]/g, "");
+        const safePresetName = presetName.slice(0, 16);
+        // Maximum of 16 characters
+        const encodedName = this.encodePresetName(safePresetName);
+
+        for(let i = 0; i < encodedName.length; i=i+1) {
+            BaseSysEx[0x1d + i] = encodedName[i];
+        }
+
+        console.log(BaseSysEx);
+
+        //Update Model
+        this.gp200.savePreset(presetNumberToSave, safePresetName);
+
+
+        // Send message
+        this.midi.sendMessage(BaseSysEx);
     }
 
     // PRESET SETTINGS ACTIONS
@@ -343,7 +382,7 @@ export class GP200Actions implements IActions{
     ChangePresetFxLoopMode(mode: FxLoopMode) {
         // byte 0x16 FxLoop Parameter ID: 3 -> sendLevel; 4 -> returnLevel; 5 -> mode
         // bytes 0x19 and 0x1a Parameter Value: split in hex digits (nibbles)
-        let BaseSysEx= BaseSysExMsg.PresetSettingsAction.FxLoopSettings;
+        let BaseSysEx = BaseSysExMsg.PresetSettingsAction.FxLoopSettings;
         BaseSysEx[0x16] = 5;
         const [highNibble, lowNibble] = this.byteToNibbles(mode);
 

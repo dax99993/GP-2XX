@@ -4,7 +4,7 @@ import { ICtrlSettings } from "./ICtrlSettings";
 import { ExpModule, IExpSettings } from "./IExpSettings";
 import { FxLoopMode, IFxLoopSettings } from "./IFxLoopSettings";
 import { IKnobSettings, KnobModule } from "./IKnobSettings";
-import { ISyncPresetInfo } from "./ISyncPresetInfo";
+import { ISyncEffectInfo, ISyncPresetInfo } from "./ISyncPresetInfo";
 
 
 export class PresetModel {
@@ -94,6 +94,68 @@ export class PresetModel {
 
     static default(): PresetModel {
         return new PresetModel(itsGP200);
+    }
+
+    clone(): PresetModel {
+        // construct interface
+        const efffectsInfo: ISyncEffectInfo[] = this.effects.map(e =>{
+            // get param values
+            const params = Array.from({length: 15}, (_, i) => 0);
+            e.parameters.forEach((p) => {
+                params[p.id] = p.getValue();
+            });
+
+            return {
+                chainID: e.type,
+                id: e.id,
+                state: e.state, //or should it be a number?
+                params: params, //15 elements not all used
+            }
+        });
+
+        const presetInfo : ISyncPresetInfo = 
+        {
+            // General info
+            name: this.name,
+            number: this.number,
+
+            // Settings
+            volume: this.volume,
+            bpm: this.bpm,
+            pan: this.pan,
+            effectsChainOrder: this.effectsChainOrder,
+
+            // FXLOOP
+            fxloop: this.fxLoop,
+
+            // EXP
+
+            exp1A: this.exps[0],
+            exp1B: this.exps[1],
+            exp2: this.exps[2],
+
+
+            // KNOB
+            knob1: this.knobs[0],
+            knob2: this.knobs[1],
+            knob3: this.knobs[2],
+
+            // CTRL
+            ctrl1: this.ctrls[0],
+            ctrl2: this.ctrls[1],
+            ctrl3: this.ctrls[2],
+            ctrl4: this.ctrls[3],
+
+            ctrl5: this.ctrls[4],
+            ctrl6: this.ctrls[5],
+            ctrl7: this.ctrls[6],
+            ctrl8: this.ctrls[7],
+
+            // Create Effect object class from string name
+            effects: efffectsInfo,
+        }
+
+        return new PresetModel(presetInfo);
     }
 
     get bankCode(): string {

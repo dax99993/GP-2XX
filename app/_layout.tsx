@@ -1,4 +1,5 @@
 import DisconnectModal from "@/components/Modals/DisconnectModal";
+import SaveModal from "@/components/Modals/SaveModal";
 import SyncModal from "@/components/Modals/SyncModal";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
@@ -25,9 +26,9 @@ export default function RootLayout() {
 
   return (
     <GluestackUIProvider mode={"dark"}>
-
         <SyncModal/>
         <DisconnectModal/>
+        <SaveModal/>
       <ThemeProvider value={DarkTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
