@@ -79,8 +79,9 @@ function EffectImage({type, state, selected}: EffectImageProps) {
   const image = GetImage(type, state, selected ?? false);
 
     return (
-            <Image source={image}
-              resizeMode="contain"
+            <Image
+              source={image}
+              resizeMode="cover"
               style={selected ? styles.selectedImage : styles.nonSelectedImage}
             />
     );

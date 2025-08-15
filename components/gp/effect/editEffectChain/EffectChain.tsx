@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { StyleSheet } from "react-native";
+import { DimensionValue, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import EffectChainUnit from "@/components/gp/effect/editEffectChain/EffectChainUnit";
@@ -11,6 +11,55 @@ import Sortable, { SortableGridRenderItem } from 'react-native-sortables';
 import { SortableGridDragEndParams } from "react-native-sortables/dist/typescript/types";
 import SettingsChainUnit from "./SettingsUnit";
 
+import ChainIcon from "@/assets/images/svgs/Chain2.svg";
+import InArrow from "@/assets/images/svgs/InArrow.svg";
+import OutArrow from "@/assets/images/svgs/OutArrow.svg";
+
+function GetInArrowPosition(pos: number) {
+  let top : DimensionValue = '0%';
+  let left: DimensionValue = '0%';
+
+  const topPositions: DimensionValue[] = ['-1%', '34%', '69%'];
+  const leftPositions: DimensionValue[] = ['3%', '25%', '50.5%', '76.5%'];
+
+  const topPos = Math.floor(pos / 4);
+  const topLeft = pos % 4;
+
+  top = topPositions[topPos];
+  left = leftPositions[topLeft];
+
+  const style = StyleSheet.create({
+    s: {
+      top: top,
+      left: left,
+    }
+  });
+
+  return style.s;
+}
+
+function GetOutArrowPosition(pos: number) {
+  let top : DimensionValue = '0%';
+  let left: DimensionValue = '0%';
+
+  const topPositions: DimensionValue[] = ['10%', '46%', '82%'];
+  const leftPositions: DimensionValue[] = ['3%', '25%', '50.5%', '76.5%'];
+
+  const topPos = Math.floor(pos / 4);
+  const topLeft = pos % 4;
+
+  top = topPositions[topPos];
+  left = leftPositions[topLeft];
+
+  const style = StyleSheet.create({
+    s: {
+      top: top,
+      left: left,
+    }
+  });
+
+  return style.s;
+}
 
 function EffectChain() {
   if (store.gp200.currentPreset == undefined) {return null};
@@ -54,7 +103,10 @@ function EffectChain() {
 
     return (
       <GestureHandlerRootView style={styles.baseContainer}>
-        <Center className="bg-secondary-0" style={styles.sortableContainer}>
+        <Center className="" style={styles.sortableContainer}>
+          <ChainIcon scaleX={1.0} scaleY={0.75} width={'103%'} height={'100%'} style={styles.chainBackground}/>
+          <InArrow scaleX={1.0} scaleY={1.0} width={15} style={[styles.arrowBackground, GetInArrowPosition(store.gp200.currentPreset.fxLoop.sendPosition)]}/>
+          <OutArrow scaleX={1.0} scaleY={1.0} width={15} style={[styles.arrowBackground, GetOutArrowPosition(store.gp200.currentPreset.fxLoop.returnPosition)]}/>
           <Sortable.Grid
             rowGap={15}
             columnGap={15}
@@ -77,11 +129,20 @@ const styles = StyleSheet.create({
   },
   sortableContainer: {
     //flex: 1,
-    paddingLeft: 10,
+    paddingLeft: 15,
     paddingRight: 5,
     paddingTop: 15,
     paddingBottom: 15,
   },
+  chainBackground: {
+    position: 'absolute',
+    top: '7.5%',
+    left: '1%',
+    //backgroundColor: 'pink',
+  },
+  arrowBackground: {
+    position: 'absolute',
+  }
 });
 
 export default observer(EffectChain);
