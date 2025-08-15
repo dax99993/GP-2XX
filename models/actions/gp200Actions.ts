@@ -163,6 +163,7 @@ export class GP200Actions implements IActions{
         this.ChangePreset(num);
     }
 
+
     PreviousPreset() {
         if (this.gp200.currentPresetNumber === undefined) { return; }
 
@@ -174,6 +175,30 @@ export class GP200Actions implements IActions{
         }
 
         this.ChangePreset(num);
+    }
+
+    NextBank() {
+        if (this.gp200.currentPresetNumber === undefined) { return; }
+
+        let bankNum = Math.floor(this.gp200.currentPresetNumber / 4) + 1;
+        if (bankNum > 63) {
+            bankNum = 0
+        }
+        const presetNum = bankNum * 4;
+
+        this.ChangePreset(presetNum);
+    }
+
+    PrevBank() {
+        if (this.gp200.currentPresetNumber === undefined) { return; }
+
+        let bankNum = Math.floor(this.gp200.currentPresetNumber / 4) - 1;
+        if (bankNum < 0) {
+            bankNum = 63
+        }
+        const presetNum = bankNum * 4;
+
+        this.ChangePreset(presetNum);
     }
 
     SaveCurrentPreset(presetNumberToSave: number, presetName: string) {

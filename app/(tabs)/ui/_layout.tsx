@@ -29,6 +29,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="preset"
         options={{
+          href: null, //Maybe add this screen later
           title: 'Preset',
           tabBarIcon: ({ color }) => <Ionicons size={28} name="musical-notes" color={color} />,
         }}
@@ -41,15 +42,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="testing"
-        options={{
-          title: 'Test',
-          tabBarIcon: ({ color }) => <Ionicons size={28} name="phone-portrait" color={color} />,
-        }}
-      />
-      <Tabs.Screen
         name="testscreen"
         options={{
+          href: null, //Remove when testing
           title: 'Test Screen',
           tabBarIcon: ({ color }) => <Ionicons size={28} name="phone-portrait" color={color} />,
         }}

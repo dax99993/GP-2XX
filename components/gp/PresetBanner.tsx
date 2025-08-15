@@ -1,5 +1,7 @@
+import { Text } from "@/components/ui/text";
 import { observer } from "mobx-react-lite";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { HStack } from "../ui/hstack";
 
 
 type PresetBannerProps = {
@@ -8,11 +10,9 @@ type PresetBannerProps = {
 }
 
 function PresetBanner(props: PresetBannerProps) {
-
   
     return (
-        <>
-        <View style={styles.bannerContainer}>
+        <HStack style={styles.bannerContainer}>
             <View style={styles.presetCodeContainer}>
               <Text style={styles.text}>{props.presetBankCode}</Text>
             </View>
@@ -20,52 +20,33 @@ function PresetBanner(props: PresetBannerProps) {
             <View style={styles.presetNameContainer}>
               <Text style={styles.text}>{props.presetName}</Text>
             </View>
-        </View>
-        </>
+        </HStack>
     )
 }
 
 
 const styles = StyleSheet.create({
   bannerContainer: {
-    flex: 1,
-    flexDirection: 'row',
     backgroundColor: '#007FFF', //azure
-    borderRadius: 5,
-    borderCurve: 'continuous',
-    //minHeight: 60,
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
   presetCodeContainer: {
-    flex: 1,
     paddingHorizontal: 15,
     backgroundColor: 'lightgray', 
     //marginBlockEnd: 10,
     //marginLeft: 10,
   },
   presetSeparator: {
-    //flex: 1,
-    //paddingHorizontal: 20,
     backgroundColor: 'black', 
-    minHeight: '80%',
-    //maxWidth: 5,
-    //fontSize: 1,
   },
   presetNameContainer: {
-    flex: 3,
     justifyContent: 'center',
     alignContent: 'center',
     paddingHorizontal: 20,
     marginRight: 10,
     backgroundColor: 'gray'
-  },
-  text: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: 'white', 
-    textAlign: 'center',
   },
 });
 

@@ -120,7 +120,6 @@ export class GP200Model {
         console.log("Current preset",this.currentPreset);
     }
 
-
     savePreset(presetNumber: number, presetName: string) {
         if (!this.currentPreset) { return }
 
@@ -128,6 +127,7 @@ export class GP200Model {
         this.currentPreset.number = presetNumber;
         this.presets[presetNumber] = this.currentPreset;
     }
+
 
 
     // -- PATCH/PRESET SETTINGS --
