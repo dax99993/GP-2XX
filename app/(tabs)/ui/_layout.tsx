@@ -5,11 +5,16 @@ import { Platform, useColorScheme } from 'react-native';
 import { HapticTab } from '@/components/HapticTab';
 //import FontAwesomeIcon from '@expo/vector-icons/FontAwesomeIcon';
 import TabBarBackground from '@/components/ui/TabBarBackground';
+import useOrientation from '@/hooks/useOrientation';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Orientation } from 'expo-screen-orientation';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const orientation = useOrientation();
+
+  const isLandscape = orientation == Orientation.LANDSCAPE_LEFT || orientation == Orientation.LANDSCAPE_RIGHT;
 
   return (
     <Tabs
@@ -17,6 +22,11 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
+        // Change tab bar position based on orientation
+        tabBarPosition: isLandscape ? 'right' : 'bottom',
+        // tabBarLabelPosition: isLandscape ? 'below-icon' : 'beside-icon',
+        tabBarLabelPosition: 'below-icon',
+        tabBarVariant: isLandscape ? 'material' : 'uikit',
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {

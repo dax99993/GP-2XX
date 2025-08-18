@@ -31,6 +31,7 @@ function HomeScreen() {
     }, [store.gp200.syncedPresets])
 
 
+
     return (
         <VStack space="md" className="bg-secondary-0" style={styles.maincontainer}>
             <TopBar>
@@ -38,7 +39,7 @@ function HomeScreen() {
                     <></>
                 </TopBar.centerItems>
                 <TopBar.rightItems>
-                    {/* <Buttons></Buttons> */}
+                    <Buttons></Buttons>
                     <></>
                 </TopBar.rightItems>
             </TopBar>
@@ -84,15 +85,15 @@ function Buttons() {
                 <ButtonText>About</ButtonText>
                 <ButtonIcon as={InfoIcon}/>
             </Button>
-            {/* <Button size="md"
+            <Button size="md"
                 variant="solid"
                 action="primary"
                 onPress={() => { 
-                    router.replace('/ui/preset') 
+                    router.replace('/ui/testscreen/screen1') 
                  }}
             >
                 <ButtonText>Go to UI</ButtonText>
-            </Button> */}
+            </Button>
         </HStack>
     );
 }
