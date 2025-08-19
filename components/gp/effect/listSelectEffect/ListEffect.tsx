@@ -8,6 +8,7 @@ import { EffectsChangeInfo } from "@/constants/EffectsChangeInfo";
 import { IEffectChangeInfo } from "@/models/effect/changeEffect/IEffectChangeInfo";
 import { EffectType } from "@/models/effect/effect";
 import { store } from "@/models/store";
+import { useRouter } from "expo-router";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FlatList, TouchableOpacity } from "react-native";
@@ -92,10 +93,13 @@ type ListEffectItemProps = {
 }
 
 function ListEffectItem(props: ListEffectItemProps) {
+    const router = useRouter();
 
     const onPress = () => {
         //console.log("Selected ", props.name);
         store.gpActions.ChangeEffect(props.id);
+        // go back to edit screen
+        router.back();
     };
 
     const onButtonPress = () => {

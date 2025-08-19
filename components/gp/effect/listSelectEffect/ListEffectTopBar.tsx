@@ -11,7 +11,8 @@ function ListEffectTopBar() {
     const router = useRouter();
 
     const goToEdit = () => {
-        router.push("/ui/edit/effecttab")
+        // go back to edit screen
+        router.back();
     };
 
     const effectType = store.gp200.currentEffect?.typeName;

@@ -4,6 +4,7 @@ import { Input, InputField } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { store } from "@/models/store";
+import { useRouter } from "expo-router";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FlatList, TouchableOpacity } from "react-native";
@@ -106,9 +107,13 @@ type ListItemProps = {
 
 const SelectPresetListItem = observer((props: ListItemProps) => {
 
+    const router = useRouter();
+
     const onPress = () => {
         //console.log("Selected ", props.name);
         store.gpActions.ChangePreset(props.number);
+        // Go back to edit screen
+        router.back();
     };
 
     // const onButtonPress = () => {

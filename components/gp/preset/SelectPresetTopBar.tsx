@@ -13,7 +13,8 @@ function SelectPresetTopBar() {
     const router = useRouter();
 
     const goToEdit = () => {
-        router.push("/ui/edit/effecttab")
+        // go back to edit screen
+        router.back();
     };
 
     const bankCode = store.gp200.currentPreset?.bankCode;
