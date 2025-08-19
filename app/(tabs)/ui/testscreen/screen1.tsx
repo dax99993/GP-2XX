@@ -3,6 +3,7 @@ import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 
 
 import ChainTest from '@/components/ChainTest';
+import NumericSlider from '@/components/NumericSlider';
 import TopBar from '@/components/topBar/TopBar';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
@@ -14,7 +15,7 @@ import React from 'react';
 
 
 export default function TestScreen() {
-  const orientation = useOrientation();
+  const {orientation, isLandscape} = useOrientation();
   console.log(Orientation[orientation]);
 
   return (
@@ -31,12 +32,16 @@ export default function TestScreen() {
           <Text>Right</Text>
         </TopBar.rightItems>
       </TopBar>
-      <View style={orientation === Orientation.LANDSCAPE_LEFT  || orientation === Orientation.LANDSCAPE_RIGHT 
-          ? styles.landscapeContainer : styles.portraitContainer} >
+      <View style={isLandscape ? styles.landscapeContainer : styles.portraitContainer} >
           <ChainTest />
-          <Button size="xl" action='primary' onPress={() => { store.modals.openModal("savePresetModal") }} style={{flex:1}}>
-            <ButtonText>Open Save Preset Modal</ButtonText>
-          </Button>
+          <VStack style={{flex:1}}>
+            <Button size="xl" action='primary' onPress={() => { store.modals.openModal("savePresetModal") }}>
+              <ButtonText>Open Save Preset Modal</ButtonText>
+            </Button>
+            <NumericSlider name={"Slider"} minValue={0} maxValue={100} step={1} currentValue={50}
+              onChange={function (n: number): void {
+              }} />
+          </VStack>
       </View>
       <Text style={{backgroundColor: 'gray'}}>Bottom Text</Text>
     </VStack>
@@ -47,10 +52,11 @@ const styles = StyleSheet.create({
   maincontainer: {
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'space-around',
-    alignItems: 'stretch',
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-    //marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
+    //paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     backgroundColor: 'blue',
   },
   landscapeContainer: {
@@ -58,14 +64,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row', // Example: change layout direction in landscape
     // Add more landscape-specific styles here
     backgroundColor: 'white',
-    justifyContent: 'space-around',
-    alignItems: 'stretch',
+    gap: 5,
   },
   portraitContainer: {
     flex:1,
-    flexDirection: 'column', // Example: change layout direction in landscape
-    justifyContent: 'space-around',
-    alignItems: 'stretch',
-    backgroundColor: 'red'
+    flexDirection: 'column',
+    backgroundColor: 'red',
+    gap: 5,
   }
 });

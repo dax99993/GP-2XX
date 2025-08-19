@@ -7,6 +7,7 @@ import EffectImage from "../EffectImage";
 
 type EffectUnitProps = {
   chainID: number;
+  size: number;
 }
 
 function EffectChainUnit(props: EffectUnitProps) {
@@ -28,7 +29,7 @@ function EffectChainUnit(props: EffectUnitProps) {
 
     return (
       <TouchableOpacity onPress={select_unit} style={styles.baseContainer}>
-        <Center className="" style={styles.unitContainer}>
+        <Center className="" style={{width: props.size, height: props.size}}>
             <EffectImage
               type={EffectType[effect.type]}
               state={effect.state}
@@ -42,10 +43,6 @@ function EffectChainUnit(props: EffectUnitProps) {
 const styles = StyleSheet.create({
   baseContainer: {
     alignItems: 'center',
-  },
-  unitContainer: {
-    height: 70,
-    width: 70
   },
 })
 

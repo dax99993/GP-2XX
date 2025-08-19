@@ -1,6 +1,5 @@
 import { Center } from "@/components/ui/center";
 import { HStack } from "@/components/ui/hstack";
-import { VStack } from "@/components/ui/vstack";
 import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
@@ -43,16 +42,9 @@ function CtrlSettings({ctrlID}: CtrlSettingsProps) {
     }, [pedals, effects]);
 
     return (
-        <Center>
-            <VStack space="md">
-                <HStack space="md">
-                    { DATA.slice(0, 6).map(s => renderItem(s))}
-                </HStack>
-                <HStack space="md">
-                    { DATA.slice(6).map(s => renderItem(s))}
-                </HStack>
-            </VStack>
-        </Center>
+        <HStack space="xs" style={{ flexWrap: 'wrap', justifyContent: 'center' }}>
+            {DATA.map(s => renderItem(s))}
+        </HStack>
     );
 }
 

@@ -14,13 +14,15 @@ import SettingsChainUnit from "./SettingsUnit";
 import ChainIcon from "@/assets/images/svgs/Chain2.svg";
 import InArrow from "@/assets/images/svgs/InArrow.svg";
 import OutArrow from "@/assets/images/svgs/OutArrow.svg";
+import useDimensions from "@/hooks/useDimensions";
+import useOrientation from "@/hooks/useOrientation";
 
 function GetInArrowPosition(pos: number) {
   let top : DimensionValue = '0%';
   let left: DimensionValue = '0%';
 
-  const topPositions: DimensionValue[] = ['-1%', '34%', '69%'];
-  const leftPositions: DimensionValue[] = ['3%', '25%', '50.5%', '76.5%'];
+  const topPositions: DimensionValue[] = ['-3%', '36%', '75%'];
+  const leftPositions: DimensionValue[] = ['-5%', '20%', '47%', '74%'];
 
   const topPos = Math.floor(pos / 4);
   const topLeft = pos % 4;
@@ -42,8 +44,8 @@ function GetOutArrowPosition(pos: number) {
   let top : DimensionValue = '0%';
   let left: DimensionValue = '0%';
 
-  const topPositions: DimensionValue[] = ['10%', '46%', '82%'];
-  const leftPositions: DimensionValue[] = ['3%', '25%', '50.5%', '76.5%'];
+  const topPositions: DimensionValue[] = ['14%', '53%', '92%'];
+  const leftPositions: DimensionValue[] = ['-5%', '20%', '47%', '74%'];
 
   const topPos = Math.floor(pos / 4);
   const topLeft = pos % 4;
@@ -76,16 +78,57 @@ function EffectChain() {
 
   console.log("Current chain order", DATA);
 
+  // Styles
+  const {orientation, isLandscape} = useOrientation();
+  const {height, width, aspectRatio, isTablet} = useDimensions();
+
+  console.log("Height", height, "Width", width);
+  console.log("Orientation", orientation, "is Landscape", isLandscape);
+  console.log("Aspect Ratio", aspectRatio, "is Tablet", isTablet);
+
+  const scale = 1.5; //when used in bigger screen tablets
+  const chainWidth = 400;
+  const chainItemSize = isTablet? scale * chainWidth / 8: chainWidth / 8;
+  const chainRowGap = isTablet ? scale * chainItemSize / 2 : chainItemSize / 2;
+  const chainColGap = isTablet ? scale * chainItemSize / 2 : chainItemSize / 2;
+  const arrowSize = chainColGap;
+
+  const styles = StyleSheet.create({
+    baseContainer: {
+      // maxWidth: isLandscape ? (isTablet ? '40%': '50%') : '100%',
+      maxWidth: isTablet ? scale * chainWidth: chainWidth,
+      justifyContent: isLandscape ? 'center': 'flex-start',
+      alignItems: 'center',
+      alignContent: 'center',
+      paddingHorizontal: chainColGap,
+      paddingVertical: chainColGap,
+      //backgroundColor: 'lightgreen',
+    },
+    sortableContainer: {
+      //alignItems: 'center',
+      justifyContent: 'flex-start',
+      //backgroundColor: "#6600ff8f",
+    },
+    chainBackground: {
+      position: 'absolute',
+      //width: chainWidth,
+    },
+    arrowBackground: {
+      position: 'absolute',
+      //backgroundColor: 'pink'
+    }
+  })
+
   const renderItem = useCallback<SortableGridRenderItem<number>>(
     ({ item }) => {
       const isFixed = item == -1;
 
       return <Sortable.Handle mode={isFixed ? 'fixed' : 'draggable'}>
         {isFixed &&
-          <SettingsChainUnit/>
+          <SettingsChainUnit size={chainItemSize}/>
         }
         {!isFixed &&
-          <EffectChainUnit chainID={item} />
+          <EffectChainUnit chainID={item} size={chainItemSize}/>
         }
       </Sortable.Handle>
     },
@@ -104,12 +147,21 @@ function EffectChain() {
     return (
       <GestureHandlerRootView style={styles.baseContainer}>
         <Center className="" style={styles.sortableContainer}>
-          <ChainIcon scaleX={1.0} scaleY={0.75} width={'103%'} height={'100%'} style={styles.chainBackground}/>
-          <InArrow scaleX={1.0} scaleY={1.0} width={15} style={[styles.arrowBackground, GetInArrowPosition(store.gp200.currentPreset.fxLoop.sendPosition)]}/>
-          <OutArrow scaleX={1.0} scaleY={1.0} width={15} style={[styles.arrowBackground, GetOutArrowPosition(store.gp200.currentPreset.fxLoop.returnPosition)]}/>
+          <ChainIcon scaleX={1.2} scaleY={0.80}
+            height={'100%'} width={'100%'}
+            style={styles.chainBackground}
+          />
+          <InArrow scaleX={1.0} scaleY={1.0}
+            height={arrowSize} width={arrowSize}
+            style={[styles.arrowBackground, GetInArrowPosition(store.gp200.currentPreset.fxLoop.sendPosition)]}
+          />
+          <OutArrow scaleX={1.0} scaleY={1.0}
+            height={arrowSize} width={arrowSize}
+            style={[styles.arrowBackground, GetOutArrowPosition(store.gp200.currentPreset.fxLoop.returnPosition)]}
+          />
           <Sortable.Grid
-            rowGap={15}
-            columnGap={15}
+            rowGap={chainRowGap}
+            columnGap={chainColGap}
             columns={4}
             data={DATA}
             renderItem={renderItem}
@@ -122,27 +174,5 @@ function EffectChain() {
       </GestureHandlerRootView>
     )
 } 
-
-const styles = StyleSheet.create({
-  baseContainer: {
-    //flex:1,
-  },
-  sortableContainer: {
-    //flex: 1,
-    paddingLeft: 15,
-    paddingRight: 5,
-    paddingTop: 15,
-    paddingBottom: 15,
-  },
-  chainBackground: {
-    position: 'absolute',
-    top: '7.5%',
-    left: '1%',
-    //backgroundColor: 'pink',
-  },
-  arrowBackground: {
-    position: 'absolute',
-  }
-});
 
 export default observer(EffectChain);

@@ -6,7 +6,7 @@ import { observer } from "mobx-react-lite";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
 
-function SettingsChainUnit() {
+function SettingsChainUnit({size}: {size: number}) {
   if (!store.gp200.currentPreset) {
     console.log("NULL current Preset");
     return null;
@@ -22,9 +22,9 @@ function SettingsChainUnit() {
 
     return (
       <TouchableOpacity onPress={select_unit} style={styles.baseContainer}>
-        <Center className="bg-secondary-300 rounded-lg" style={[styles.unitContainer, isSelected ? styles.selected : {}]}>
-            <Text>Preset</Text>
-            <Text>Settings</Text>
+        <Center className="bg-secondary-300 rounded-lg" style={[{width: size, height:size}, isSelected ? styles.selected : {}]}>
+            <Text size="xs">Preset</Text>
+            <Text size="xs">Settings</Text>
         </Center>
       </TouchableOpacity>
     )
@@ -33,10 +33,6 @@ function SettingsChainUnit() {
 const styles = StyleSheet.create({
   baseContainer: {
     alignItems: 'center',
-  },
-  unitContainer: {
-    height: 70,
-    width: 70,
   },
   selected: {
     borderWidth: 3,

@@ -7,14 +7,11 @@ import { HapticTab } from '@/components/HapticTab';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import useOrientation from '@/hooks/useOrientation';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Orientation } from 'expo-screen-orientation';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const orientation = useOrientation();
-
-  const isLandscape = orientation == Orientation.LANDSCAPE_LEFT || orientation == Orientation.LANDSCAPE_RIGHT;
+  const {orientation, isLandscape} = useOrientation();
 
   return (
     <Tabs
@@ -24,9 +21,8 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
         // Change tab bar position based on orientation
         tabBarPosition: isLandscape ? 'right' : 'bottom',
-        // tabBarLabelPosition: isLandscape ? 'below-icon' : 'beside-icon',
-        tabBarLabelPosition: 'below-icon',
         tabBarVariant: isLandscape ? 'material' : 'uikit',
+        tabBarLabelPosition: 'below-icon',
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {
