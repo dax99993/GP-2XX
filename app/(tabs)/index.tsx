@@ -17,9 +17,11 @@ import { InfoIcon, SmartphoneIcon } from 'lucide-react-native';
 
 import GPIcon from "@/assets/images/svgs/GPIcon4.svg";
 import UsbCable from "@/assets/images/svgs/usbcable.svg";
+import useOrientation from '@/hooks/useOrientation';
 
 function HomeScreen() {
     const router = useRouter();
+    const {orientation} = useOrientation();
 
     useEffect(() => {
         if (store.gp200.syncedPresets > 1) {
@@ -59,12 +61,6 @@ function HomeScreen() {
                     <SmartphoneIcon height={70} width={50} color={'white'}/>
                 </HStack>
             </Center>
-            {/* <Center style={{backgroundColor:"pink", maxHeight: 200}}>
-                <Atomic scaleX={0.1} scaleY={0.1}/>
-            </Center>
-            <Center style={{backgroundColor:"lightgreen", maxHeight: 200}}>
-                <Atomic scaleX={0.1} scaleY={0.1}/>
-            </Center> */}
         </VStack>
     );
 }
