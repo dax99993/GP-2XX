@@ -1,4 +1,4 @@
-package com.dax9999.miditest
+package com.atomicnoize.gp2
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

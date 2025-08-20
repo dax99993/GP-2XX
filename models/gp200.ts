@@ -79,6 +79,10 @@ export class GP200Model {
       this.presets[preset.number] = preset;
     }
 
+    get isSynced(): boolean {
+      return this.syncedPresets == 256;
+    }
+
     get presetBankCode(): string {
       const number = this.currentPresetNumber;
 

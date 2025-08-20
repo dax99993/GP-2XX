@@ -1,4 +1,4 @@
-import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { Button, ButtonText } from '@/components/ui/button';
 import { useRouter } from 'expo-router';
 import { Platform, StatusBar, StyleSheet } from "react-native";
 
@@ -13,7 +13,7 @@ import { useEffect } from 'react';
 
 import TopBar from '@/components/topBar/TopBar';
 import { Center } from '@/components/ui/center';
-import { InfoIcon, SmartphoneIcon } from 'lucide-react-native';
+import { SmartphoneIcon } from 'lucide-react-native';
 
 import GPIcon from "@/assets/images/svgs/GPIcon4.svg";
 import UsbCable from "@/assets/images/svgs/usbcable.svg";
@@ -24,14 +24,12 @@ function HomeScreen() {
     const {orientation} = useOrientation();
 
     useEffect(() => {
-        if (store.gp200.syncedPresets > 1) {
+        if (store.gp200.isSynced) {
             //router.replace('/ui/preset');
-            store.gp200.changePreset(0);
             router.replace('/ui/edit/effecttab');
-            store.modals.closeModal('syncModal');
+            //store.modals.closeModal('syncModal');
         }
     }, [store.gp200.syncedPresets])
-
 
 
     return (
@@ -47,7 +45,7 @@ function HomeScreen() {
             </TopBar>
 
             <Center>
-                <Heading size='3xl'>GP-200 Controller</Heading>
+                <Heading size='3xl'>GP-2XX</Heading>
             </Center>
 
 
@@ -70,7 +68,7 @@ function Buttons() {
 
     return (
         <HStack>
-            <Button
+            {/* <Button
                 size="md"
                 variant="outline"
                 action="secondary"
@@ -80,15 +78,16 @@ function Buttons() {
             >
                 <ButtonText>About</ButtonText>
                 <ButtonIcon as={InfoIcon}/>
-            </Button>
+            </Button> */}
             <Button size="md"
                 variant="solid"
                 action="primary"
                 onPress={() => { 
-                    router.replace('/ui/testscreen/screen1') 
+                    //router.replace('/ui/testscreen/screen1') 
+                    router.replace('/ui/edit/effecttab');
                  }}
             >
-                <ButtonText>Go to UI</ButtonText>
+                <ButtonText>Skip</ButtonText>
             </Button>
         </HStack>
     );

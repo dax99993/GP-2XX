@@ -7,12 +7,19 @@ import { observer } from "mobx-react-lite";
 
 
 function EffectState() {
+    const type = store.gp200.currentEffect ? 
+        EffectType[store.gp200.currentEffect.type] :
+        "";
+    const state = store.gp200.currentEffect ? 
+        store.gp200.currentEffect.state :
+        false;
+
     return (
         <Center className="bg-secondary-300 mx-3 my-2 px-2 py-2 rounded-md">
-            <Text bold={true}>{EffectType[store.gp200.currentEffect.type]}</Text>
+            <Text bold={true}>{type}</Text>
             <Switch
                 size="md"
-                value={store.gp200.currentEffect.state}
+                value={state}
                 onValueChange={(v) => {
                     console.log(v);
                     store.gpActions.ChangeEffectState(v);

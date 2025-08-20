@@ -46,7 +46,7 @@ function SelectPresetList() {
                     number={item.item.number} 
                     //selected={item.item.name == store.gp200.currentPreset?.name}
                 />}
-                keyExtractor={item => item.name}
+                keyExtractor={item => item.number.toString()}
                 ListHeaderComponent={
                     <SearchBar placeholder="Search preset" onChange={onSearchChange}/>
                 }
@@ -111,16 +111,18 @@ const SelectPresetListItem = observer((props: ListItemProps) => {
 
     const onPress = () => {
         //console.log("Selected ", props.name);
-        store.gpActions.ChangePreset(props.number);
         // Go back to edit screen
         router.back();
+        store.gpActions.ChangePreset(props.number);
     };
 
     // const onButtonPress = () => {
     //     console.log("Button pressed!");
     // }
 
-    const isSelected = props.name == store.gp200.currentPreset?.name;
+    const isSelected = store.gp200.currentPreset ?
+        props.name == store.gp200.currentPreset.name && props.number == store.gp200.currentPreset.number :
+        false;
 
     return (
         <Box className="bg-secondary-0">

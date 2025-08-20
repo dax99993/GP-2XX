@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "midi-test",
-    "slug": "midi-test",
+    "name": "GP-2XX",
+    "slug": "GP-2XX",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/icon.png",
-    "scheme": "miditest",
+    "scheme": "gp2",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "androidNavigationBar": {
@@ -13,17 +13,15 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.dax9999.miditest"
+      "bundleIdentifier": "com.atomicnoize.gp2"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#000000"
-        //"foregroundImage": "./assets/images/adaptive-icon.png",
-        //"backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.dax9999.miditest"
+      "package": "com.atomicnoize.gp2"
     },
     "web": {
       "bundler": "metro",
@@ -48,7 +46,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "3720f46e-d143-412b-8764-d0c6ef73ed90"
+        "projectId": "eb0e7c79-4811-4372-9cba-24bf8c485064"
       }
     }
   }

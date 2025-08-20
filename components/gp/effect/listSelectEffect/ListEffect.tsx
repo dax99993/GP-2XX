@@ -33,7 +33,13 @@ function ListEffect() {
         <VStack style={{flex:1}} className="bg-secondary-0">
             <FlatList
                 data={filteredData}
-                renderItem={(item) => <ListEffectItem name={item.item.name} id={item.item.id} selected={item.item.name == store.gp200.currentEffect?.name}/>}
+                renderItem={(item) => 
+                    <ListEffectItem
+                        name={item.item.name}
+                        id={item.item.id}
+                        selected={store.gp200.currentEffect ? item.item.name == store.gp200.currentEffect.name : false}
+                    />
+                }
                 keyExtractor={item => item.name}
                 ListHeaderComponent={
                     <SearchBarEffect placeholder="Search effect" onChange={onSearchChange}/>

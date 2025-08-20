@@ -1,4 +1,4 @@
-package com.dax9999.miditest
+package com.atomicnoize.gp2
 
 import android.app.Application
 import android.content.res.Configuration

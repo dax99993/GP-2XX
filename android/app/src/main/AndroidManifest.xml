@@ -24,8 +24,8 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="miditest"/>
-        <data android:scheme="exp+midi-test"/>
+        <data android:scheme="gp2"/>
+        <data android:scheme="exp+gp-2xx"/>
       </intent-filter>
     </activity>
   </application>

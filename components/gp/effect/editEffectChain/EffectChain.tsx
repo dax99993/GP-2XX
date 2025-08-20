@@ -64,19 +64,7 @@ function GetOutArrowPosition(pos: number) {
 }
 
 function EffectChain() {
-  if (store.gp200.currentPreset == undefined) {return null};
-
-  const DATA = 
-    store.gp200.currentPreset ? 
-      store.gp200.currentPreset.effectsChainOrder
-      : Object.values(EffectType).filter(e => typeof e === 'number');
-  
-  // Add index of Fixed settings
-  if (!DATA.includes(-1)) {
-    DATA.push(-1);
-  }
-
-  console.log("Current chain order", DATA);
+  //if (store.gp200.currentPreset == undefined) {return null};
 
   // Styles
   const {orientation, isLandscape} = useOrientation();
@@ -144,6 +132,20 @@ function EffectChain() {
     store.gpActions.ChangePresetChainOrder(ids);
   }, []);
 
+  // Default values
+  const sendPosition = store.gp200.currentPreset ? store.gp200.currentPreset.fxLoop.sendPosition : 0; 
+  const returnPosition = store.gp200.currentPreset ? store.gp200.currentPreset.fxLoop.returnPosition: 11; 
+  const DATA = 
+    store.gp200.currentPreset ? 
+      store.gp200.currentPreset.effectsChainOrder
+      : Object.values(EffectType).filter(e => typeof e === 'number');
+  
+  // Add index of Fixed settings
+  if (!DATA.includes(-1)) {
+    DATA.push(-1);
+  }
+  console.log("Current chain order", DATA);
+
     return (
       <GestureHandlerRootView style={styles.baseContainer}>
         <Center className="" style={styles.sortableContainer}>
@@ -153,11 +155,11 @@ function EffectChain() {
           />
           <InArrow scaleX={1.0} scaleY={1.0}
             height={arrowSize} width={arrowSize}
-            style={[styles.arrowBackground, GetInArrowPosition(store.gp200.currentPreset.fxLoop.sendPosition)]}
+            style={[styles.arrowBackground, GetInArrowPosition(sendPosition)]}
           />
           <OutArrow scaleX={1.0} scaleY={1.0}
             height={arrowSize} width={arrowSize}
-            style={[styles.arrowBackground, GetOutArrowPosition(store.gp200.currentPreset.fxLoop.returnPosition)]}
+            style={[styles.arrowBackground, GetOutArrowPosition(returnPosition)]}
           />
           <Sortable.Grid
             rowGap={chainRowGap}

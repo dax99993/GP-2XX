@@ -63,7 +63,6 @@ class Store {
     SyncGP() {
         // Reset state to start Syncing again
         this.gp200.SetToStartSyncing();
-        const totalPresets = 2;
         const maxTriesPerPreset = 5;
         let tries = 0;
         let syncedPresets = 0;
@@ -71,7 +70,7 @@ class Store {
         const timeoutID = setTimeout(() => {
             // clearInterval when device is disconnected! otherwise infine loop occurs.
             const intervalId = setInterval(() => {
-                if (this.gp200.syncedPresets < totalPresets  && !this.gp200.syncing && tries < maxTriesPerPreset) {
+                if (!store.gp200.isSynced && !this.gp200.syncing && tries < maxTriesPerPreset) {
                     console.log(`Executing ask preset ${this.gp200.syncedPresets}`);
                     // Your code to execute in each iteration
                     if (syncedPresets != this.gp200.syncedPresets) {
@@ -83,7 +82,7 @@ class Store {
                     this.gpActions.AskPresetInfo(this.gp200.syncedPresets);
                 } else {
                     // Could not sync the device stop this and reconnect to try again
-                    if (this,this.gp200.syncedPresets !== totalPresets) {
+                    if (!this.gp200.isSynced) {
                         console.log("SYNCING PROBLEM OCCUR");
                         runInAction(() => {
                             store.gp200.syncingErrorOccur = true;
@@ -91,7 +90,9 @@ class Store {
                     } else {
                         console.log("SYNCING SUCCESSFUL");
                         this.modals.closeModal("syncModal");
+
                         // Execute action to changePreset to current preset in device
+                        store.gp200.changePreset(0);
 
                     }
                     clearInterval(intervalId); // Stop the interval when the condition is met

@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "miditest.app"
-               BlueprintName = "miditest"
-               ReferencedContainer = "container:miditest.xcodeproj">
+               BuildableName = "GP2XX.app"
+               BlueprintName = "GP2XX"
+               ReferencedContainer = "container:GP2XX.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "miditestTests.xctest"
-               BlueprintName = "miditestTests"
-               ReferencedContainer = "container:miditest.xcodeproj">
+               BuildableName = "GP2XXTests.xctest"
+               BlueprintName = "GP2XXTests"
+               ReferencedContainer = "container:GP2XX.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "miditest.app"
-            BlueprintName = "miditest"
-            ReferencedContainer = "container:miditest.xcodeproj">
+            BuildableName = "GP2XX.app"
+            BlueprintName = "GP2XX"
+            ReferencedContainer = "container:GP2XX.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "miditest.app"
-            BlueprintName = "miditest"
-            ReferencedContainer = "container:miditest.xcodeproj">
+            BuildableName = "GP2XX.app"
+            BlueprintName = "GP2XX"
+            ReferencedContainer = "container:GP2XX.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

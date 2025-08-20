@@ -68,6 +68,11 @@ export class GP200DeviceActions implements IDeviceActions {
 
         // Notify synced preset
         this.gp200.SyncingPresetDone();
+
+        // When finished change to preset 0
+        // if (this.gp200.isSynced) {
+        //     this.gp200.changePreset(0);
+        // }
     }
 
 

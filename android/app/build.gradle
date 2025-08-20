@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.dax9999.miditest'
+    namespace 'com.atomicnoize.gp2'
     defaultConfig {
-        applicationId 'com.dax9999.miditest'
+        applicationId 'com.atomicnoize.gp2'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

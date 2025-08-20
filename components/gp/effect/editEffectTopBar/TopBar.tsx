@@ -129,13 +129,14 @@ function TopBarRightMenu() {
 
 
 const TopBarPresetInfo = observer(() => {
-  if (store.gp200.currentPreset == undefined) {return null};
+  //if (store.gp200.currentPreset == undefined) {return null};
 
   const router = useRouter();
 
-  const presetName = store.gp200.currentPreset.name.length > 10 ? 
-  store.gp200.currentPreset.name.slice(0, 10 - 3) + '...' :
-  store.gp200.currentPreset.name;
+  const bankCode = store.gp200.currentPreset ? store.gp200.currentPreset.bankCode : "";
+  let presetName = store.gp200.currentPreset ? store.gp200.currentPreset.name : "";
+  presetName = presetName.length > 10 ? 
+    presetName.slice(0, 10 - 3) + '...' : presetName
 
   const goChangePreset = () => {
     console.log("Go change preset");
@@ -145,7 +146,7 @@ const TopBarPresetInfo = observer(() => {
   return (
     <TouchableOpacity style={{ flex: 1, flexDirection: 'row' }} onPress={goChangePreset}>
       <Center className='bg-secondary-300 px-2 rounded-md' style={{ minWidth: 100 }}>
-        <Text>{store.gp200.presetBankCode}</Text>
+        <Text>{bankCode}</Text>
         <Text>{presetName}</Text>
       </Center>
     </TouchableOpacity>

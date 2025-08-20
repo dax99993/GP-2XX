@@ -7,7 +7,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>midi-test</string>
+    <string>GP-2XX</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -27,14 +27,14 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>miditest</string>
-          <string>com.dax9999.miditest</string>
+          <string>gp2</string>
+          <string>com.atomicnoize.gp2</string>
         </array>
       </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>exp+midi-test</string>
+          <string>exp+gp-2xx</string>
         </array>
       </dict>
     </array>

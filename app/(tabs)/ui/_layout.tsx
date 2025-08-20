@@ -33,18 +33,19 @@ export default function TabLayout() {
         }),
       }}>
       <Tabs.Screen
+        name="edit"
+        options={{
+          //href: null, //Maybe add this screen later
+          title: 'Edit',
+          tabBarIcon: ({ color }) => <Ionicons name="options" size={28} color={color} />
+        }}
+      />
+      <Tabs.Screen
         name="preset"
         options={{
           href: null, //Maybe add this screen later
           title: 'Preset',
           tabBarIcon: ({ color }) => <Ionicons size={28} name="musical-notes" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="edit"
-        options={{
-          title: 'Edit',
-          tabBarIcon: ({ color }) => <Ionicons name="options" size={32} color={color} />
         }}
       />
       <Tabs.Screen

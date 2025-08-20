@@ -7,10 +7,10 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 
 
 function SettingsChainUnit({size}: {size: number}) {
-  if (!store.gp200.currentPreset) {
-    console.log("NULL current Preset");
-    return null;
-  }
+  // if (!store.gp200.currentPreset) {
+  //   console.log("NULL current Preset");
+  //   return null;
+  // }
 
   const select_unit = () => {
     //store.gp200.changeSelectedEffect(effect.type);
