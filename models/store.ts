@@ -92,7 +92,9 @@ class Store {
                         this.modals.closeModal("syncModal");
 
                         // Execute action to changePreset to current preset in device
-                        store.gp200.changePreset(0);
+                        runInAction(() => {
+                            store.gpActions.ChangePreset(0);
+                        })
 
                     }
                     clearInterval(intervalId); // Stop the interval when the condition is met
