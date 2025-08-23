@@ -11,9 +11,9 @@
     "preview": {
       "distribution": "internal"
     },
-    "preview2": {
+    "testing": {
       "android": {
-        "buildType": "apk"
+        "buildType": "app-bundle"
       }
     },
     "production": {

@@ -8,9 +8,6 @@
     "scheme": "gp2",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "androidNavigationBar": {
-      "visible": "immersive"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.atomicnoize.gp2"

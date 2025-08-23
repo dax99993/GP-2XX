@@ -52,8 +52,8 @@ function NumericSlider(props: NumericSliderProps) {
                 }}
                 thumbTintColor="white"
                 minimumTrackTintColor="white"
-                trackHeight={5}
-                thumbSize={20}
+                trackHeight={20}
+                thumbSize={30}
             />
         </Box>
     );

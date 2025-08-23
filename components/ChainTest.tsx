@@ -13,7 +13,6 @@ import ChainIcon from "@/assets/images/svgs/Chain2.svg";
 import InArrow from "@/assets/images/svgs/InArrow.svg";
 import OutArrow from "@/assets/images/svgs/OutArrow.svg";
 
-import useDimensions from "@/hooks/useDimensions";
 import useOrientation from "@/hooks/useOrientation";
 
 function GetInArrowPosition(pos: number) {
@@ -81,12 +80,8 @@ function AA({name, size}: Props) {
 
 function EffectChain() {
   //if (store.gp200.currentPreset == undefined) {return null};
-  const {orientation, isLandscape} = useOrientation();
-
-  const {height, width, aspectRatio, isTablet} = useDimensions();
-  console.log("Height", height, "Width", width);
-  console.log("Orientation", orientation, "is Landscape", isLandscape);
-  console.log("Aspect Ratio", aspectRatio, "is Tablet", isTablet);
+  const {orientation, isLandscape, isTablet} = useOrientation();
+  console.log("Orientation", orientation, "is Landscape", isLandscape, "is Tablet", isTablet);
 
   const scale = 1.5; //when used in bigger screen tablets
   const chainWidth = 400;
