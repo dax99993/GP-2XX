@@ -2,6 +2,7 @@ import { NumericParameterModel } from "@/models/parameter/numericParameter";
 import { store } from "@/models/store";
 //import Slider from "@react-native-community/slider";
 import NumericSlider from "@/components/NumericSlider";
+import { useScrolling } from "@/contexts/scroll-context";
 import { observer } from "mobx-react-lite";
 
 type NumericParameterProps = {
@@ -10,9 +11,7 @@ type NumericParameterProps = {
 
 function NumericParameter({param}: NumericParameterProps) {
 
-    const onChange = (n: number) => {
-       store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
-    };
+    const { enableScrolling, disableScrolling} = useScrolling();
 
     const getStringValue = (n: number): string => {
         if (param == undefined) return "";
@@ -31,7 +30,13 @@ function NumericParameter({param}: NumericParameterProps) {
             maxValue={param.max_value[0]}
             step={param.step_size[0]}
             currentValue={param.current_value[0]}
-            onChange={onChange}
+            onSlidingStart={(_) => {
+                disableScrolling();
+            }}
+            onSlidingComplete={(n: number) => {
+                enableScrolling();
+                store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
+            }}
         />
     );
 }

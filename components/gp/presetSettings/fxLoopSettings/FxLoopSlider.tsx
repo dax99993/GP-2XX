@@ -15,8 +15,9 @@ interface Props {
     step: number;
     lowValue: number;
     highValue: number;
-    onChange: (values: number[]) => void;
-    //onChange: (low: number, high: number) => void;
+    onSlidingStart?: (values: [number, number]) => void;
+    onSlidingComplete?: (values: [number, number]) => void;
+    onValueChange?: (values: [number, number]) => void;
 }
 
 const Thumb = (t: {value: number, thumb: "min" | "max"}) => {
@@ -59,7 +60,7 @@ const StepMarker = (props: IStepMarker) => {
   return (
     <View>
       {!props.stepMarked &&
-        <Center style={{ width:20, height: 20 , backgroundColor: '' }}>
+        <Center style={{ width:20, height: 20 , marginTop: 5, backgroundColor: '' }}>
           <Text size='md'>{props.markValue + 1}</Text>
         </Center>
       }
@@ -79,10 +80,18 @@ function FxLoopSlider(props: Props) {
             step={props.step}
             range={[props.lowValue, props.highValue]}
             minimumRange={0}
-            onSlidingComplete={props.onChange}
+            onSlidingStart={(range) => {
+              if (props.onSlidingStart) props.onSlidingStart(range);
+            }}
+            onValueChange={(range) => {
+              if (props.onValueChange) props.onValueChange(range);
+            }}
+            onSlidingComplete={(range) => {
+              if (props.onSlidingComplete) props.onSlidingComplete(range);
+            }}
             inboundColor={'white'}
             outboundColor={'gray'}
-            trackHeight={5}
+            trackHeight={10}
             CustomThumb={Thumb}
             StepMarker={StepMarker}
         />

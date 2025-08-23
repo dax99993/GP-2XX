@@ -1,5 +1,6 @@
 import NumericSlider from "@/components/NumericSlider";
 import PickerSelector from "@/components/pickerSelector";
+import { useScrolling } from "@/contexts/scroll-context";
 import { DoubleParameterModel } from "@/models/parameter/doubleParameter";
 import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
@@ -10,13 +11,7 @@ type DoubleParameterProps = {
 
 function DoubleParameter({param}: DoubleParameterProps) {
 
-    const onChangeNumeric = (n: number) => {
-       store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
-    };
-
-    const onChangeSelect = (v:string, n: number) => {
-        store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
-    };
+    const { enableScrolling, disableScrolling} = useScrolling();
 
     const isSecondRangeActive = param.current_range_idx !== 0;
 
@@ -45,7 +40,13 @@ function DoubleParameter({param}: DoubleParameterProps) {
                     maxValue={param.max_value[0]}
                     step={param.step_size[0]}
                     currentValue={param.current_value[0]}
-                    onChange={onChangeNumeric}
+                    onSlidingStart={(_) => {
+                        disableScrolling();
+                    }}
+                    onSlidingComplete={(n:number) => {
+                        enableScrolling();
+                        store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
+                    }}
                 />
             }
             {
@@ -54,7 +55,9 @@ function DoubleParameter({param}: DoubleParameterProps) {
                     name={param.name}
                     currentValue={param.current_value[1].toString()}
                     labels={labels}
-                    onChange={onChangeSelect} 
+                    onChange={(_: string, n: number) => {
+                        store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
+                    }}
                 />
             }
         </>

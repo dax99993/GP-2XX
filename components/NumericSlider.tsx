@@ -12,7 +12,9 @@ type NumericSliderProps = {
     maxValue: number;
     step: number;
     currentValue: number;
-    onChange: (n:number) => void;
+    onSlidingStart?: (n:number) => void;
+    onValueChange?: (n:number) => void;
+    onSlidingComplete?: (n:number) => void;
 }
 
 function NumericSlider(props: NumericSliderProps) {
@@ -43,11 +45,15 @@ function NumericSlider(props: NumericSliderProps) {
                 step={props.step}
                 value={props.currentValue}
                 onValueChange={(n: number) => {
+                    if (props.onValueChange) props.onValueChange(n);
                     setValue(n);
                     setIsSliding(true);
                 }}
+                onSlidingStart={(n: number) => {
+                    if(props.onSlidingStart) props.onSlidingStart(n);
+                }}  
                 onSlidingComplete={(n: number) => {
-                    props.onChange(n);
+                    if(props.onSlidingComplete) props.onSlidingComplete(n);
                     setIsSliding(false);
                 }}
                 thumbTintColor="white"

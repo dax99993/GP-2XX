@@ -2,6 +2,7 @@ import NumericSlider from "@/components/NumericSlider";
 import PickerSelector from "@/components/pickerSelector";
 import { Divider } from "@/components/ui/divider";
 import { VStack } from "@/components/ui/vstack";
+import { useScrolling } from "@/contexts/scroll-context";
 import { DoubleParameterModel } from "@/models/parameter/doubleParameter";
 import { IParameter } from "@/models/parameter/IParameter";
 import { ExpModule } from "@/models/preset/IExpSettings";
@@ -77,6 +78,8 @@ interface ExpSettingsProps {
 
 function ExpSettings({expID, expParamID }: ExpSettingsProps) {
     if (store.gp200.currentPreset == undefined) {return null};
+
+    const { enableScrolling, disableScrolling} = useScrolling();
 
     console.log("ExpID", expID, "paramID", expParamID);
 
@@ -192,8 +195,12 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
                 maxValue={paramMax}
                 step={paramStep}
                 currentValue={min}
-                onChange={function (n: number): void {
+                onSlidingStart={(_) => {
+                    disableScrolling();
+                }}
+                onSlidingComplete={function (n: number): void {
                     console.log("Change Exp Param Min value:", n);
+                    enableScrolling();
                     setMin(n);
                     store.gpActions.ChangePresetExpSettings(expID, expParamID,
                         expModule, expParam, n, max);
@@ -206,8 +213,12 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
                 maxValue={paramMax}
                 step={paramStep}
                 currentValue={max}
-                onChange={function (n: number): void {
+                onSlidingStart={(_) => {
+                    disableScrolling();
+                }}
+                onSlidingComplete={function (n: number): void {
                     console.log("Change Exp Param Max value:", n);
+                    enableScrolling();
                     setMax(n);
                     store.gpActions.ChangePresetExpSettings(expID, expParamID,
                         expModule, expParam, min, n);

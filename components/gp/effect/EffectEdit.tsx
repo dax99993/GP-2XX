@@ -1,5 +1,6 @@
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
+import { useScrolling } from "@/contexts/scroll-context";
 import { DoubleParameterModel } from "@/models/parameter/doubleParameter";
 import { NumericParameterModel } from "@/models/parameter/numericParameter";
 import { SelectParameterModel } from "@/models/parameter/selectParameter";
@@ -13,6 +14,7 @@ import EffectSelector from "./EffectSelector";
 import EffectState from "./EffectState";
 
 function EffectEdit() {
+    const { isScrollingEnabled } = useScrolling();
 
     return (
         <VStack style={styles.mainContainer} className="bg-secondary-0">
@@ -20,14 +22,25 @@ function EffectEdit() {
                 <EffectState/>
                 <EffectSelector/>
             </HStack>
-            <ScrollView style={styles.parametersContainer}>
+            <ScrollView style={styles.parametersContainer}
+                scrollEnabled={isScrollingEnabled}
+            >
                 { store.gp200.currentEffect && store.gp200.currentEffect.parameters.map(p => {
                     if (p.type === "Numeric") {
-                        return <NumericParameter key={p.name + p.id} param={p as NumericParameterModel}/>
+                        return <NumericParameter
+                            key={p.name + p.id}
+                            param={p as NumericParameterModel}
+                        />
                     } else if (p.type === "Select" ) {
-                        return <SelectParameter key={p.name} param={p as SelectParameterModel}/>
+                        return <SelectParameter
+                            key={p.name}
+                            param={p as SelectParameterModel}
+                        />
                     } else {
-                        return <DoubleParameter key={p.name} param={p as DoubleParameterModel} />
+                        return <DoubleParameter
+                            key={p.name}
+                            param={p as DoubleParameterModel} 
+                        />
                     }
                 }) 
                 }

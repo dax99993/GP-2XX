@@ -6,6 +6,7 @@ import EditEffectTopBar from '@/components/gp/effect/editEffectTopBar/TopBar';
 import EffectEdit from '@/components/gp/effect/EffectEdit';
 import PresetSettings from '@/components/gp/presetSettings/PresetSettings';
 import { VStack } from '@/components/ui/vstack';
+import { ScrollingProvider } from '@/contexts/scroll-context';
 import useOrientation from '@/hooks/useOrientation';
 import { store } from '@/models/store';
 import { Orientation } from 'expo-screen-orientation';
@@ -21,14 +22,16 @@ function EditScreen() {
         <EditEffectTopBar/>
         <View style={isLandscape ? styles.landscapeContainer : styles.portraitContainer} >
           <EffectChain/>
-          <VStack style={{flex:1}}>
-            {!store.showPatchSettings &&
-              <EffectEdit />
-            }
-            {store.showPatchSettings &&
-              <PresetSettings />
-            }
-          </VStack>
+          <ScrollingProvider>
+            <VStack style={{flex:1}}>
+              {!store.showPatchSettings &&
+                <EffectEdit />
+              }
+              {store.showPatchSettings &&
+                <PresetSettings />
+              }
+            </VStack>
+          </ScrollingProvider>
         </View>
       </VStack>
   );

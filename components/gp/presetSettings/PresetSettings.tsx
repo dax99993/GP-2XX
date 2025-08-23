@@ -9,11 +9,13 @@ import KnobsSettings from '@/components/gp/presetSettings/knobSettings/knobsSett
 import { Center } from '@/components/ui/center';
 import { Heading } from '@/components/ui/heading';
 import { VStack } from '@/components/ui/vstack';
+import { useScrolling } from '@/contexts/scroll-context';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 
 
 
 export default function PresetSettings() {
+  const { isScrollingEnabled, enableScrolling, disableScrolling} = useScrolling();
 
   return (
     <VStack space='md' className='bg-secondary-0' style={{flex:1}}>
@@ -26,7 +28,7 @@ export default function PresetSettings() {
         </BoundBox>
 
         <GestureHandlerRootView>
-            <ScrollView>
+            <ScrollView scrollEnabled={isScrollingEnabled}>
                 <VStack space='md' className='bg-secondary-0'>
                 <GeneralSettings/>
                 <FxLoopSettings/>

@@ -3,6 +3,7 @@ import NumericSlider from "@/components/NumericSlider";
 import { Center } from "@/components/ui/center";
 import { Heading } from "@/components/ui/heading";
 import { VStack } from "@/components/ui/vstack";
+import { useScrolling } from "@/contexts/scroll-context";
 import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 import React from "react";
@@ -10,6 +11,8 @@ import React from "react";
 
 function GeneralSettings() {
     if (store.gp200.currentPreset == undefined) {return null};
+
+    const { enableScrolling, disableScrolling} = useScrolling();
 
     return (
         <BoundBox>
@@ -23,7 +26,11 @@ function GeneralSettings() {
                     maxValue={100}
                     step={1}
                     currentValue={store.gp200.currentPreset.volume}
-                    onChange={function (n: number): void {
+                    onSlidingStart={(_) => {
+                        disableScrolling();
+                    }}
+                    onSlidingComplete={(n: number) => {
+                        enableScrolling();
                         store.gpActions.ChangePresetVolume(n);
                     }}                
                 />
@@ -33,7 +40,11 @@ function GeneralSettings() {
                     maxValue={250}
                     step={1}
                     currentValue={store.gp200.currentPreset.bpm}
-                    onChange={function (n: number): void {
+                    onSlidingStart={(_) => {
+                        disableScrolling();
+                    }}
+                    onSlidingComplete={(n: number) => {
+                        enableScrolling();
                         store.gpActions.ChangePresetBPM(n);
                     }}                
                 />
@@ -43,7 +54,11 @@ function GeneralSettings() {
                     maxValue={100}
                     step={1}
                     currentValue={store.gp200.currentPreset.pan}
-                    onChange={function (n: number): void {
+                    onSlidingStart={(_) => {
+                        disableScrolling();
+                    }}
+                    onSlidingComplete={(n: number) => {
+                        enableScrolling();
                         store.gpActions.ChangePresetPan(n);
                     }}                
                 />
