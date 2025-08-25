@@ -53,28 +53,35 @@ function RightItems({children}: RightProps) {
 
 const styles = StyleSheet.create({
     container: {
-        height: 50,
+        //height: '12%',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-evenly',
+        justifyContent: 'space-between',
+        //backgroundColor: 'pink'
     },
     leftItem: {
         //flex: 1,
+        //flexGrow: 1,
+        //flexShrink: 0,
         flexDirection: 'row',
         justifyContent: 'flex-start',
         //backgroundColor: 'orange'
     },
     centerItem: {
         flex: 1,
+        //flexGrow: 0,
+        flexShrink: 0,
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        //backgroundColor: 'pink'
+        justifyContent: 'center',
+        //backgroundColor: 'lightgreen'
     },
     rightItem: {
-        //flex: 1,
+        flex: 1,
+        //flexGrow: 0,
+        flexShrink: 0,
         flexDirection: 'row',
-        justifyContent: 'flex-start',
-        //backgroundColor: 'orange'
+        justifyContent: 'flex-end',
+        //backgroundColor: 'skyblue'
     }
 });
 

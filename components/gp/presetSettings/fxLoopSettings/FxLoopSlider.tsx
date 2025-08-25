@@ -26,7 +26,7 @@ const Thumb = (t: {value: number, thumb: "min" | "max"}) => {
      style={[styles.thumb,
       { backgroundColor: t.thumb=== "max" ? Colors.fxLoop.outPosition : Colors.fxLoop.inPosition, alignItems:'center'}]}
     >
-      <Text size='xl'>{t.value + 1}</Text>
+      <Text size='xl' bold={true}>{t.value + 1}</Text>
     </Center>
   )
 }
@@ -60,8 +60,8 @@ const StepMarker = (props: IStepMarker) => {
   return (
     <View>
       {!props.stepMarked &&
-        <Center style={{ width:20, height: 20 , marginTop: 5, backgroundColor: '' }}>
-          <Text size='md'>{props.markValue + 1}</Text>
+        <Center style={{ width:20, height: 20 , marginTop: 8, backgroundColor: '' }}>
+          <Text size='lg'>{props.markValue + 1}</Text>
         </Center>
       }
     </View>
@@ -91,7 +91,7 @@ function FxLoopSlider(props: Props) {
             }}
             inboundColor={'white'}
             outboundColor={'gray'}
-            trackHeight={10}
+            trackHeight={15}
             CustomThumb={Thumb}
             StepMarker={StepMarker}
         />
@@ -112,15 +112,15 @@ const styles = StyleSheet.create({
   },
     controlContainer: {
         marginTop: 10,
-        marginLeft: 25,
-        marginRight: 25,
+        marginLeft: 15,
+        marginRight: 15,
     },
   thumb: {
     width: THUMB_RADIUS * 2,
     height: THUMB_RADIUS * 2,
     borderRadius: THUMB_RADIUS,
-    borderWidth: 3,
-    borderColor: "white",
+    //borderWidth: 3,
+    //borderColor: 'lightgray',
   },
 });
 

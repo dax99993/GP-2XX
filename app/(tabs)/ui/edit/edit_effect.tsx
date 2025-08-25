@@ -14,14 +14,17 @@ import { observer } from 'mobx-react-lite';
 
 
 function EditScreen() {
-  const {orientation, isLandscape} = useOrientation();
+  const {orientation, isLandscape, isTablet} = useOrientation();
   console.log(Orientation[orientation]);
 
   return (
       <VStack space='md' className="bg-secondary-0" style={styles.mainContainer}>
         <EditEffectTopBar/>
         <View style={isLandscape ? styles.landscapeContainer : styles.portraitContainer} >
+          <View style={{backgroundColor: ''}}>
           <EffectChain/>
+          {/* Component to show only on tablet */}
+          </View>
           <ScrollingProvider>
             <VStack style={{flex:1}}>
               {!store.showPatchSettings &&

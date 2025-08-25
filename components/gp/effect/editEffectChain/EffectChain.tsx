@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { DimensionValue, StyleSheet } from "react-native";
+import { Dimensions, DimensionValue, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import EffectChainUnit from "@/components/gp/effect/editEffectChain/EffectChainUnit";
@@ -20,8 +20,8 @@ function GetInArrowPosition(pos: number) {
   let top : DimensionValue = '0%';
   let left: DimensionValue = '0%';
 
-  const topPositions: DimensionValue[] = ['-3%', '36%', '75%'];
-  const leftPositions: DimensionValue[] = ['-5%', '20%', '47%', '74%'];
+  const topPositions: DimensionValue[] = ['10%', '49%', '88%'];
+  const leftPositions: DimensionValue[] = ['4%', '27%', '54%', '77.5%'];
 
   const topPos = Math.floor(pos / 4);
   const topLeft = pos % 4;
@@ -43,8 +43,8 @@ function GetOutArrowPosition(pos: number) {
   let top : DimensionValue = '0%';
   let left: DimensionValue = '0%';
 
-  const topPositions: DimensionValue[] = ['14%', '53%', '92%'];
-  const leftPositions: DimensionValue[] = ['-5%', '20%', '47%', '74%'];
+  const topPositions: DimensionValue[] = ['26.5%', '65%', '104%'];
+  const leftPositions: DimensionValue[] = ['4%', '27%', '54%', '77.5%'];
 
   const topPos = Math.floor(pos / 4);
   const topLeft = pos % 4;
@@ -69,28 +69,33 @@ function EffectChain() {
   const {orientation, isLandscape, isTablet} = useOrientation();
   console.log("Orientation", orientation, "is Landscape", isLandscape, "is Tablet", isTablet);
 
+  const {width, height} = Dimensions.get("window");
+  console.log("Width", width, "Height", height);
 
-  const scale = 1.5; //when used in bigger screen tablets
-  const chainWidth = 400;
-  const chainItemSize = isTablet? scale * chainWidth / 8: chainWidth / 8;
-  const chainRowGap = isTablet ? scale * chainItemSize / 2 : chainItemSize / 2;
-  const chainColGap = isTablet ? scale * chainItemSize / 2 : chainItemSize / 2;
+  
+  const chainWidth = Math.min(height, width, 400);
+  const chainItemSize = chainWidth / 8;
+  const chainRowGap = chainItemSize / 2;
+  const chainColGap = chainItemSize / 2;
   const arrowSize = chainColGap;
+  console.log("ChainWidth", chainWidth, "ChainItemSize", chainItemSize);
+  console.log("ChainRowGap", chainRowGap, "ChainColGap", chainColGap, "ArrowSize", arrowSize);
 
   const styles = StyleSheet.create({
     baseContainer: {
-      // maxWidth: isLandscape ? (isTablet ? '40%': '50%') : '100%',
-      maxWidth: isTablet ? scale * chainWidth: chainWidth,
-      justifyContent: isLandscape ? 'center': 'flex-start',
-      alignItems: 'center',
-      alignContent: 'center',
-      paddingHorizontal: chainColGap,
-      paddingVertical: chainColGap,
+      //maxWidth: isLandscape ? '50%' : '100%',
+      justifyContent: 'flex-start',
+      //alignItems: 'center',
       //backgroundColor: 'lightgreen',
     },
     sortableContainer: {
-      //alignItems: 'center',
-      justifyContent: 'flex-start',
+      //justifyContent: 'flex-start',
+      maxWidth: chainWidth,
+      justifyContent: 'center',
+      alignContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: chainColGap,
+      paddingVertical: chainColGap,
       //backgroundColor: "#6600ff8f",
     },
     chainBackground: {
@@ -131,6 +136,7 @@ function EffectChain() {
   // Default values
   const sendPosition = store.gp200.currentPreset ? store.gp200.currentPreset.fxLoop.sendPosition : 0; 
   const returnPosition = store.gp200.currentPreset ? store.gp200.currentPreset.fxLoop.returnPosition: 11; 
+
   const DATA = 
     store.gp200.currentPreset ? 
       store.gp200.currentPreset.effectsChainOrder

@@ -9,15 +9,15 @@ import { observer } from "mobx-react-lite";
 import FxLoopSlider from "./FxLoopSlider";
 
 function FxLoopSettings() {
-    if (store.gp200.currentPreset == undefined) {return null};
+    // if (store.gp200.currentPreset == undefined) {return null};
 
     const { enableScrolling, disableScrolling} = useScrolling();
 
-    const sendPosition = store.gp200.currentPreset.fxLoop.sendPosition;
-    const returnPosition = store.gp200.currentPreset.fxLoop.returnPosition;
-    const sendLevel = store.gp200.currentPreset.fxLoop.sendLevel;
-    const returnLevel = store.gp200.currentPreset.fxLoop.returnLevel;
-    const mode = store.gp200.currentPreset.fxLoop.mode;
+    const sendPosition = store.gp200.currentPreset ? store.gp200.currentPreset.fxLoop.sendPosition : 0;
+    const returnPosition = store.gp200.currentPreset ? store.gp200.currentPreset.fxLoop.returnPosition : 0;
+    const sendLevel = store.gp200.currentPreset ? store.gp200.currentPreset.fxLoop.sendLevel : 0;
+    const returnLevel = store.gp200.currentPreset ? store.gp200.currentPreset.fxLoop.returnLevel : 0;
+    const mode = store.gp200.currentPreset ? store.gp200.currentPreset.fxLoop.mode : 0;
 
     console.log("FxLoop SendLevel", sendLevel, "ReturnLevel", returnLevel, "Mode",mode);
 

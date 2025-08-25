@@ -1,9 +1,9 @@
 import TopBar from "@/components/topBar/TopBar";
 import { Button, ButtonIcon } from "@/components/ui/button";
-import { ChevronLeftIcon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { store } from "@/models/store";
 import { useRouter } from "expo-router";
+import { ArrowLeftIcon } from "lucide-react-native";
 import { observer } from "mobx-react-lite";
 
 
@@ -15,19 +15,17 @@ function ListEffectTopBar() {
         router.back();
     };
 
-    const effectType = store.gp200.currentEffect?.typeName;
+    const effectType = store.gp200.currentEffect ? store.gp200.currentEffect.typeName : "Module";
 
     return (
         <TopBar>
             <TopBar.leftItems>
-                <Button variant="solid" action="secondary" size="sm" className="rounded-5" onPress={goToEdit}>
-                    <ButtonIcon as={ChevronLeftIcon} size="sm" />
+                <Button variant="solid" action="secondary" size="lg" className="rounded-xl px-3" onPress={goToEdit}>
+                    <ButtonIcon as={ArrowLeftIcon} />
                 </Button>
             </TopBar.leftItems>
             <TopBar.centerItems>
-                    <Text size="2xl"></Text>
-                    <Text size="2xl">{effectType}</Text>
-                    <Text size="2xl"></Text>
+                    <Text bold={true} size="2xl">{effectType}</Text>
             </TopBar.centerItems>
         </TopBar>
     );

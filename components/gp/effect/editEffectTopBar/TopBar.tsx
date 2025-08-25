@@ -4,9 +4,10 @@ import { Center } from "@/components/ui/center";
 import { Icon } from "@/components/ui/icon";
 import { Menu, MenuItem, MenuItemLabel, MenuSeparator } from "@/components/ui/menu";
 import { Text } from "@/components/ui/text";
+import useOrientation from "@/hooks/useOrientation";
 import { store } from "@/models/store";
 import { useRouter } from "expo-router";
-import { ArrowDownToLineIcon, ChevronLeftIcon, ChevronRightIcon, CircleArrowDownIcon, EllipsisVerticalIcon, FolderInputIcon, FolderOutputIcon, HomeIcon, SaveIcon } from "lucide-react-native";
+import { ArrowDownToLineIcon, ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon, EllipsisVerticalIcon, FolderInputIcon, FolderOutputIcon, HomeIcon, SaveIcon } from "lucide-react-native";
 import { observer } from "mobx-react-lite";
 import { TouchableOpacity } from "react-native";
 
@@ -32,6 +33,7 @@ function EditEffectTopBar() {
 
 function TopBarLeft() {
   const router = useRouter();
+
   const goHome = () => {
     console.log("Go Home");
     router.replace("/");
@@ -45,83 +47,119 @@ function TopBarLeft() {
 }
 
 function TopBarCenter() {
-  const previousPreset = () => {
-    console.log("Change to previous preset");
-    store.gpActions.PreviousPreset();
-  }
-
-  const nextPreset = () => {
-    console.log("Change to next preset");
-    store.gpActions.NextPreset();
-  }
-
-  const savePreset = () => {
-    console.log("save preset");
-    store.modals.openModal("savePresetModal");
-  }
-
   return (
-    <>
     <TopBarPresetInfo/>
-    <ButtonGroup style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Button size="lg" action="secondary" className='rounded-xl px-3' onPress={previousPreset}>
-        <ButtonIcon as={ChevronLeftIcon} />
-      </Button>
-      <Button size="lg" action="secondary" className='rounded-xl px-3' onPress={nextPreset}>
-        <ButtonIcon as={ChevronRightIcon} />
-      </Button>
-      <Button size="lg" action="secondary" className='rounded-xl px-3' onPress={savePreset}>
-        <ButtonIcon as={SaveIcon} size='lg' />
-      </Button>
-    </ButtonGroup>
-    </>
   );
 }
 
 function TopBarRightMenu() {
-  const importPreset = () => {
-    console.log("import preset");
-  }
-
-  const exportPreset = () => {
-    console.log("export preset");
-  }
-  const loadIR = () => {
-    console.log("Load IR");
-  }
-  const loadNAM = () => {
-    console.log("Load NAM");
-  }
+  const {isLandscape, isTablet} = useOrientation();
 
   return (
-    <Menu
-      placement="bottom"
-      trigger={({ ...triggerProps }) => {
-        return (
-          <Button size="lg" action="secondary" className='rounded-xl px-3' {...triggerProps}>
-            <ButtonIcon as={EllipsisVerticalIcon} />
-          </Button>
-        )
-      }}
-    >
-      <MenuItem key="Import preset" textValue="Import preset" onPress={importPreset}>
-        <Icon as={FolderInputIcon} size="sm" className="mr-2" />
-        <MenuItemLabel size="sm">Import preset</MenuItemLabel>
-      </MenuItem>
-      <MenuItem key="Export preset" textValue="Export preset" onPress={exportPreset}>
-        <Icon as={FolderOutputIcon} size="sm" className="mr-2" />
-        <MenuItemLabel size="sm">Export preset</MenuItemLabel>
-      </MenuItem>
-      <MenuSeparator />
-      <MenuItem key="Load IR" textValue="Load IR" onPress={loadIR}>
-        <Icon as={ArrowDownToLineIcon} size="sm" className="mr-2" />
-        <MenuItemLabel size="sm">Load IR</MenuItemLabel>
-      </MenuItem>
-      <MenuItem key="Load NAM" textValue="Load NAM" onPress={loadNAM}>
-        <Icon as={CircleArrowDownIcon} size="sm" className="mr-2" />
-        <MenuItemLabel size="sm">Load NAM</MenuItemLabel>
-      </MenuItem>
-    </Menu>
+    <ButtonGroup style={{ flexDirection: 'row', alignItems: 'center' }} space="sm">
+      { ((isLandscape  && !isTablet) || isTablet) &&
+      <>
+      <Button
+        size="lg"
+        action="secondary"
+        className='rounded-xl px-3'
+        onPress={() => {
+          console.log("Change to previous bank");
+          store.gpActions.PrevBank();
+        }}
+      >
+        <ButtonIcon as={ChevronsLeftIcon} />
+      </Button>
+      <Button
+        size="lg"
+        action="secondary"
+        className='rounded-xl px-3'
+        onPress={() => {
+          console.log("Change to next bank");
+          store.gpActions.NextBank();
+        }}
+      >
+        <ButtonIcon as={ChevronsRightIcon} />
+      </Button>
+      </>
+      }
+      <Button
+        size="lg"
+        action="secondary"
+        className='rounded-xl px-3'
+        onPress={() => {
+          console.log("Change to previous preset");
+          store.gpActions.PreviousPreset();
+        }}
+      >
+        <ButtonIcon as={ChevronLeftIcon} />
+      </Button>
+      <Button
+        size="lg"
+        action="secondary"
+        className='rounded-xl px-3'
+        onPress={() => {
+          console.log("Change to next preset");
+          store.gpActions.NextPreset();
+        }}
+      >
+        <ButtonIcon as={ChevronRightIcon} />
+      </Button>
+      <Button
+        size="lg"
+        action="secondary"
+        className='rounded-xl px-3'
+        onPress={()=> {
+          console.log("save preset");
+          store.modals.openModal("savePresetModal");
+        }}
+      >
+        <ButtonIcon as={SaveIcon} size='lg' />
+      </Button>
+        <Menu
+          placement="bottom right"
+          style={{marginTop: isTablet ? 20 : 10}}
+          trigger={({ ...triggerProps }) => {
+            return (
+              <Button size="lg" action="secondary" className='rounded-xl px-3' {...triggerProps}>
+                <ButtonIcon as={EllipsisVerticalIcon} />
+              </Button>
+            )
+          }}
+        >
+          <MenuItem
+            key="Import preset"
+            textValue="Import preset"
+            onPress={() => {
+              console.log("import preset");
+            }}
+          >
+            <Icon as={FolderInputIcon} size="sm" className="mr-2" />
+            <MenuItemLabel size="sm">Import preset</MenuItemLabel>
+          </MenuItem>
+          <MenuItem
+            key="Export preset"
+            textValue="Export preset"
+            onPress={() => {
+              console.log("export preset");
+            }}
+          >
+            <Icon as={FolderOutputIcon} size="sm" className="mr-2" />
+            <MenuItemLabel size="sm">Export preset</MenuItemLabel>
+          </MenuItem>
+          <MenuSeparator />
+          <MenuItem
+            key="Load IR"
+            textValue="Load IR"
+            onPress={() => {
+              console.log("Load IR");
+            }}
+          >
+            <Icon as={ArrowDownToLineIcon} size="sm" className="mr-2" />
+            <MenuItemLabel size="sm">Load IR</MenuItemLabel>
+          </MenuItem>
+        </Menu>
+    </ButtonGroup>
   );
 
 }
@@ -133,10 +171,10 @@ const TopBarPresetInfo = observer(() => {
 
   const router = useRouter();
 
-  const bankCode = store.gp200.currentPreset ? store.gp200.currentPreset.bankCode : "";
-  let presetName = store.gp200.currentPreset ? store.gp200.currentPreset.name : "";
-  presetName = presetName.length > 10 ? 
-    presetName.slice(0, 10 - 3) + '...' : presetName
+  const bankCode = store.gp200.currentPreset ? store.gp200.currentPreset.bankCode : "YY-XX";
+  let presetName = store.gp200.currentPreset ? store.gp200.currentPreset.name : "a".repeat(12);
+  // presetName = presetName.length > 10 ? 
+  //   presetName.slice(0, 10 - 3) + '...' : presetName
 
   const goChangePreset = () => {
     console.log("Go change preset");
@@ -144,10 +182,10 @@ const TopBarPresetInfo = observer(() => {
   };
 
   return (
-    <TouchableOpacity style={{ flex: 1, flexDirection: 'row' }} onPress={goChangePreset}>
-      <Center className='bg-secondary-300 px-2 rounded-md' style={{ minWidth: 100 }}>
-        <Text>{bankCode}</Text>
-        <Text>{presetName}</Text>
+    <TouchableOpacity style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }} onPress={goChangePreset}>
+      <Center className='bg-secondary-300 px-2 rounded-md' style={{ minWidth: 90 }}>
+        <Text numberOfLines={1} size="xl" bold={true}>{bankCode}</Text>
+        <Text numberOfLines={1} size="md">{presetName}</Text>
       </Center>
     </TouchableOpacity>
   );

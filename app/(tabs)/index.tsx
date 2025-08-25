@@ -25,8 +25,8 @@ function HomeScreen() {
 
     useEffect(() => {
         if (store.gp200.isSynced) {
-            //router.replace('/ui/preset');
-            router.replace('/ui/edit/effecttab');
+            //router.replace('/ui/pjeset');
+            router.replace('/ui/edit/edit_effect');
             //store.modals.closeModal('syncModal');
         }
     }, [store.gp200.syncedPresets])
@@ -84,7 +84,7 @@ function Buttons() {
                 action="primary"
                 onPress={() => { 
                     //router.replace('/ui/testscreen/screen1') 
-                    router.replace('/ui/edit/effecttab');
+                    router.replace('/ui/edit/edit_effect');
                  }}
             >
                 <ButtonText>Skip</ButtonText>
