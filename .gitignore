@@ -38,5 +38,5 @@ yarn-error.*
 
 app-example
 close-testing.aab
-android/
-ios/
+# android/
+# ios/
