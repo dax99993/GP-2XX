@@ -157,7 +157,7 @@ export class GP200DeviceActions implements IDeviceActions {
                 this.gp200.currentPreset?.changeVolume(volume);
                 break
             case 1:
-                const bpm = this.nibblesToByte(message[0x19], message[0x1a]);
+                const bpm = this.decodeNibblesTo16BitTwosComplement([...message.slice(0x19, 0x1c + 1)]);
                 // //Update Model
                 this.gp200.currentPreset?.changeBPM(bpm);
                 break

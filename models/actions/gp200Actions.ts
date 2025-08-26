@@ -235,7 +235,7 @@ export class GP200Actions implements IActions{
 
     // PRESET SETTINGS ACTIONS
     ChangePresetVolume(volume: number) {
-        // byte 0x16 contains which parameter to change 0 -> volume; 1->BPM; 6 -> Pan
+        // byte 0x16 contains which parameter to change 0 -> volume; 1 -> BPM; 6 -> Pan
         // bytes 0x19 and 0x1a contain the volume and BPM value split in hex
         let BaseSysEx= BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
         BaseSysEx[0x16] = 0;
@@ -252,14 +252,22 @@ export class GP200Actions implements IActions{
     }
 
     ChangePresetBPM(bpm: number) {
-        // byte 0x16 contains which parameter to change 0 -> volume; 1->BPM; 6 -> Pan
+        // byte 0x16 contains which parameter to change 0 -> volume; 1 -> BPM; 6 -> Pan
         // bytes 0x19 and 0x1a contain the volume and BPM value split in hex
         let BaseSysEx= BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
         BaseSysEx[0x16] = 1;
-        const [highNibble, lowNibble] = this.byteToNibbles(bpm);
+        //const [highNibble, lowNibble] = this.byteToNibbles(bpm);
 
-        BaseSysEx[0x19] = highNibble;
-        BaseSysEx[0x1a] = lowNibble;
+        // console.log("Change BPM", bpm, highNibble, lowNibble);
+        // BaseSysEx[0x19] = highNibble;
+        // BaseSysEx[0x1a] = lowNibble;
+
+        const encodedValue = this.encode16BitTwosComplementToNibbles(bpm);
+        console.log("Change BPM", bpm, encodedValue);
+
+        for (let i = 0; i < encodedValue.length; i=i+1) {
+            BaseSysEx[0x19 + i] = encodedValue[i];
+        }
 
         //Update Model
         //this.gp200.currentPreset?.changeBPM(bpm);
@@ -269,7 +277,7 @@ export class GP200Actions implements IActions{
     }
 
     ChangePresetPan(pan: number) {
-        // byte 0x16 contains which parameter to change 0 -> volume; 1->BPM; 6 -> Pan
+        // byte 0x16 contains which parameter to change 0 -> volume; 1-> BPM; 6 -> Pan
         // bytes 0x19 to 0x1c contain the PAN value encoded in two's complement
         let BaseSysEx = BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
         BaseSysEx[0x16] = 6;

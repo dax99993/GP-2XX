@@ -7,6 +7,7 @@ function useOrientation() {
   const [orientation, setOrientation] = useState(ScreenOrientation.Orientation.PORTRAIT_UP);
   const [isLandscape, setIsLandscape] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
+  //const [width, setWidth] = useState(Dimensions.get("window")["width"])
 
   console.log(ScreenOrientation.Orientation[orientation]);
 

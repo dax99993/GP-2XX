@@ -55,7 +55,7 @@ export default function PresetSettings() {
                           <ButtonGroup space="md" flexDirection="row" style={{ flex: 1, alignItems: 'center', justifyContent: 'space-around' }}>
                             {
                               buttonTitles.map((title, index) => (
-                                <Button size="md" action="primary" variant={selectedSettings == index ? "solid" : "outline"} onPress={() => setSelectedSettings(index)}>
+                                <Button key={index} size="md" action="primary" variant={selectedSettings == index ? "solid" : "outline"} onPress={() => setSelectedSettings(index)}>
                                   <ButtonText>{title}</ButtonText>
                                 </Button>
                               ))

@@ -80,8 +80,8 @@ export class GP200Model {
     }
 
     get isSynced(): boolean {
-      //return this.syncedPresets == 256;
-      return this.syncedPresets == 2;
+      return this.syncedPresets == 256;
+      //return this.syncedPresets == 1;
     }
 
     get presetBankCode(): string {

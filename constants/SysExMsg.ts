@@ -32,7 +32,7 @@ export const BaseSysExMsg = {
     },
 
     PresetSettingsAction: {
-        // byte 0x16 contains which parameter to change 0 -> volume; 1->BPM; 6 -> Pan
+        // byte 0x16 contains which parameter to change 0 -> volume; 1 -> BPM; 6 -> Pan
         // bytes 0x19 and 0x1a contain the volume and BPM value split in hex
         // bytes 0x19 to 0x1c contain the PAN value encoded in two's complement
         changePresetVolumePanBPM: [
