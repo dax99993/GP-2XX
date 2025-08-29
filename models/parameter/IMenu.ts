@@ -1,4 +1,4 @@
 export interface IMenu {
-    Name: string,
+    name: string,
     ID: number,
 }

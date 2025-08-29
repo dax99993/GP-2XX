@@ -4,8 +4,8 @@ import { HStack } from "@/components/ui/hstack";
 import { Input, InputField } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { EffectsChangeInfo } from "@/constants/EffectsChangeInfo";
-import { IEffectChangeInfo } from "@/models/effect/changeEffect/IEffectChangeInfo";
+import { ChangeEffectsInfo } from "@/constants/ChangeEffects";
+import { IChangeEffect } from "@/models/effect/changeEffect/IChangeEffects";
 import { EffectType } from "@/models/effect/effect";
 import { store } from "@/models/store";
 import { useRouter } from "expo-router";
@@ -17,8 +17,8 @@ import { FlatList, TouchableOpacity } from "react-native";
 function ListEffect() {
     if (store.gp200.currentEffect == undefined) {return null}
 
-    const DATA = EffectsChangeInfo[EffectType[store.gp200.currentEffect.type] as keyof typeof EffectsChangeInfo];
-    const [filteredData, setFilteredData] = useState<IEffectChangeInfo[]>(DATA);
+    const DATA = ChangeEffectsInfo[EffectType[store.gp200.currentEffect.type] as keyof typeof ChangeEffectsInfo];
+    const [filteredData, setFilteredData] = useState<IChangeEffect[]>(DATA);
 
     const onSearchChange = (q: string) => {
         if (q === "") {
@@ -36,7 +36,7 @@ function ListEffect() {
                 renderItem={(item) => 
                     <ListEffectItem
                         name={item.item.name}
-                        id={item.item.id}
+                        id={item.item.ID}
                         selected={store.gp200.currentEffect ? item.item.name == store.gp200.currentEffect.name : false}
                     />
                 }
@@ -94,7 +94,7 @@ function SearchBarEffect(props: SearchProps) {
 // List item
 type ListEffectItemProps = {
     name: string;
-    id: number[];
+    id: number;
     selected: boolean
 }
 

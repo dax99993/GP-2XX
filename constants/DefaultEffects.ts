@@ -1,4 +1,4 @@
-import DefaultEffectsInfoJson from "@/json/DefaultEffects.json";
-import { IDefaultEffectsInfo } from "@/models/effect/defaultEffect/IDefaultEffectsInfo";
+import DefaultEffectsJson from "@/json/DefaultEffects.json";
+import { IDefaultEffects } from "@/models/effect/defaultEffect/IDefaultEffects";
 
-export const DefaultEffectsInfo = DefaultEffectsInfoJson as IDefaultEffectsInfo;
+export const DefaultEffectsInfo = DefaultEffectsJson as IDefaultEffects;

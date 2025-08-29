@@ -1,26 +1,29 @@
 import PickerSelector from "@/components/pickerSelector";
-import { SelectParameterModel } from "@/models/parameter/selectParameter";
+import { Combox } from "@/models/parameter/Combox";
 import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 
 type SelectParameterProps = {
-    param: SelectParameterModel
+    param: Combox
 }
 
 function SelectParameter({param}: SelectParameterProps) {
 
     const onChange = (v:string, n: number) => {
-       store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
+       store.gpActions.ChangeEffectParamValue(param.ID, "float", n);
        console.log(`Select assign value (${param.name})= ${v}, ${n}`);
     };
 
-    const labelEntries = Object.entries(param.labels);
+    const labelEntries: [string, string][] = param.data.map((menu) => {
+        return [menu.ID.toString(), menu.name];
+    });
+
     console.log("Select labels = ", labelEntries);
 
     return (
         <PickerSelector
             name={param.name}
-            currentValue={param.current_value[0].toString()}
+            currentValue={param.currentValue.toString()}
             labels={labelEntries}
             onChange={onChange}
         />

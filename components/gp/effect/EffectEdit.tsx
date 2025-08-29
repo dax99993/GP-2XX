@@ -1,13 +1,11 @@
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { useScrolling } from "@/contexts/scroll-context";
-import { DoubleParameterModel } from "@/models/parameter/doubleParameter";
-import { NumericParameterModel } from "@/models/parameter/numericParameter";
-import { SelectParameterModel } from "@/models/parameter/selectParameter";
+import { Combox } from "@/models/parameter/Combox";
+import { ParamType } from "@/models/parameter/IParameter";
 import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 import { ScrollView, StyleSheet } from "react-native";
-import DoubleParameter from "../parameter/DoubleParameter";
 import NumericParameter from "../parameter/NumericParameter";
 import SelectParameter from "../parameter/SelectParameter";
 import EffectSelector from "./EffectSelector";
@@ -26,22 +24,23 @@ function EffectEdit() {
                 scrollEnabled={isScrollingEnabled}
             >
                 { store.gp200.currentEffect && store.gp200.currentEffect.parameters.map(p => {
-                    if (p.type === "Numeric") {
+                    if (p.type === ParamType.Knob || p.type === ParamType.Slider) {
                         return <NumericParameter
-                            key={p.name + p.id}
-                            param={p as NumericParameterModel}
+                            key={p.name + p.ID}
+                            param={p}
                         />
-                    } else if (p.type === "Select" ) {
+                    } else if (p.type === ParamType.Switch || p.type === ParamType.Combox ) {
                         return <SelectParameter
                             key={p.name}
-                            param={p as SelectParameterModel}
-                        />
-                    } else {
-                        return <DoubleParameter
-                            key={p.name}
-                            param={p as DoubleParameterModel} 
+                            param={p as Combox}
                         />
                     }
+                    // } else {
+                    //     return <DoubleParameter
+                    //         key={p.name}
+                    //         param={p as DoubleParameterModel} 
+                    //     />
+                    // }
                 }) 
                 }
             </ScrollView>

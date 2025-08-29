@@ -1,4 +1,4 @@
-import { EffectsChangeInfo } from "@/constants/EffectsChangeInfo";
+import { DefaultEffectsInfo } from "@/constants/DefaultEffects";
 import { BaseSysExMsg } from "@/constants/SysExMsg";
 import { action, makeObservable, observable } from "mobx";
 import { EffectType } from "../effect/effect";
@@ -118,6 +118,24 @@ export class GP200Actions implements IActions{
 
         console.log(lowByteHighNible, lowByteLowNible, highByteHighNible, highByteLowNible);
         return [lowByteHighNible, lowByteLowNible, highByteHighNible, highByteLowNible];
+    }
+
+    encodeEffectIDToNibbles(num: number): number[] {
+        // Ensure the number is within the 16-bit signed integer range
+        const n = num & 0xFFFFFFFF;
+
+        // Use a DataView to handle the two's complement representation directly
+        // Create a 2-byte (16-bit) ArrayBuffer
+        const buffer = new ArrayBuffer(4);
+        // Create a DataView to manipulate the buffer
+        const view = new DataView(buffer);
+
+        // Invert order
+        view.setUint32(0, n, true);
+
+        const bytes = [...new Uint8Array(buffer)]
+
+        return this.byteArrayToNibbleArray(bytes)
     }
 
     encodePresetName(name: string) {
@@ -526,40 +544,34 @@ export class GP200Actions implements IActions{
         return baseSysEx;
     }
 
-    ChangeEffect(effectID: number[]) {
+    ChangeEffect(effectID: number) {
         if (this.gp200.currentEffect === undefined) { return; }
 
         // This is always invoked when the current effect is the one we want to change
         const pedalID = this.gp200.currentEffect.type;
+        // Map int to 8 bytes hex digits little endian
+        const effectIDNibbles = this.encodeEffectIDToNibbles(effectID)
         // Construct midi message
-        const SysExMsg = this._contructChangeEffectMessage(pedalID, effectID);
-
-        // CHECK WHEN TYPE IS AMP TO ALSO CHANGE THE APPROPIATE CAB
-        const effectsChangeInfo = EffectsChangeInfo[EffectType[pedalID] as keyof typeof EffectsChangeInfo];
-        let effectChangeInfo = effectsChangeInfo.filter(e => e.id == effectID)[0];
+        const SysExMsg = this._contructChangeEffectMessage(pedalID, effectIDNibbles);
 
         // Update model
-        //this.gp200.changeEffect(effectChangeInfo.name, pedalID);
-        this.gp200.changeEffectByID(effectID, pedalID);
+        //this.gp200.changeEffectByID(effectID, pedalID);
 
-        if (effectChangeInfo.associated != undefined) { 
-            const associated = effectChangeInfo.associated;
-            const t: EffectType = EffectType[associated.type as keyof typeof EffectType];
-            console.log(associated.name);
-            //this.gp200.changeEffect(associated.name, t);
-            this.gp200.changeEffectByID(associated.id, t);
+        // CHECK WHEN TYPE IS AMP TO ALSO CHANGE THE APPROPIATE CAB
+        const defaultEffectsInfo = DefaultEffectsInfo[EffectType[pedalID] as keyof typeof DefaultEffectsInfo];
+        let defaultEffectInfo = defaultEffectsInfo.filter(e => e.ID == effectID)[0];
+
+        // When changing AMP implementations, also CAB needs to be changed
+        if (defaultEffectInfo.cabCode != null) { 
+            const cabCodeID = defaultEffectInfo.cabCode;
+            const t: EffectType = EffectType.CAB;
+            console.log("Associated cabCode", cabCodeID);
+            const SysExMsg = this._contructChangeEffectMessage(t, this.encodeEffectIDToNibbles(cabCodeID));
+            this.midi.sendMessage(SysExMsg);
         }
 
         // Send physical device
         this.midi.sendMessage(SysExMsg);
-
-        // When changing AMP implementations, also CAB needs to be changed
-        if (effectChangeInfo.associated != undefined) { 
-            const associated = effectChangeInfo.associated;
-            const t: EffectType = EffectType[associated.type as keyof typeof EffectType];
-            const SysExMsg = this._contructChangeEffectMessage(t, associated.id);
-            this.midi.sendMessage(SysExMsg);
-        }
     }
 
     //ChangeEffectState(pedal_id: number, state: boolean) {

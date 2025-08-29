@@ -1,0 +1,1932 @@
+{
+  "PRE": [
+    {
+      "name": "COMP",
+      "index": 0,
+      "ID": 0,
+      "description": "Based on the legendary Ross\u2122 Compressor. This is the originator of the guitar compression effect. It brings the guitar compression effect to the public and becomes an important element in the future. It has a very natural and mellow compression effect."
+    },
+    {
+      "name": "COMP4",
+      "index": 1,
+      "ID": 1,
+      "description": "Based on the Keeley \u00ae C4 4-knob compressor*. A recording studio - level compression effect.Clear sense of hierarchy, the right amount of high frequency makes your guitar sound brighter."
+    },
+    {
+      "name": "S-Comp",
+      "index": 2,
+      "ID": 3,
+      "description": "Flexible, fully adjustable compressor effect"
+    },
+    {
+      "name": "Micro Boost",
+      "index": 3,
+      "ID": 20,
+      "description": "Based on the legendary MXR\u00ae M133 Micro Amp pedal. Providing up to 20dB of gain, the Micro Boost elevates your amp sound without changing its tonal character."
+    },
+    {
+      "name": "AC Boost",
+      "index": 4,
+      "ID": 10,
+      "description": "Based on famous Xotic\u00ae AC Booster* pedal, It is a beautiful smooth sounding drive/boost pedal that it perfect for giving your tube amp a bit of extra grunt."
+    },
+    {
+      "name": "B-Boost",
+      "index": 5,
+      "ID": 11,
+      "description": "Any guitarist can benefit from the Xotic\u00ae BB Preamp* overdrive pedal. The pedal works equally well for getting thick and creamy overdrive tones with great sustain as it does for pushing the clean front end of an already driven amp with up to 30dB of boost."
+    },
+    {
+      "name": "P-Boost",
+      "index": 6,
+      "ID": 12,
+      "description": "Based famous on Xotic\u00ae RC Booster* provides you with super-transparent 20dB boost without altering your carefully crafted tone. And it offers an added gain channel for extra fatness. Take advantage of the +/-15dB range on the treble and bass EQ controls, and imbue your guitar sound with unbelievable harmonic complexity. The EQ controls also compensate for the extra bass boominess the volume boost may cause and are great for matching the response for multiple guitars."
+    },
+    {
+      "name": "14 Boost",
+      "index": 7,
+      "ID": 14,
+      "description": "Based famous on Fortin\u00aeGrind*. It gives you up to +20dB of boost that will tighten up and add aggression to any tube or solid-state amplifier. The GRIND\u2019s surprising low noise floor and high input Z lets every nuance of  instrument character come through unaltered."
+    },
+    {
+      "name": "FAT BB",
+      "index": 8,
+      "ID": 25,
+      "description": "This is a clean boost and pre-amp with a switchable low-cut filter and separate bass and treble controls."
+    },
+    {
+      "name": "Boost",
+      "index": 9,
+      "ID": 26,
+      "description": "Based on famous Xotic\u00ae EP Booster* pedal. Provides +20DB of pure stimulation lift, strong low frequency, bright high frequency, making clear sound more pleasant."
+    },
+    {
+      "name": "AC Refiner",
+      "index": 10,
+      "ID": 16777216,
+      "description": "Designed for acoustic instruments, bringing you a  more natural \"woody\" acoustic sound"
+    },
+    {
+      "name": "AC Sim",
+      "index": 11,
+      "ID": 16777217,
+      "description": "Acoustic guitar simulator designed for guitars. Its prototype comes from a classic acoustic guitar analog stompbox."
+    },
+    {
+      "name": "T-Wah",
+      "index": 12,
+      "ID": 16777231,
+      "description": "Control the wah sound by playing intensity.A wide range d envelope filter (a.k.a. touch wah) designed for guitarists and bassists  that is touch-sensitive and flexible"
+    },
+    {
+      "name": "A-WAH",
+      "index": 13,
+      "ID": 16777237,
+      "description": "Set the rate to make the wah pedal work regularly. Providing a variable auto wah effect for both guitars and basses."
+    },
+    {
+      "name": "Step Filter",
+      "index": 14,
+      "ID": 16777241,
+      "description": "A 4-step auto filter machine for creating synth-like sounds"
+    },
+    {
+      "name": "OCTA",
+      "index": 15,
+      "ID": 16777249,
+      "description": "Provides polyphonic octave effect."
+    },
+    {
+      "name": "Pitch",
+      "index": 16,
+      "ID": 16777251,
+      "description": "Polyphonic pitch shifter/harmonizer."
+    },
+    {
+      "name": "P-Bend",
+      "index": 17,
+      "ID": 16777252,
+      "description": "Polyphonic pitch shifter/harmonizer."
+    },
+    {
+      "name": "Ring Mod",
+      "index": 18,
+      "ID": 16777263,
+      "description": "A ring modulator for creating intresting inharmonic frequency spectra (like bells and chimes."
+    },
+    {
+      "name": "Saturate",
+      "index": 19,
+      "ID": 16777267,
+      "description": "Vintage tape saturation simulater providing analog warmth and natural distortion."
+    },
+    {
+      "name": "hammy",
+      "index": 18,
+      "ID": 16777289,
+      "description": "Based on classic Whammy\u00ae* monophonic pitch shifter pedal. Assign the Position parameter to expression pedal, then move the pedal to get the effect."
+    },
+    {
+      "name": "Auto Swell",
+      "index": 21,
+      "ID": 67108909,
+      "description": "This is an auto swell effect with two parameters that are easy to understand and use. It can make the guitar sound like a violin."
+    },
+    {
+      "name": "Hold",
+      "index": 22,
+      "ID": 67108911,
+      "description": "This is a freeze effect that can freeze the sound for a short period of time before the effect is activated and make it play in a loop. The Activate parameter can be assigned to the expression pedal to activate and deactivate the effect; You can also turn on the Activate parameter and use CTRL to directly control the On/Off of the effect module."
+    },
+    {
+      "name": "Freeze",
+      "index": 23,
+      "ID": 67108912,
+      "description": "This is a freeze effect that can freeze the sound at the moment of activation and keep it playing when the effect is activated. The Activate parameter can be assigned to the expression pedal to activate and deactivate the effect; You can also turn on the Activate parameter and use CTRL to directly control the On/Off of the effect module."
+    },
+    {
+      "name": "OD 9",
+      "index": 1,
+      "ID": 50331649,
+      "description": "The Ibanez\u00ae Tube Screamer\u00ae is synonymous with the transparent overdrive tone used by many of today's top guitarists. The TS9 pedal boosts the guitar signal enough to drive the preamp stage of your amp, giving a very natural-sounding and pure overdrive and crisp rhythm crunch."
+    },
+    {
+      "name": "Yellow OD",
+      "index": 2,
+      "ID": 50331650,
+      "description": "Artist of the 70's was mostly using a fuzz distortion sound and the overdrive produced by it was not typical. It was however soon accepted as the new standard of guitar sound. It features an asymmetric circuit where the positive and negative halves of the waveform isn't distorted equally. The sound is therefore still close to the original even though distortion have been added."
+    },
+    {
+      "name": "Penesas",
+      "index": 3,
+      "ID": 50331668,
+      "description": "Based on the legendary Klon\u00ae Centaur*, this overdrive model gives you an authentic amp-in-a-box feel with full, rich sound character that is not harsh or boomy at all. Turn Gain knob to minimum you get a superb clean boost."
+    },
+    {
+      "name": "Blues OD",
+      "index": 7,
+      "ID": 50331657,
+      "description": "Whether it's warm and natural overdrive or full open distortion, it gives your guitar the most expression, makes it easy to control the tone, and allows for subtle variations in your personal playing style."
+    },
+    {
+      "name": "Super OD",
+      "index": 5,
+      "ID": 50331654,
+      "description": "The unique asymmetric overdrive effect circuit adds warm and pleasant overdrive effect to the traditional guitar timbre."
+    },
+    {
+      "name": "Harmonizer 1",
+      "index": 24,
+      "ID": 16777293,
+      "description": "This model is a monophonic single voice automatic harmonizer with max one octave pitch shifting range. Detailed Key, Scale and Interval settings can bring you lots of fun. "
+    },
+    {
+      "name": "Harmonizer 2",
+      "index": 25,
+      "ID": 16777294,
+      "description": "This model is a monophonic dual voice automatic harmonizer with max one octave pitch shifting range. Detailed Key, Scale and Interval settings can bring you lots of fun. "
+    }
+  ],
+  "WAH": [
+    {
+      "name": "V-Wah",
+      "index": 0,
+      "ID": 83886081,
+      "description": "Based on legendary VOX\u00ae V846* wah pedal. The earliest wa-wah pedal was originally designed to allow the wind instrument passing through it to produce a more emotionally expressive \"wa-wah\" sound.The amplitude is small and acts between medium and high frequency."
+    },
+    {
+      "name": "C-Wah",
+      "index": 1,
+      "ID": 83886088,
+      "description": "Based on legendary Dunlop\u00ae CryBaby\u00ae* wah pedal. The classic 60's traditional wha pedal, acting between low and medium frequency, moderate amplitude, neutral timbre."
+    },
+    {
+      "name": "P-Wah",
+      "index": 2,
+      "ID": 83886090,
+      "description": "Based on John Petrucci's rack wah settings, this Cry Baby\u00ae Wah features Volume, Q, and six EQ controls for ultimate tonal control over your wah sound."
+    },
+    {
+      "name": "S-Wah",
+      "index": 3,
+      "ID": 83886086,
+      "description": "Classic wah tone. Just press down and feel the vocal sweep and lush harmonics from the wah's classic era. Its like keeping a tiny jimi hendrix in your pocket."
+    },
+    {
+      "name": "B-Wah",
+      "index": 4,
+      "ID": 83886087,
+      "description": "Wah designed for basses"
+    },
+    {
+      "name": "hammy",
+      "index": 5,
+      "ID": 16777289,
+      "description": "Based on classic Whammy\u00ae* monophonic pitch shifter pedal. Assign the Position parameter to expression pedal, then move the pedal to get the effect."
+    }
+  ],
+  "DST": [
+    {
+      "name": "Green OD",
+      "index": 0,
+      "ID": 50331648,
+      "description": "Based on legenary Ibanez\u00ae TS-808 Tube Screamer\u00ae* overdrive pedal. Since it was first shown to the world in 1979, TS808 has opened up a new world. There are countless guitarists who love it. It is a warm, delicate overdrive effect.Can be used as either an overdrive or a Boost, can be used in a variety of musical styles."
+    },
+    {
+      "name": "OD 9",
+      "index": 1,
+      "ID": 50331649,
+      "description": "The Ibanez\u00ae Tube Screamer\u00ae is synonymous with the transparent overdrive tone used by many of today's top guitarists. The TS9 pedal boosts the guitar signal enough to drive the preamp stage of your amp, giving a very natural-sounding and pure overdrive and crisp rhythm crunch."
+    },
+    {
+      "name": "Yellow OD",
+      "index": 2,
+      "ID": 50331650,
+      "description": "Artist of the 70's was mostly using a fuzz distortion sound and the overdrive produced by it was not typical. It was however soon accepted as the new standard of guitar sound. It features an asymmetric circuit where the positive and negative halves of the waveform isn't distorted equally. The sound is therefore still close to the original even though distortion have been added."
+    },
+    {
+      "name": "Penesas",
+      "index": 3,
+      "ID": 50331668,
+      "description": "Based on the legendary Klon\u00ae Centaur*, this overdrive model gives you an authentic amp-in-a-box feel with full, rich sound character that is not harsh or boomy at all. Turn Gain knob to minimum you get a superb clean boost."
+    },
+    {
+      "name": "Swarm",
+      "index": 4,
+      "ID": 50331652,
+      "description": "The Providence\u00ae SOV-2 Stampede OD pedal is designed to deliver natural overdrive without obscuring the inherent characteristics and tone of the guitar being used. It features a special bipolar power supply that powers the internal circuitry with boosted voltage, providing a wider dynamic range than possible with conventional 9-volt powered overdrives. For singing lead tones and solid, chunky rhythms, there\u2019s nothing like the SOV-2 Stampede OD."
+    },
+    {
+      "name": "Super OD",
+      "index": 5,
+      "ID": 50331654,
+      "description": "The unique asymmetric overdrive effect circuit adds warm and pleasant overdrive effect to the traditional guitar timbre."
+    },
+    {
+      "name": "Scream OD",
+      "index": 6,
+      "ID": 50331656,
+      "description": "Based on Tube Screamer\u00ae Style overdrive pedal, with unique timbre characteristics."
+    },
+    {
+      "name": "Blues OD",
+      "index": 7,
+      "ID": 50331657,
+      "description": "Whether it's warm and natural overdrive or full open distortion, it gives your guitar the most expression, makes it easy to control the tone, and allows for subtle variations in your personal playing style."
+    },
+    {
+      "name": "Force",
+      "index": 8,
+      "ID": 50331658,
+      "description": "Fulltone\u00ae OCD* sounds like finding the \u201csweet spot\u201d on your favorite amp. It produces overdriven tones that sound warm and full, with genuine tube-like response. There\u2019s no shortage of usable drive, meaning it dynamically ramps up overdriven grit from dirty overtones to saturated distortion in the smooth range of its drive control."
+    },
+    {
+      "name": "Blues Master",
+      "index": 9,
+      "ID": 50331662,
+      "description": "The Marshall\u00ae BluesBreaker* is a low-gain pedal with exceptional transparent tone. Moderate overdrive and subtle boost are the strong points, though it can get as well emphatic with a cranked up tube amp."
+    },
+    {
+      "name": "Master OD",
+      "index": 10,
+      "ID": 50331663,
+      "description": "The EQ stage is extremely wide, offering treble, mid and bass shaping options and the gain stage goes from clean to a well driven JCM800 kind of tone and that is also where its magic lies."
+    },
+    {
+      "name": "TaiChi OD",
+      "index": 11,
+      "ID": 50331664,
+      "description": "Hermida\u00ae Zendrive\u00ae rose to fame because of its tube-like tone. To get the perfect balance of saturation and harmonics required to result in all of the 'in-tangibles' that make a pedal overdrive sound like a real amp overdrive. Things like touch sensitivity and response to guitar tone and volume control changes."
+    },
+    {
+      "name": "Timmy OD",
+      "index": 12,
+      "ID": 50331678,
+      "description": "Paul Cochrane\u00ae Timmy* overdrive was one of the original boutique overdrive pedals, generating a dedicated following based on its open, un-compressed drive tone and good EQ options."
+    },
+    {
+      "name": "Precise OD",
+      "index": 13,
+      "ID": 50331676,
+      "description": "Horizon Devices\u00ae Precision Drive* overdrive. Perfect modern metal rig with precise tonal carving controls. The built-in noise gate ensures the cleanness and clarity of tone."
+    },
+    {
+      "name": "Lazaro",
+      "index": 14,
+      "ID": 50331682,
+      "description": "Based on legendary Electro-Harmonix\u00aeBig Mu Pi\u00ae*fuzz/distortion pedal. It is very individual, warm and thick sound wall, restless but full of beauty."
+    },
+    {
+      "name": "Red Haze",
+      "index": 15,
+      "ID": 50331684,
+      "description": "Based on legendary Dallas-Arbiter\u00ae Fuzz Face\u00ae* fuzz pedal. Dallas Arbiter conjured the sound of rock and roll for half a century in 1966 with a few simple transistors. The sound of Fuzz Face was heavy and sharp, and its sound influenced countless famous musicians."
+    },
+    {
+      "name": "Sora Fuzz",
+      "index": 16,
+      "ID": 50331686,
+      "description": "For fans of the aggressive germanium fuzz tones that could be wrought from those early units, there\u2019s nothing quite like the Sola Sound\u00ae Tone Bender*. The Tone Bender\u2019s circuit became massively popular, and over the following years its design rapidly evolved, making for a tangled and winding history that is intertwined with some of the most formative music made in the U.K. from the mid 1960s to the early \u201970s."
+    },
+    {
+      "name": "Plustortion",
+      "index": 17,
+      "ID": 50331689,
+      "description": "This little yellow box has produced lots of great soundings in countless classic studio albums. Yeah, we\u2019re talking the legendary MXR\u00ae M104 Distortion +*, and this M104-based Plustortion. The Plustortion recreated the Germanium-powered soft clipping distortion, like what Randy Rhoads and other hard rockers do!"
+    },
+    {
+      "name": "SM Dist",
+      "index": 18,
+      "ID": 50331690,
+      "description": "It is based on a classic orange three-knob distortion effector, which can be used to easily get the timbre characteristics of the 70s-80s."
+    },
+    {
+      "name": "Darktale",
+      "index": 19,
+      "ID": 50331691,
+      "description": "Based on legendary ProCo\u2122 The Rat* distortion (early LM308 OP-amp version). The Rat* has come to life thanks to its wide range of Filter knob, bright and compact sound head, full end and strong plasticity, making it a favorite of many musicians."
+    },
+    {
+      "name": "Chief",
+      "index": 20,
+      "ID": 50331693,
+      "description": "The Marshall\u00ae Guv'nor* was released in 1988 and in production during 4 years. This overdrive/distortion Made in England effect replicates the classic tube Marshall\u00ae Amp sound into compact and solid state box featuring a sustainable gain with a touch of compression."
+    },
+    {
+      "name": "Master Dist",
+      "index": 21,
+      "ID": 50331694,
+      "description": "The Marshall Shredmaster Distortion guitar effect pedal delivers face-melting distortion and that tone you can only get out of a Marshall. The pedal offers treble, bass, and contour knobs to tweak, twist, and deliver an unbelievable performance."
+    },
+    {
+      "name": "La Charger",
+      "index": 22,
+      "ID": 50331696,
+      "description": "Based on MI Audio\u00ae Crunch Box\u00ae* distortion peal. Sensitive and exquisite distortion beast, it satisfies all the passion of Riff and Solo.The response of each frequency band is balanced, the dynamic feedback is faithful to the fingertip, and the noise can be well controlled even at high gain."
+    },
+    {
+      "name": "Flex OD",
+      "index": 23,
+      "ID": 50331711,
+      "description": "A simple and effective distortion effect for guitars and basses."
+    },
+    {
+      "name": "Bass OD",
+      "index": 24,
+      "ID": 50331712,
+      "description": "This is an overload effect device specially designed for bass. It combines the original bass sound with a unique overdrive effect to make a very good distortion effect while ensuring The original bass dynamic tone. It can also be used as a pretty good boost."
+    },
+    {
+      "name": "Black Bass",
+      "index": 25,
+      "ID": 50331716,
+      "description": "Based on the Darkglass\u00ae Microtubes B7K*. Takes the powerful dynamic saturation circuit and adds a four-band equalizer and a balanced line driver for even greater versatility. Designed for both studio and live use, it will take your direct sound to a whole new level."
+    },
+    {
+      "name": "Micro Boost",
+      "index": 26,
+      "ID": 20,
+      "description": "Based on the legendary MXR\u00ae M133 Micro Amp pedal. Providing up to 20dB of gain, the Micro Boost elevates your amp sound without changing its tonal character."
+    },
+    {
+      "name": "AC Boost",
+      "index": 27,
+      "ID": 10,
+      "description": "Based on famous Xotic\u00ae AC Booster* pedal, It is a beautiful smooth sounding drive/boost pedal that it perfect for giving your tube amp a bit of extra grunt."
+    },
+    {
+      "name": "B-Boost",
+      "index": 28,
+      "ID": 11,
+      "description": "Any guitarist can benefit from the Xotic\u00ae BB Preamp* overdrive pedal. The pedal works equally well for getting thick and creamy overdrive tones with great sustain as it does for pushing the clean front end of an already driven amp with up to 30dB of boost."
+    },
+    {
+      "name": "P-Boost",
+      "index": 29,
+      "ID": 12,
+      "description": "Based famous on Xotic\u00ae RC Booster* provides you with super-transparent 20dB boost without altering your carefully crafted tone. And it offers an added gain channel for extra fatness. Take advantage of the +/-15dB range on the treble and bass EQ controls, and imbue your guitar sound with unbelievable harmonic complexity. The EQ controls also compensate for the extra bass boominess the volume boost may cause and are great for matching the response for multiple guitars."
+    },
+    {
+      "name": "14 Boost",
+      "index": 30,
+      "ID": 14,
+      "description": "Based famous on Fortin\u00aeGrind*. It gives you up to +20dB of boost that will tighten up and add aggression to any tube or solid-state amplifier. The GRIND\u2019s surprising low noise floor and high input Z lets every nuance of  instrument character come through unaltered."
+    },
+    {
+      "name": "FAT BB",
+      "index": 31,
+      "ID": 25,
+      "description": "This is a clean boost and pre-amp with a switchable low-cut filter and separate bass and treble controls."
+    },
+    {
+      "name": "Boost",
+      "index": 32,
+      "ID": 26,
+      "description": "Based on famous Xotic\u00ae EP Booster* pedal. Provides +20DB of pure stimulation lift, strong low frequency, bright high frequency, making clear sound more pleasant."
+    },
+    {
+      "name": "Empire OD",
+      "index": 33,
+      "ID": 50331728,
+      "description": "Based on Analog.Man\u2122 Prince of Tone* Overload effect, multi-mode selection, large tone adjustment range to suit different scenes."
+    },
+    {
+      "name": "Revolt",
+      "index": 34,
+      "ID": 50331698,
+      "description": "Based on the Suhr\u00ae Riot Distortion\u2122* pedal,Three knobs and a tone selection switch, easy to use, large adjustable range is very suitable for a variety of playing scenes."
+    },
+    {
+      "name": "Flagman Dist",
+      "index": 35,
+      "ID": 50331730,
+      "description": "This model is based on a famous dirt box recreating, perfect reproduction of modern British high-gain timbre, rich tunability, intuitive operation to provide the perfect boost to your music."
+    },
+    {
+      "name": "Bass Hammer",
+      "index": 36,
+      "ID": 50331729,
+      "description": "Based on the famous Aguilar\u00ae Tone Hammer* Front effect, with two sounds Color, three-stage equalization and mid-frequency sweep frequency regulation, high timbre regulation, is a good shape for timbre."
+    },
+    {
+      "name": "DST Empty 1",
+      "index": 37,
+      "ID": 251658245,
+      "description": "For importing and using the.nam file."
+    },
+    {
+      "name": "DST Empty 2",
+      "index": 38,
+      "ID": 251658246,
+      "description": "For importing and using the.nam file."
+    },
+    {
+      "name": "DST Empty 3",
+      "index": 39,
+      "ID": 251658247,
+      "description": "For importing and using the.nam file."
+    },
+    {
+      "name": "DST Empty 4",
+      "index": 40,
+      "ID": 251658248,
+      "description": "For importing and using the.nam file."
+    },
+    {
+      "name": "DST Empty 5",
+      "index": 41,
+      "ID": 251658249,
+      "description": "For importing and using the.nam file."
+    }
+  ],
+  "AMP": [
+    {
+      "name": "Tweedy",
+      "index": 0,
+      "ID": 117440513,
+      "description": "Based on Fender\u00ae Tweed Deluxe*. This amplifier with a dynamic range from clean to wild overdrive, from country rock to distortion, the Fender\u00ae Tweed Deluxe* has been a totem in every style for more than 60 years."
+    },
+    {
+      "name": "Bellman 59N",
+      "index": 1,
+      "ID": 117440515,
+      "description": "Based on Fender\u00ae \u201959 Bassman\u00ae*. The most dramatic speaker in the history of Rock&Roll, originally designed for bass, has become the most classic guitar speaker.As clear as water, Vacuum tubemakes the sound more beautiful,make musical instrument manufacturers are eager to imitate the product."
+    },
+    {
+      "name": "Dark Twin",
+      "index": 2,
+      "ID": 117440516,
+      "description": "Based on Fender\u00ae \u201965 Twin Reverb\u00ae*. With a Stratocaster*, the classic sound can be easily restored in both country jazz and rock music."
+    },
+    {
+      "name": "Dark DLX",
+      "index": 3,
+      "ID": 117440517,
+      "description": "Great clean tones are possible, but the versatile \"sweet distortion\" is what so many guitarists appreciate and love with the Deluxe. Therefore the amp is the number 1 for many blues musicians, as well as for modern super guitarrists. The fender-typical spring reverb and a tube vibrato effect allow even more \"vintage\"- sound variants."
+    },
+    {
+      "name": "Dark Vibra",
+      "index": 4,
+      "ID": 117440521,
+      "description": "The original (6G16 circuit) Vibroverb was introduced in February 1963. The speaker lineup and the output transformer were based on the Fender Super amp of the time and the circuit based on the Fender Vibrolux of the time. The 40-watt amplifier boasted two channels (NORMAL and BRIGHT). Both channels had VOLUME, TREBLE and BASS controls; the single-control REVERB affected only the BRIGHT channel."
+    },
+    {
+      "name": "Silver Twin",
+      "index": 5,
+      "ID": 117440525,
+      "description": "Fender\u00ae Silverface Twin Reverb* amplifiers were built between 1967 and 1981. It makes the sound of history."
+    },
+    {
+      "name": "SUPDual CL",
+      "index": 6,
+      "ID": 117440527,
+      "description": "Based on the Supro\u00aeDual-Tone 1624T* (CH1\uff0cclean tone). In the mid 60\u2019s , vintage 1624T amps have been sought-after for decades because the Dual-Tone\u2019s volume knob is turned beyond noon, a fat and compressed clean tone evolves into an immediately recognizable grind that remains articulate and listenable even when turned up to full blast."
+    },
+    {
+      "name": "Foxy 15TB",
+      "index": 7,
+      "ID": 117440528,
+      "description": "Based on vintage VOX\u00ae* AC-100* bass amp. In 1963, the Beatles was in urgent need of a bass speaker with a volume greater than that of the club's crazy shouting, and the AC-100* came into being. With 100W power and 4x12 \"box, it has successfully become the most representative bass voice in the 1960s."
+    },
+    {
+      "name": "Foxy 30N",
+      "index": 8,
+      "ID": 117440529,
+      "description": "Based on VOX\u00ae AC30HW* (normal channel). The symbolic clear sound and warm and sharp overdrive, since the day of its birth, has become the Shadows, The Beatles, the Rolling Stones and other group's favorite speaker. The British band led the \"British Invasion\" has made VOX\u00ae speaker a household name as a British rock icon.Even in hard rock and British rock, Radiohead, Suede, Oasis and other super groups are preferred."
+    },
+    {
+      "name": "J-120 CL",
+      "index": 9,
+      "ID": 117440532,
+      "description": "Based on the legendary \u201cJazz Chorus\u201d solid state combo. When it came out in 1975, it is the first musical instrument speaker equipped with Chorus effect. It was famous for its pure sound and stereo chorus effect."
+    },
+    {
+      "name": "Match CL",
+      "index": 10,
+      "ID": 117440533,
+      "description": "Based Matchless\u2122 Chieftain 212 combo* (clean tone). MATCHLESS\u00ae's philosophy since its founding in 1989 has been to make as many top-notch, all-purpose speakers as possible.The crisp graininess and perfect dynamic feedback will make your playing easy."
+    },
+    {
+      "name": "L-Star CL",
+      "index": 11,
+      "ID": 117440537,
+      "description": "Based on Mesa/Boogie\u00ae Lone Star\u2122*(CH1). The pre-amp circuit has extraordinary expressive power, the comprehensive timbre and intuitive operation are indicative of Mesa/Boogie\u00ae's far superior technical capabilities.An engaging and lively timbre experience.It has a more compressed, balanced, soft mid frequency sound, and its high-frequency like gorgeous bell."
+    },
+    {
+      "name": "BogSV CL",
+      "index": 12,
+      "ID": 117440538,
+      "description": "Based on Bogner \u00ae Shiva* (20th Anniversary version, Ch1. Modern optimized circuit, with a double channel treasure house of sound, excellent circuit design makes it have high-frequency transparent and flexible low frequency, crystal clear sound, British higain compact and gorgeous."
+    },
+    {
+      "name": "Z38 CL",
+      "index": 13,
+      "ID": 117440539,
+      "description": "Based on Dr. Z\u00ae Maz 38 Sr.* combo (clean sound). With its varied sound, wide frequency response and dynamic range, it is not only an excellent single platform, but it can meet your needs whether you are a British or An American fan."
+    },
+    {
+      "name": "Knights CL",
+      "index": 14,
+      "ID": 117440543,
+      "description": "Based on Grindrod\u00ae Pendragon PG20C* (Normal channel, bright off). If you're a big fan of British sound/overdrive, this is a sound you can't miss.It can bring the pure British style, sound full of penetrating power."
+    },
+    {
+      "name": "Bad-KT CL",
+      "index": 15,
+      "ID": 117440546,
+      "description": "Based on Bad Cat\u00ae Hot Cat 30* (clean channel). As the world's first use of Class A circuit design guitar speakers, the sound quality has been greatly improved.It combines British and American styles, with rich harmonics and sufficient headroom."
+    },
+    {
+      "name": "Solo100 CL",
+      "index": 16,
+      "ID": 117440547,
+      "description": "Based on Soldano\u00ae SLO100* (clean channel). Also from Eddie Van Halen's Brown Sound, Steve Vai's classic album \u201cPassion & Warfare\u201d was recorded in SLO100*."
+    },
+    {
+      "name": "Bellman 59B",
+      "index": 17,
+      "ID": 117440548,
+      "description": "Based on Fender\u00ae \u201959 Bassman\u00ae*."
+    },
+    {
+      "name": "Foxy 30TB",
+      "index": 18,
+      "ID": 117440551,
+      "description": "Based on VOX\u00ae AC30HW* (normal channel)."
+    },
+    {
+      "name": "SUPDual OD",
+      "index": 19,
+      "ID": 117440552,
+      "description": "Based on the Supro\u00aeDual-Tone 1624T* (CH1+2, dirty tone). In the mid 60\u2019s , vintage 1624T amps have been sought-after for decades because the Dual-Tone\u2019s volume knob is turned beyond noon, a fat and compressed clean tone evolves into an immediately recognizable grind that remains articulate and listenable even when turned up to full blast."
+    },
+    {
+      "name": "UK 45",
+      "index": 20,
+      "ID": 117440554,
+      "description": "Based on Marshall\u00ae JTM45* (normal channel). In 1962, Marshall\u00ae introduced the first guitar speakers specifically designed for rock music, and its powerful sound laid the foundation for rock music. So its panel material  plexiglas as the most classic 1960s sound specific name--- Plexi."
+    },
+    {
+      "name": "UK 45+",
+      "index": 21,
+      "ID": 117440555,
+      "description": "Based on Marshall\u00ae JTM45* . In 1962, Marshall\u00ae introduced the first guitar speakers specifically designed for rock music, and its powerful sound laid the foundation for rock music. So its panel material  plexiglas as the most classic 1960s sound specific name--- Plexi."
+    },
+    {
+      "name": "UK 45JP",
+      "index": 22,
+      "ID": 117440556,
+      "description": "Based on Marshall\u00ae JTM45* . In 1962, Marshall\u00ae introduced the first guitar speakers specifically designed for rock music, and its powerful sound laid the foundation for rock music. So its panel material  plexiglas as the most classic 1960s sound specific name--- Plexi."
+    },
+    {
+      "name": "UK 50",
+      "index": 23,
+      "ID": 117440557,
+      "description": "Based on Marshall\u00ae JMP50* (\"Jump\" connection). Through the adjustment of JTM45*'s rectifier tube, the power was improved. In 1966, Marshall company launched JTM50*, and the \"Plexi\"  sound obtained  utilizing the overdrive by more people. The timbre is more full compared to JTM45*."
+    },
+    {
+      "name": "UK 50+",
+      "index": 24,
+      "ID": 117440558,
+      "description": "Based on Marshall\u00ae JMP50* (\"Jump\" connection). Through the adjustment of JTM45*'s rectifier tube, the power was improved. In 1966, Marshall company launched JTM50*, and the \"Plexi\"  sound obtained  utilizing the overdrive by more people. The timbre is more full compared to JTM45*."
+    },
+    {
+      "name": "UK 50JP",
+      "index": 25,
+      "ID": 117440559,
+      "description": "Based on Marshall\u00ae JMP50* (\"Jump\" connection). Through the adjustment of JTM45*'s rectifier tube, the power was improved. In 1966, Marshall company launched JTM50*, and the \"Plexi\"  sound obtained  utilizing the overdrive by more people. The timbre is more full compared to JTM45*."
+    },
+    {
+      "name": "UK SLP",
+      "index": 26,
+      "ID": 117440560,
+      "description": "The 1959HWTM is a line right back to the celebrated era of the mid to late 1960s, the original was born when Pete Townshend asked Jim Marshall if he could make it louder. This re-issue delivers that classic Marshall tone with the same overdrive and crunch, using the authentic parts and methods to construct."
+    },
+    {
+      "name": "UK 800",
+      "index": 27,
+      "ID": 117440565,
+      "description": "Based on Marshall\u00ae JCM800*. In 1981, the JCM800* quickly became the rock and metal sound of the '80s with its excellent higain sound.The founders named it after their own license plate number, inheriting and continuing the legend of Plexi*."
+    },
+    {
+      "name": "Mess2C+ 1",
+      "index": 28,
+      "ID": 117440569,
+      "description": "Based on Mesa/Boogie\u00ae Mark II C+\u2122 (Lead channel) with 2 different onboard switch combinations. In the 1980s, Mark II C + *established the position of Mesa / Boogie\u00ae metal style, and its voice appeared in the albums of Metallica and Dream Theater, and become a classic of American Higain."
+    },
+    {
+      "name": "Mess2C+ 2",
+      "index": 29,
+      "ID": 117440570,
+      "description": "Based on Mesa/Boogie\u00ae Mark II C+\u2122 (Lead channel) with 2 different onboard switch combinations. In the 1980s, Mark II C + *established the position of Mesa / Boogie\u00ae metal style, and its voice appeared in the albums of Metallica and Dream Theater, and become a classic of American Higain."
+    },
+    {
+      "name": "Mess 2C+ 3",
+      "index": 30,
+      "ID": 117440571,
+      "description": "Based on Mesa/Boogie\u00ae Mark II C+\u2122 (Lead channel) with 2 different onboard switch combinations. In the 1980s, Mark II C + *established the position of Mesa / Boogie\u00ae metal style, and its voice appeared in the albums of Metallica and Dream Theater, and become a classic of American Higain."
+    },
+    {
+      "name": "BogSV OD",
+      "index": 31,
+      "ID": 117440573,
+      "description": "Based on Bogner \u00ae Shiva* (20th Anniversary version, Ch2."
+    },
+    {
+      "name": "Juice30 OD",
+      "index": 32,
+      "ID": 117440574,
+      "description": "The AD30 is an amp head with pure tube sound in the classic Class A circuit (with 4 El84 amp tubes), which guarantees harmonious sounds with an impressive spectrum. The \"TC\" stands for \"twin channel\", where a lead channel available, ensuring sustain rich sounds even at lowest volume."
+    },
+    {
+      "name": "Flagman 1",
+      "index": 33,
+      "ID": 117440576,
+      "description": "Based on the famous\u201cBrown Eye\u201dUK-style boutique amp head (BE channel). Improvement on Marshall\u00ae Plexi* basis. It has smooth high frequency, tight low frequency and high frequency gain function. It can be used in many musical styles."
+    },
+    {
+      "name": "Flagman 2",
+      "index": 34,
+      "ID": 117440577,
+      "description": "Based on the famous\"Brown Eye\"UK-style boutique amp head (BE channel)."
+    },
+    {
+      "name": "Bog BlueV",
+      "index": 35,
+      "ID": 117440579,
+      "description": "Bogner\u00ae XTC blue channel is popular for its highly recognizable classic rock and roll sound. Its loud and handsome plexi voice has extraordinary attainments."
+    },
+    {
+      "name": "Bog BlueM",
+      "index": 36,
+      "ID": 117440580,
+      "description": "Bogner\u00ae XTC blue channel is popular for its highly recognizable classic rock and roll sound. Its loud and handsome plexi voice has extraordinary attainments."
+    },
+    {
+      "name": "Solo100 OD",
+      "index": 37,
+      "ID": 117440583,
+      "description": "Based on Soldano\u00ae SLO100* (crunch channel)."
+    },
+    {
+      "name": "Match OD",
+      "index": 38,
+      "ID": 117440584,
+      "description": "Based Matchless\u2122 Chieftain 212 combo* (overdrive tone)."
+    },
+    {
+      "name": "Z38 OD",
+      "index": 39,
+      "ID": 117440585,
+      "description": "Based on Dr. Z\u00ae Maz 38 Sr.* combo (clean sound)."
+    },
+    {
+      "name": "L-Star OD",
+      "index": 40,
+      "ID": 117440586,
+      "description": "Based on Mesa/Boogie\u00ae Lone Star\u2122(CH2)."
+    },
+    {
+      "name": "Bad-KT OD",
+      "index": 41,
+      "ID": 117440587,
+      "description": "Based on Bad Cat\u00ae Hot Cat 30* (overdrive channel)."
+    },
+    {
+      "name": "UK 900",
+      "index": 42,
+      "ID": 117440590,
+      "description": "The JCM900 is the evolution of the JCM800\u00ae adding another channel, two reverb options and two gain features. Tube Set consists of 3 x 12AX7 preamp tubes, and 4 x 6L6/5881 power tubes. Known for its tone and workhorse roadworthiness, the JCM900 has many fans due to its feature set and versatility."
+    },
+    {
+      "name": "Juice R100",
+      "index": 43,
+      "ID": 117440595,
+      "description": "Based on Orange\u00ae Rockerverb 100\u2122* (Dirty channel). Once launched, this amplifier has become a new favorite of rock musicians. Its sound is unique, and its timbre can be controlled from warm and sweet clear tone to heavy music, which will bring surprise to the performers."
+    },
+    {
+      "name": "Mess4 LD",
+      "index": 44,
+      "ID": 117440597,
+      "description": "Based on Mesa/Boogie\u00ae Mark IV\u2122 (Lead channel). Based on the classic upgrade, it inherits the omnipotence of Mesa / Boogie\u00ae, with rich harmonics and sustain from the voiceless tone to the sharp dark morden higain timbre."
+    },
+    {
+      "name": "Mess4 LD 2",
+      "index": 45,
+      "ID": 117440598,
+      "description": "Based on Mesa/Boogie\u00ae Mark IV\u2122 (Lead 2 channel)."
+    },
+    {
+      "name": "Mess4 LD 3",
+      "index": 46,
+      "ID": 117440599,
+      "description": "Based on Mesa/Boogie\u00ae Mark IV\u2122 (Lead 3 channel)."
+    },
+    {
+      "name": "Solo100 LD",
+      "index": 47,
+      "ID": 117440601,
+      "description": "Based on Soldano\u00ae SLO100* (overdrive channel). Also from Eddie Van Hale's Brown Sound, Steve Vai's classic album \u201cPassion & Warfare\u201d was recorded in SLO100*."
+    },
+    {
+      "name": "EV 51",
+      "index": 48,
+      "ID": 117440602,
+      "description": "Based on Peavey\u00ae 5150\u00ae (LEAD channel). Guitarist Eddie Van Halen, who began working with Peavey\u00ae in the 1980s, loved the sound and took the album's title \"5150\" to the world with its metallic sound."
+    },
+    {
+      "name": "Flagman+ 1",
+      "index": 49,
+      "ID": 117440605,
+      "description": "Based on the famous\u201cBrown Eye\u201dUK-style boutique amp head (HBE channel)."
+    },
+    {
+      "name": "Flagman+ 2",
+      "index": 50,
+      "ID": 117440606,
+      "description": "Based on the famous\u201cBrown Eye\u201dUK-style boutique amp head (HBE channel)."
+    },
+    {
+      "name": "Eagle 120",
+      "index": 51,
+      "ID": 117440607,
+      "description": "ENGL\u00ae Savage 120 Amplifier embodies ENGL\u2019s rich legacy of creating metal machines for delivering truly punishing tones, with clear dynamics and tremendous sonic variety. This incredible tonal flexibility comes from the 4 channel layout of the amp, with a dedicated Clean channel, two separate Crunch channels, and a super-saturated Lead channel, all supported by two discrete EQs and a wide selection of additional features."
+    },
+    {
+      "name": "Eagle 120+",
+      "index": 52,
+      "ID": 117440608,
+      "description": "ENGL\u00ae Savage 120 Amplifier embodies ENGL\u2019s rich legacy of creating metal machines for delivering truly punishing tones, with clear dynamics and tremendous sonic variety. This incredible tonal flexibility comes from the 4 channel layout of the amp, with a dedicated Clean channel, two separate Crunch channels, and a super-saturated Lead channel, all supported by two discrete EQs and a wide selection of additional features."
+    },
+    {
+      "name": "Power LD",
+      "index": 53,
+      "ID": 117440611,
+      "description": "Based on ENGL\u00ae Powerball II E645/2* (CH4). It can bring you extremely compact low frequency, a lot of gain and precise dynamic response, which is very suitable for modern rock and metal music."
+    },
+    {
+      "name": "Dizz VH",
+      "index": 54,
+      "ID": 117440613,
+      "description": "Based on Diezel\u00ae VH4*. Born in Germany in the 1990s, its timbre and multifunction have attracted countless guitar masters.The unique Modern Higain quickly conquered many musicians."
+    },
+    {
+      "name": "Dizz VH S",
+      "index": 55,
+      "ID": 117440614,
+      "description": "Based on Diezel\u00ae VH4*. Born in Germany in the 1990s, its timbre and multifunction have attracted countless guitar masters.The unique Modern Higain quickly conquered many musicians."
+    },
+    {
+      "name": "Mess DualV",
+      "index": 56,
+      "ID": 117440616,
+      "description": "Based on Mesa/Boogie\u00ae Dual Rectifier\u00ae. The distortion of Rectifier\u00ae series is warm, and the distortion of Rectifier\u00ae series is very wide, which is more thick and solid than Mark\u00ae."
+    },
+    {
+      "name": "Mess DualM",
+      "index": 57,
+      "ID": 117440617,
+      "description": "Based on Mesa/Boogie Dual Rectifier(Modern mode). The distortion of Rectifier series is warm, and the distortion of Rectifier series is very wide, which is more thick and solid than Mark."
+    },
+    {
+      "name": "Dizz VH+",
+      "index": 58,
+      "ID": 117440618,
+      "description": "Based on Diezel\u00ae VH4*. Born in Germany in the 1990s, its timbre and multifunction have attracted countless guitar masters.The unique Modern Higain quickly conquered many musicians."
+    },
+    {
+      "name": "Dizz VH+ S",
+      "index": 59,
+      "ID": 117440619,
+      "description": "Based on Diezel\u00ae VH4*. Born in Germany in the 1990s, its timbre and multifunction have attracted countless guitar masters.The unique Modern Higain quickly conquered many musicians."
+    },
+    {
+      "name": "Bog RedV",
+      "index": 60,
+      "ID": 117440621,
+      "description": "The Bogner\u00ae XTC red channel is known for its fiery high gain distortion and the main timbre."
+    },
+    {
+      "name": "Bog RedM",
+      "index": 61,
+      "ID": 117440622,
+      "description": "The Bogner\u00ae XTC red channel is known for its fiery high gain distortion and the main timbre."
+    },
+    {
+      "name": "Classic Bass",
+      "index": 62,
+      "ID": 117440627,
+      "description": "Based on Ampeg\u00ae SVT* bass amp. Launched in 1969, Ampeg SVT has always been the most mainstream bass speaker, Have a strong ability to sound shape."
+    },
+    {
+      "name": "Foxy Bass",
+      "index": 63,
+      "ID": 117440629,
+      "description": "Based on vintage VOX\u00ae* AC-100* bass amp. In 1963, the Beatles was in urgent need of a bass speaker with a volume greater than that of the club's crazy shouting, and the AC-100* came into being. With 100W power and 4x12 \"box, it has successfully become the most representative bass voice in the 1960s."
+    },
+    {
+      "name": "Mess Bass",
+      "index": 64,
+      "ID": 117440631,
+      "description": "Based on Mesa/Boogie\u00ae Bass 400* amp. You can hear the sound of the early bass speakers in many albums."
+    },
+    {
+      "name": "Knights CL+",
+      "index": 65,
+      "ID": 117440635,
+      "description": "Based on Grindrod\u00ae Pendragon PG20C* (Normal channel, bright on). If you're a big fan of British sound/overdrive, this is a sound you can't miss.It can bring the pure British style, sound full of penetrating power."
+    },
+    {
+      "name": "Knights OD",
+      "index": 66,
+      "ID": 117440636,
+      "description": "Based on Grindrod\u00ae Pendragon PG20C* (Drive channel). If you're a big fan of British sound/overdrive, this is a sound you can't miss.It can bring the pure British style, sound full of penetrating power."
+    },
+    {
+      "name": "Mini Bass",
+      "index": 67,
+      "ID": 134217845,
+      "description": "Based on Ampeg\u00ae B-15* \"Flip Top\" bass amp. The B-15* was conceived by legendary Jess Oliver in 1958. It can be seen from the early clubs to the world's top studios. B-15* can be said to be a landmark product that is hard to be ignored."
+    },
+    {
+      "name": "Bass Pre",
+      "index": 68,
+      "ID": 134217846,
+      "description": "Based on Alembic\u2122 F-2B* preamp.In the 1960s, inspired by the Fender\u00ae speaker, the circuit was transformed in an all-round way, which brought the extremely advanced adjustment mode at that time, which was loved by many musicians, thus leaving a strong mark in the history of rock music."
+    },
+    {
+      "name": "AC Pre",
+      "index": 69,
+      "ID": 134217850,
+      "description": "Based on AER\u00ae Colourizer 2* acoustic preamp. Originated in Germany, it is a preamp designed for acoustic guitar sound reinforcement. It will bring richer dynamics and overtones to your acoustic guitar, making the sound more three-dimensional and vivid."
+    },
+    {
+      "name": "AC Pre 2",
+      "index": 70,
+      "ID": 134217851,
+      "description": "Based on AER\u00ae Colourizer 2* acoustic preamp. Originated in Germany, it is a preamp designed for acoustic guitar sound reinforcement. It will bring richer dynamics and overtones to your acoustic guitar, making the sound more three-dimensional and vivid."
+    },
+    {
+      "name": "AMP Empty 1",
+      "index": 71,
+      "ID": 251658240,
+      "description": "For importing and using the.nam file."
+    },
+    {
+      "name": "AMP Empty 2",
+      "index": 72,
+      "ID": 251658241,
+      "description": "For importing and using the.nam file."
+    },
+    {
+      "name": "AMP Empty 3",
+      "index": 73,
+      "ID": 251658242,
+      "description": "For importing and using the.nam file."
+    },
+    {
+      "name": "AMP Empty 4",
+      "index": 74,
+      "ID": 251658243,
+      "description": "For importing and using the.nam file."
+    },
+    {
+      "name": "AMP Empty 5",
+      "index": 75,
+      "ID": 251658244,
+      "description": "For importing and using the.nam file."
+    }
+  ],
+  "NR": [
+    {
+      "name": "Gate 1",
+      "index": 0,
+      "ID": 27,
+      "description": "Based on famous ISP\u00aeDecimator\u2122* noise gate pedal. The Decimator features improvements in the expander tracking with their new Linearized Time Vector Processing\u2122. This novel improvement provides a more linear release time-constant response for the exponential release curve of the downward expander."
+    },
+    {
+      "name": "Gate 2",
+      "index": 1,
+      "ID": 29,
+      "description": "Flexible noise gate with attack and release control."
+    },
+    {
+      "name": "Auto Swell",
+      "index": 2,
+      "ID": 67108909,
+      "description": "This is an auto swell effect with two parameters that are easy to understand and use. It can make the guitar sound like a violin."
+    }
+  ],
+  "CAB": [
+    {
+      "name": "SUP ZEP 1X6",
+      "index": 0,
+      "ID": 167772160,
+      "description": "Supro\u00ae* 1x6\" cabinet with oval speaker"
+    },
+    {
+      "name": "TWD CP 1X8",
+      "index": 1,
+      "ID": 167772161,
+      "description": "Vintage Fender\u00ae Champ* 1x8\" cabinet"
+    },
+    {
+      "name": "TWD PRC 1X10",
+      "index": 2,
+      "ID": 167772162,
+      "description": "Vintage Fender\u00ae Princeton* 1x10\" cabinet"
+    },
+    {
+      "name": "DARK LUX 1X12",
+      "index": 3,
+      "ID": 167772163,
+      "description": "Vintage Fender\u00ae Deluxe* 1x12\" cabinet"
+    },
+    {
+      "name": "DARK VIT 1X12",
+      "index": 4,
+      "ID": 167772164,
+      "description": "Vintage Fender\u00ae Vibrolux* 1x12\" cabinet"
+    },
+    {
+      "name": "ROUT 1X12",
+      "index": 5,
+      "ID": 167772165,
+      "description": "Carr\u00ae Rambler* 1x12\" cabinet"
+    },
+    {
+      "name": "BogSV 1X12",
+      "index": 6,
+      "ID": 167772166,
+      "description": "Bogner\u00ae Shiva* 1x12\" cabinet"
+    },
+    {
+      "name": "Bad-KT 1X12",
+      "index": 7,
+      "ID": 167772167,
+      "description": "Black Cat\u00ae Hot Cat* 1x12\" cabinet"
+    },
+    {
+      "name": "FOXY 1X12",
+      "index": 8,
+      "ID": 167772168,
+      "description": "Vintage VOX\u00ae AC15* 1x12\" cabinet"
+    },
+    {
+      "name": "D STAR 1X12",
+      "index": 9,
+      "ID": 167772169,
+      "description": "Mesa/Boogie\u00ae Lonestar* 1x12\" cabinet"
+    },
+    {
+      "name": "Match 2X12",
+      "index": 10,
+      "ID": 167772176,
+      "description": "Matchless\u00ae Chieftain* 2x12\" cabinet"
+    },
+    {
+      "name": "TOM OPEN 1X12",
+      "index": 11,
+      "ID": 167772170,
+      "description": "Swart\u00ae Atomic Space* 1x12\" cabinet"
+    },
+    {
+      "name": "TWD LUX 1X12",
+      "index": 12,
+      "ID": 167772171,
+      "description": "Fender\u00ae Tweed Deluxe* 1x12 cabinet"
+    },
+    {
+      "name": "US STO 1X12",
+      "index": 13,
+      "ID": 167772172,
+      "description": "1980's Mesa/Boogie\u00ae* 1x12\" cabinet"
+    },
+    {
+      "name": "ACE 1X12",
+      "index": 14,
+      "ID": 167772173,
+      "description": "Morgan\u00ae AC-20 Deluxe* 1x12 cabinet"
+    },
+    {
+      "name": "UK G12 1X12",
+      "index": 15,
+      "ID": 167772174,
+      "description": "Marshall\u00ae* 1x12\" cabinet"
+    },
+    {
+      "name": "FOXY 2X12",
+      "index": 16,
+      "ID": 167772175,
+      "description": "Vintage VOX\u00ae AC30* 2x12\" cabinet"
+    },
+    {
+      "name": "J-120 2X12",
+      "index": 17,
+      "ID": 167772177,
+      "description": "Legendary \"Jazz Chorus\" 2x12\" cabinet"
+    },
+    {
+      "name": "Dark Twin 2X12",
+      "index": 18,
+      "ID": 167772178,
+      "description": "Vintage Fender\u00ae \u201965 Twin Reverb* 2x12\" cabinet"
+    },
+    {
+      "name": "US GRN 2X12",
+      "index": 19,
+      "ID": 167772179,
+      "description": "Marshall\u00ae 2550* 2x12\" cabinet"
+    },
+    {
+      "name": "TWD SUP 2X10",
+      "index": 20,
+      "ID": 167772180,
+      "description": "A custom Fender\u00ae Tweed* 2x10\" cabinet"
+    },
+    {
+      "name": "BOUTI 2X12",
+      "index": 21,
+      "ID": 167772181,
+      "description": "A unique custom 2x12\" cabinet"
+    },
+    {
+      "name": "Bellman 212",
+      "index": 22,
+      "ID": 167772182,
+      "description": "Vintgae Fender\u00ae \"Piggyback\" Bassman\u00ae* 2x12\" cabinet"
+    },
+    {
+      "name": "SUP 2X12",
+      "index": 23,
+      "ID": 167772183,
+      "description": "Supro\u00ae 1624T* 2x12 cabinet\""
+    },
+    {
+      "name": "MATT TWD 2X12",
+      "index": 24,
+      "ID": 167772184,
+      "description": "Matchless\u00ae* 2x12\" cabinet"
+    },
+    {
+      "name": "SUP STAR 2X12",
+      "index": 25,
+      "ID": 167772185,
+      "description": "Mesa/Boogie\u00ae Lonestar* 2x12\" cabinet"
+    },
+    {
+      "name": "FREEMAN 2X12",
+      "index": 26,
+      "ID": 167772186,
+      "description": "Fryette\u00ae Deliverance* 2x12\" cabinet"
+    },
+    {
+      "name": "Dark CS 2X12",
+      "index": 27,
+      "ID": 167772187,
+      "description": "Custom modified Fender\u00ae* 2x12\" cabinet"
+    },
+    {
+      "name": "DB ROCK 2X12",
+      "index": 28,
+      "ID": 167772188,
+      "description": "Two-Rock\u00ae* 2x12\" cabinet"
+    },
+    {
+      "name": "BLUE SK 2X12",
+      "index": 29,
+      "ID": 167772189,
+      "description": "A custom 2x12\" cabinet with Celestion\u00ae Alnico Blue* speakers"
+    },
+    {
+      "name": "Bellman 410",
+      "index": 30,
+      "ID": 167772190,
+      "description": "Fender\u00ae '59 Bassman\u00ae* 4x10\" cabinet"
+    },
+    {
+      "name": "UK LD 4X12",
+      "index": 31,
+      "ID": 167772191,
+      "description": "Marshall\u00ae 1960AV* 4x12\" cabinet"
+    },
+    {
+      "name": "UK TD 2X12",
+      "index": 32,
+      "ID": 167772192,
+      "description": "68 Marshall\u00ae Basketweave* 4x12\" cabinet"
+    },
+    {
+      "name": "UK MD 4X12",
+      "index": 33,
+      "ID": 167772193,
+      "description": "Custom modified Marshall\u00ae* 4x12\" cabinet"
+    },
+    {
+      "name": "UK GRN 4X12",
+      "index": 34,
+      "ID": 167772194,
+      "description": "Vintage Marshall\u00ae 4x12\" cabinet with Celestion\u00ae Greenback\u00ae* speakers"
+    },
+    {
+      "name": "EV 4X12",
+      "index": 35,
+      "ID": 167772195,
+      "description": "Peavey\u00ae 6505* 4x12\" cabinet"
+    },
+    {
+      "name": "Mess 4X12",
+      "index": 36,
+      "ID": 167772196,
+      "description": "Mesa/Boogie\u00ae Rectifier\u00ae* 4x12\" cabinet"
+    },
+    {
+      "name": "Bog 4X12",
+      "index": 37,
+      "ID": 167772197,
+      "description": "Bogner\u00ae* 4x12\" cabinet"
+    },
+    {
+      "name": "Eagle 4X12",
+      "index": 38,
+      "ID": 167772198,
+      "description": "ENGL\u00ae* 4x12\" cabinet"
+    },
+    {
+      "name": "Uban 4X12",
+      "index": 39,
+      "ID": 167772199,
+      "description": "Bogner\u00ae Uberkab* 4x12\" cabinet"
+    },
+    {
+      "name": "SOLO 4X12",
+      "index": 40,
+      "ID": 167772200,
+      "description": "Soldano\u00ae* 4x12\" caninet"
+    },
+    {
+      "name": "Juice 4X12",
+      "index": 41,
+      "ID": 167772201,
+      "description": "Orange\u00ae PPC412* 4x12\" cabinet"
+    },
+    {
+      "name": "H-WAY 4X12",
+      "index": 42,
+      "ID": 167772202,
+      "description": "Vintage Hiwatt\u00ae SE4123* 4x12\" cabinet"
+    },
+    {
+      "name": "UK DARK 4X12",
+      "index": 43,
+      "ID": 167772203,
+      "description": "1968 Marshall\u00ae* 4x12\" cabinet"
+    },
+    {
+      "name": "WAY 4X12",
+      "index": 44,
+      "ID": 167772204,
+      "description": "Vintage WEM\u00ae* 4x12\" cabinet"
+    },
+    {
+      "name": "DUMB 4X12",
+      "index": 45,
+      "ID": 167772205,
+      "description": "Dumble\u00ae* 4x12\" cabinet"
+    },
+    {
+      "name": "DIZZ 4X12",
+      "index": 46,
+      "ID": 167772206,
+      "description": "Diezel\u00ae* 4x12\" cabinet"
+    },
+    {
+      "name": "TRP 4X12",
+      "index": 47,
+      "ID": 167772207,
+      "description": "Hughes & Kettner\u00ae Triamp* 4x12\" cabinet"
+    },
+    {
+      "name": "UK 75 4X12",
+      "index": 48,
+      "ID": 167772208,
+      "description": "Marshall\u00ae* 4x12\" cabinet with Celestion\u00ae G12T-75* speakers"
+    },
+    {
+      "name": "KING 4X12",
+      "index": 49,
+      "ID": 167772209,
+      "description": "Mesa/Boogie\u00ae Road King\u00ae* 4x12\" cabinet"
+    },
+    {
+      "name": "ADM 1X15",
+      "index": 50,
+      "ID": 167772210,
+      "description": "David Eden\u00ae* 1x15\" bass cabinet"
+    },
+    {
+      "name": "WORKMAN 1X15",
+      "index": 51,
+      "ID": 167772211,
+      "description": "SWR\u00ae* 1x15\" bass cabinet"
+    },
+    {
+      "name": "F-TOP 1X15",
+      "index": 52,
+      "ID": 167772212,
+      "description": "Ampeg\u00ae PF-115HE* 1x15\" bass cabinet"
+    },
+    {
+      "name": "US BASS 2X10",
+      "index": 53,
+      "ID": 167772213,
+      "description": "Mesa/Boogie\u00ae* 2x10\" bass cabinet"
+    },
+    {
+      "name": "MATT 2X10",
+      "index": 54,
+      "ID": 167772214,
+      "description": "Mark Bass\u00ae* 2x10\" bass cabinet"
+    },
+    {
+      "name": "ADM 4X10",
+      "index": 55,
+      "ID": 167772215,
+      "description": "David Eden\u00ae* 4x10\" bass cabinet"
+    },
+    {
+      "name": "AMPG 4X10",
+      "index": 56,
+      "ID": 167772216,
+      "description": "Ampeg\u00ae SVT-410HE* 4x10\" bass cabinet"
+    },
+    {
+      "name": "WORKMAN 4X10",
+      "index": 57,
+      "ID": 167772217,
+      "description": "SWR\u00ae Workingman's* 4x10\" bass cabinet"
+    },
+    {
+      "name": "HACK 4X12",
+      "index": 58,
+      "ID": 167772218,
+      "description": "Hartke\u00ae* 4x12\" bass cabinet"
+    },
+    {
+      "name": "AMPG 8X10",
+      "index": 59,
+      "ID": 167772219,
+      "description": "Ampeg SVT-810E* 8x10\" bass cabinet"
+    },
+    {
+      "name": "AC",
+      "index": 60,
+      "ID": 167772220,
+      "description": "Dreadnought guitar simulation 1"
+    },
+    {
+      "name": "AC Dream",
+      "index": 61,
+      "ID": 167772221,
+      "description": "Dreadnought guitar simulation 2"
+    },
+    {
+      "name": "OM",
+      "index": 62,
+      "ID": 167772222,
+      "description": "Simulates an OM type acoustic guitar"
+    },
+    {
+      "name": "JUMBO",
+      "index": 63,
+      "ID": 167772223,
+      "description": "Simulates a jumbo acoustic guitar"
+    },
+    {
+      "name": "Bird",
+      "index": 64,
+      "ID": 167772224,
+      "description": "Simulates the iconic \"H-Bird\" acoustic guitar"
+    },
+    {
+      "name": "GA",
+      "index": 65,
+      "ID": 167772225,
+      "description": "Simulates a GA type acoustic guitar"
+    },
+    {
+      "name": "Classic AC",
+      "index": 66,
+      "ID": 167772226,
+      "description": "Simulates a classical guitar"
+    },
+    {
+      "name": "Mandolin",
+      "index": 67,
+      "ID": 167772227,
+      "description": "Simulates a mandolon"
+    },
+    {
+      "name": "Fretless Bass",
+      "index": 68,
+      "ID": 167772228,
+      "description": "Simulates a fretless acoustic bass"
+    },
+    {
+      "name": "Double Bass",
+      "index": 69,
+      "ID": 167772229,
+      "description": "Simulates a double bass"
+    },
+    {
+      "name": "USER IR",
+      "index": 70,
+      "ID": 168820736,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 71,
+      "ID": 168820737,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 72,
+      "ID": 168820738,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 73,
+      "ID": 168820739,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 74,
+      "ID": 168820740,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 75,
+      "ID": 168820741,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 76,
+      "ID": 168820742,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 77,
+      "ID": 168820743,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 78,
+      "ID": 168820744,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 79,
+      "ID": 168820745,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 80,
+      "ID": 168820746,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 81,
+      "ID": 168820747,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 82,
+      "ID": 168820748,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 83,
+      "ID": 168820749,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 84,
+      "ID": 168820750,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 85,
+      "ID": 168820751,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 86,
+      "ID": 168820752,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 87,
+      "ID": 168820753,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 88,
+      "ID": 168820754,
+      "description": "USER IR"
+    },
+    {
+      "name": "USER IR",
+      "index": 89,
+      "ID": 168820755,
+      "description": "USER IR"
+    }
+  ],
+  "EQ": [
+    {
+      "name": "EQ 1",
+      "index": 0,
+      "ID": 16777269,
+      "description": "Equalizer designed for guitars"
+    },
+    {
+      "name": "EQ 3",
+      "index": 1,
+      "ID": 16777270,
+      "description": "Equalizer designed for guitars"
+    },
+    {
+      "name": "EQ 2",
+      "index": 2,
+      "ID": 16777274,
+      "description": "Equalizer designed for basses"
+    },
+    {
+      "name": "EQ 6",
+      "index": 3,
+      "ID": 16777273,
+      "description": "Equalizer designed for basses"
+    },
+    {
+      "name": "Hyper EQ",
+      "index": 4,
+      "ID": 16777283,
+      "description": "10-band graphic EQ suitable for any instrument"
+    },
+    {
+      "name": "5-Band EQ",
+      "index": 5,
+      "ID": 16777276,
+      "description": "Based on the 5-band EQ module on Mesa/Boogie\u00ae* amps"
+    }
+  ],
+  "MOD": [
+    {
+      "name": "G-Chorus",
+      "index": 0,
+      "ID": 67108865,
+      "description": "Based on the legendary huge ensemble chorus pedal born in late 1970s (chorus mode), producing rich, shimmering vintage analog chorus tone. Warm, rich, and dreamlike analog chorus sound."
+    },
+    {
+      "name": "C-Chorus",
+      "index": 1,
+      "ID": 67108866,
+      "description": "Based on a legendary 4-button purple stereo chorus pedal, providing detailed rich chorus tone that expands sonic dimensions"
+    },
+    {
+      "name": "Jet",
+      "index": 2,
+      "ID": 67108881,
+      "description": "Classic flanger effect, producing rich and natural flanger tone."
+    },
+    {
+      "name": "B-Jet",
+      "index": 3,
+      "ID": 67108882,
+      "description": "Classic flanging effect tuned for basses"
+    },
+    {
+      "name": "N-Jet",
+      "index": 4,
+      "ID": 67108883,
+      "description": "A flanger with negative feedback, producing \"underwater\" style sound"
+    },
+    {
+      "name": "V-Roto",
+      "index": 5,
+      "ID": 67108885,
+      "description": "Based on a BBD-based blue vibrato pedal, producing natural analog vibrato sound"
+    },
+    {
+      "name": "G-Roto",
+      "index": 6,
+      "ID": 67108886,
+      "description": "Based on the legendary huge ensemble chorus pedal born in late 1970s (vibrato mode), producing rich, shimmering vintage analog vibrato tone"
+    },
+    {
+      "name": "O-Phase",
+      "index": 7,
+      "ID": 67108889,
+      "description": "Based on legendary MXR\u00ae M101 Phase 90*. Have you heard the guitar sound in Eddie Van Halen's \"Eruption\"? That distorted tone with a sense of rotation is realized by Phase 90."
+    },
+    {
+      "name": "G-Phase",
+      "index": 8,
+      "ID": 67108890,
+      "description": "Based on a BBD-based green phase pedal, producing natural analog phase sound"
+    },
+    {
+      "name": "S-Phase",
+      "index": 9,
+      "ID": 67108891,
+      "description": "The Electro Harmonix Small Stone was one of the first phasers available in the 70's and can be heard on countless recordings. As the competitors of that time, it comes with a control (rate, the speed of the effect) and the intensity can be modified with a switch - the sound is just right for most applications."
+    },
+    {
+      "name": "Sine Trem",
+      "index": 10,
+      "ID": 67108902,
+      "description": "Sine tremolo waveforms and super wide tonal range."
+    },
+    {
+      "name": "Triangle Trem",
+      "index": 11,
+      "ID": 67108903,
+      "description": "Triangle tremolo waveforms and super wide tonal range."
+    },
+    {
+      "name": "Bias Trem",
+      "index": 12,
+      "ID": 67108904,
+      "description": "Bias tremolo waveforms and super wide tonal range"
+    },
+    {
+      "name": "Detune",
+      "index": 13,
+      "ID": 16777257,
+      "description": "This is a detuning effect that combines a slightly shifted signal with the original signal to create a chorus-like tone."
+    },
+    {
+      "name": "Bit Smash",
+      "index": 14,
+      "ID": 16777262,
+      "description": "Provides bitcrushing/sample reducing effect with musical fashion"
+    },
+    {
+      "name": "B-Chorus",
+      "index": 15,
+      "ID": 67108872,
+      "description": "Based on the famous ensemble chorus unit tuned for bassists"
+    },
+    {
+      "name": "M-Chorus",
+      "index": 16,
+      "ID": 67108879,
+      "description": "A multi-dimensional chorus pedal producing rich surrounding chorus sound, better playing with stereo sound systems"
+    },
+    {
+      "name": "Trem Jet",
+      "index": 17,
+      "ID": 67108884,
+      "description": "Combines flanger and tremolo in one"
+    },
+    {
+      "name": "Vibrato",
+      "index": 18,
+      "ID": 67108887,
+      "description": "A classic vibrato effect with wide adjustable range"
+    },
+    {
+      "name": "Pan Phase",
+      "index": 19,
+      "ID": 67108894,
+      "description": "A special, subtle phaser combines tremolo/pan variations"
+    },
+    {
+      "name": "M-Vibe",
+      "index": 20,
+      "ID": 67108895,
+      "description": "Based on Voodoo Lab\u00ae Micro Vibe*. Voodoo Lab Micro Vibe has the same design as the original 1968 Uni-Vibe*. Jimi Hendrix and Stevie Ray Vaughan used these effects extensively in their albums. The Vibe effect will bring about slight and regular pitch changes."
+    },
+    {
+      "name": "Vibe",
+      "index": 21,
+      "ID": 67108896,
+      "description": "The Shin-Ei Uni-Vibe is a classic phase shifter(chorus) effect made famous by Jimi Hendrix, David Gilmour, Robin Trower and many more. The rich \u201cchorus\u201d effect that it\u2019s famous for has become a staple in a classic rock guitarist\u2019s rig. While the Uni-Vibe\u2019s construction is closely copied by many companies, many players confirm that there\u2019s just nothing like the real thing!"
+    },
+    {
+      "name": "O-Trem",
+      "index": 22,
+      "ID": 67108897,
+      "description": "Based on legendary Demeter\u00ae TRM-1Tremulator*,offering classical opto tremolo sound. In 1982, rock pioneer Ry Cooder approached James Demeter to ask whether the tremolo sound of the Fender\u00ae twin series speakers could be made into a pedal effect device, and this classic effect device was born."
+    },
+    {
+      "name": "Auto Swell",
+      "index": 23,
+      "ID": 67108909,
+      "description": "This is an auto swell effect with two parameters that are easy to understand and use. It can make the guitar sound like a violin."
+    },
+    {
+      "name": "Hold",
+      "index": 24,
+      "ID": 67108911,
+      "description": "This is a freeze effect that can freeze the sound for a short period of time before the effect is activated and make it play in a loop. The Activate parameter can be assigned to the expression pedal to activate and deactivate the effect; You can also turn on the Activate parameter and use CTRL to directly control the On/Off of the effect module."
+    },
+    {
+      "name": "Freeze",
+      "index": 25,
+      "ID": 67108912,
+      "description": "This is a freeze effect that can freeze the sound at the moment of activation and keep it playing when the effect is activated. The Activate parameter can be assigned to the expression pedal to activate and deactivate the effect; You can also turn on the Activate parameter and use CTRL to directly control the On/Off of the effect module."
+    },
+    {
+      "name": "Vibrato T",
+      "index": 11,
+      "ID": 67108888,
+      "description": "This is a special vibrato effect with dynamic depth control, which lets you create  touch-sensitive pitch modulation. Use the Rate knob to control the modulation speed; use the Sens knob to fine tune the sensitivity. You can use Tap Tempo function to control the effect speed by turning on the Sync switch. When the Sync switch is on, turn the Rate knob to set a proper tap divide value. The default value is 1/4 (no division). "
+    }
+  ],
+  "DLY": [
+    {
+      "name": "BBD Delay S",
+      "index": 0,
+      "ID": 184549405,
+      "description": "This is a stereo analog delay model that captures the sound of a BBD based analog delay machine that is warm, smooth, rounded due to the limitation of BBD chips. "
+    },
+    {
+      "name": "Digital Delay S",
+      "index": 1,
+      "ID": 184549407,
+      "description": "This model is a stereo digital delay that produces a pure clean delay sound, clear and accurate."
+    },
+    {
+      "name": "Tape Delay S",
+      "index": 2,
+      "ID": 184549409,
+      "description": "Back in the old days, producers and engineers created delay and echo effects using tape machines. That sweet, space-like echo tone is still popular today, especially among psychedelic musicians."
+    },
+    {
+      "name": "Ambience 1",
+      "index": 3,
+      "ID": 184549418,
+      "description": "This model is a multi-tap delay that brings you expanded sound spaciousness. 1, 2 stands for different tonal variations"
+    },
+    {
+      "name": "Ambience 2",
+      "index": 4,
+      "ID": 184549422,
+      "description": "This model is a multi-tap delay that brings you expanded sound spaciousness. 1, 2 stands for different tonal variations"
+    },
+    {
+      "name": "Pure",
+      "index": 5,
+      "ID": 184549376,
+      "description": "Produce pure, precised delay sound"
+    },
+    {
+      "name": "Analog",
+      "index": 6,
+      "ID": 184549377,
+      "description": "Produciing warm delay sound with analog feel"
+    },
+    {
+      "name": "Tape",
+      "index": 7,
+      "ID": 184549378,
+      "description": "Simulates solid-state tape echo sound"
+    },
+    {
+      "name": "Ping Pong",
+      "index": 8,
+      "ID": 184549380,
+      "description": "A ping-pong delay producing stereo feedbadk bounces back and forth between left and right channels"
+    },
+    {
+      "name": "Slapback",
+      "index": 9,
+      "ID": 184549381,
+      "description": "Simulates the classic slapback echo effect"
+    },
+    {
+      "name": "Sweep Echo",
+      "index": 10,
+      "ID": 184549382,
+      "description": "Producing a delay effect with sweeping filter modulated repeats"
+    },
+    {
+      "name": "Ring Echo",
+      "index": 11,
+      "ID": 184549385,
+      "description": "Producing a delay effect with ring modulated repeats"
+    },
+    {
+      "name": "Tube",
+      "index": 12,
+      "ID": 184549387,
+      "description": "Simulates tube-driven tape echo sound"
+    },
+    {
+      "name": "M-Echo",
+      "index": 13,
+      "ID": 184549388,
+      "description": "A multi tap delay that simulates a huge 4-head tape echo machine"
+    },
+    {
+      "name": "Sweet Echo",
+      "index": 14,
+      "ID": 184549389,
+      "description": "This analog delay pedal was sold from 1981 to 1984 and is still sought after thanks to its warm, natural sound. Produces a delay time ranging from 20 to 300 milliseconds."
+    },
+    {
+      "name": "999 Echo",
+      "index": 15,
+      "ID": 184549394,
+      "description": "Based on Maxon\u00ae AD900 Analog Delay*, providing warm, accurate delay sound. 100% Analog Delay, dynamic distortion on Delay repeats, gorgeous, warm, organic delay tone."
+    },
+    {
+      "name": "Vintage Rack",
+      "index": 16,
+      "ID": 184549396,
+      "description": "Reproduces the sound of a vintage 1980's rack-mount delay machine with slightly sample-reduced feedback"
+    },
+    {
+      "name": "Lofi Echo",
+      "index": 17,
+      "ID": 184549414,
+      "description": "Producing a delay effect with lo-fi'd repeats"
+    },
+    {
+      "name": "Rev Echo",
+      "index": 18,
+      "ID": 184549416,
+      "description": "Producing a special delay e%ect with reversed feedback"
+    },
+    {
+      "name": "Dual Echo",
+      "index": 19,
+      "ID": 184549379,
+      "description": "Producing a pure dual delay effect with Dual Echo separated L/R channel signal proessing"
+    },
+    {
+      "name": "Ice Delay",
+      "index": 20,
+      "ID": 184549427,
+      "description": "This is a special delay effect that combining normal feedback with pitch shifted slices.  You can use Tap Tempo function to control the delay time by turning on the Sync switch. When the Sync switch is on, turn the Time knob to set a proper tap divide value. The default value is 1/4 (no division).  "
+    }
+  ],
+  "RVB": [
+    {
+      "name": "Room",
+      "index": 0,
+      "ID": 201326592,
+      "description": "Simulates the spaciousness of a room"
+    },
+    {
+      "name": "Hall",
+      "index": 1,
+      "ID": 201326593,
+      "description": "Simulates the spaciousness of a performance hall"
+    },
+    {
+      "name": "Church",
+      "index": 2,
+      "ID": 201326594,
+      "description": "Simulates the spaciousness of a church"
+    },
+    {
+      "name": "Plate",
+      "index": 3,
+      "ID": 201326595,
+      "description": "Simulates the sound character produced by a vintage plate reverberator"
+    },
+    {
+      "name": "Spring",
+      "index": 4,
+      "ID": 201326596,
+      "description": "Simulates the sound character produced by a vintage spring reverberator"
+    },
+    {
+      "name": "Studio",
+      "index": 5,
+      "ID": 201326603,
+      "description": "This reverb model recreates the spaciousness of a recording studio."
+    },
+    {
+      "name": "Club",
+      "index": 6,
+      "ID": 201326604,
+      "description": "This reverb model recreates the spaciousness of a club."
+    },
+    {
+      "name": "Concert",
+      "index": 7,
+      "ID": 201326605,
+      "description": "This reverb model recreates the spaciousness of a concert hall."
+    },
+    {
+      "name": "Arena",
+      "index": 8,
+      "ID": 201326606,
+      "description": "This reverb model recreates the spaciousness of a live arena."
+    },
+    {
+      "name": "N-Star",
+      "index": 9,
+      "ID": 201326598,
+      "description": "Special-tuned reverb effect with lush, bright decays"
+    },
+    {
+      "name": "Deepsea",
+      "index": 10,
+      "ID": 201326599,
+      "description": "Special-tuned reverb effect with huge, deep decays"
+    },
+    {
+      "name": "Sweet Space",
+      "index": 11,
+      "ID": 201326600,
+      "description": "Produces a modulated reverb effect that is lush and sweet"
+    },
+    {
+      "name": "Shimmer",
+      "index": 12,
+      "ID": 201326601,
+      "description": "Produce a rich, shimmering reverb effect"
+    },
+    {
+      "name": "Amp Spring",
+      "index": 13,
+      "ID": 201326609,
+      "description": "This reverb model simulates the solid state spring reverb module coming from a combo amp."
+    },
+    {
+      "name": "Tube Spring",
+      "index": 5,
+      "ID": 201326610,
+      "description": "This reverb model simulates the sound coming from a vintage tube driven spring reverb unit.  "
+    }
+  ],
+  "VOL": [
+    {
+      "name": "Volume",
+      "index": 0,
+      "ID": 100663299,
+      "description": "Pure volume control without any impurities"
+    }
+  ]
+}

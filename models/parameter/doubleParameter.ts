@@ -83,7 +83,7 @@ export class DoubleParameterModel implements IParameter {
         return this.current_value[this.current_range_idx];
     }
 
-    getStringValue(): string {
+    getCurrentValueAsString(): string {
         if (this.current_range_idx === 0) {
             return `${this.current_value[this.current_range_idx]} ${this.units}`
         } else {
