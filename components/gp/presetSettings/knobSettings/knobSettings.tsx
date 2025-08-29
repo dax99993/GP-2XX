@@ -26,7 +26,7 @@ function GetParamLabels(module: KnobModule): [string, string][] {
                 const l: [string, string][] = store.gp200.currentPreset.effects[module as number]
                 .parameters.map(
                     p => {
-                        return [p.id.toString(), p.name]
+                        return [p.ID.toString(), p.name]
                     }
                 )
                 return l;

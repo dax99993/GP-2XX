@@ -20,10 +20,8 @@ function pickerSelector(props: pickerSelectorProps) {
         <Picker.Item key={label[0]} value={label[0]} label={label[1]}/>
     ));
 
-    //const selectedValue = props.labels.filter(l => l.) 
-
     return (
-        <Box className="bg-secondary-300 mx-3 my-2 px-2 pt-3 rounded-md">
+        <Box className="bg-secondary-300 mx-3 my-2 px-2 pt-3 pb-3 rounded-md">
             <VStack style={styles.infoContainer}>
                 <Text size="lg" bold={true}>{props.name}</Text>
             </VStack>

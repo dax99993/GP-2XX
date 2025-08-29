@@ -152,12 +152,12 @@ export class GP200DeviceActions implements IDeviceActions {
 
         switch (param) {
             case 0:
-                const volume = this.nibblesToByte(message[0x19], message[0x1a]);
+                const volume = this.decodeNibblesTo16BitTwosComplement([...message.slice(0x19, 0x1c + 1)]);
                 // //Update Model
                 this.gp200.currentPreset?.changeVolume(volume);
                 break
             case 1:
-                const bpm = this.nibblesToByte(message[0x19], message[0x1a]);
+                const bpm = this.decodeNibblesTo16BitTwosComplement([...message.slice(0x19, 0x1c + 1)]);
                 // //Update Model
                 this.gp200.currentPreset?.changeBPM(bpm);
                 break
@@ -288,20 +288,19 @@ export class GP200DeviceActions implements IDeviceActions {
     }
 
     ChangeEffectParamValue(message: Uint8Array) {
+        if (!this.gp200.currentPreset) {return;}
+
         // byte 0x16 contains the effect chain id (0 to 10)
         // byte 0x18 containes parameter id,
         // bytes 0x25 to 0x2c contains the encoded value
-        const baseSysEx = message;
-        const effectChainID = baseSysEx[0x16];
-        const paramId = baseSysEx[0x18];
+        const effectChainID = message[0x16];
+        const paramId = message[0x18];
 
         // get encoded value bytes
-        //const encoded = baseSysEx.slice(0x25, 0x2c + 1) as number[];
-        const encoded : number[] = Array.from(baseSysEx.slice(0x25, 0x2c + 1));
+        const encoded : number[] = Array.from(message.slice(0x25, 0x2c + 1));
         
         // Get type of encoded values
         let paramType = "float";
-        if (!this.gp200.currentPreset) {return;}
 
         // this.gp200.currentPreset.effects[effectChainID].parameters.forEach(p => {
         //         if (p.id === paramId) {

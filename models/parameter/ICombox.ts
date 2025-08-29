@@ -1,11 +1,6 @@
 import { IMenu } from "./IMenu";
 import { ParamType } from "./IParameter";
 
-
-
-
-
-
 export interface ICombox {
     name: string;
     index: number;

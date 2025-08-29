@@ -1,3 +1,4 @@
+import { makeAutoObservable } from "mobx";
 import { IKnob } from "./IKnob";
 import { IParameter, ParamType } from "./IParameter";
 
@@ -34,6 +35,8 @@ export class Knob implements IParameter, IKnob {
         
         // Initialize to default value
         this.currentValue = this.default;
+
+        makeAutoObservable(this);
     }
 
     setValue(value: number): number {
@@ -53,6 +56,7 @@ export class Knob implements IParameter, IKnob {
 
     getValueAsString(num: number): string {
         const n = this.clampValue(num);
+
         if ((n == this.min && this.minIsOff) || (n == this.max && this.minIsOff && this.valueType == 2)) {
             return "OFF";
         } else {

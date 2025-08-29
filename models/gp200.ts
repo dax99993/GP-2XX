@@ -81,7 +81,7 @@ export class GP200Model {
 
     get isSynced(): boolean {
       //return this.syncedPresets == 256;
-      return this.syncedPresets == 2;
+      return this.syncedPresets == 1;
     }
 
     get presetBankCode(): string {
@@ -165,6 +165,7 @@ export class GP200Model {
       if (!this.currentPreset) { return }
 
       const e = this.currentPreset.effects.filter(e => e.type === effectChainID);
+      console.log("Set param value", parameterID, value);
       e[0].setParameterValue(parameterID, value);
     }
 

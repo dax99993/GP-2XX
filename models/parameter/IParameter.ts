@@ -52,7 +52,6 @@ export interface IParameter {
 export class DeserializeParam {
     //deserialize(p: IDefaultParameterInfo): IParameter {
     deserialize(p: IKnob | ISlider | ISwitch | ICombox): IParameter {
-        //console.log("RECEIVED JSON: ", jsonObject);
 
         switch(p.type) {
             case ParamType.Slider:

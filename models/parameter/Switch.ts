@@ -1,3 +1,4 @@
+import { makeAutoObservable } from "mobx";
 import { IMenu } from "./IMenu";
 import { IParameter, ParamType } from "./IParameter";
 import { ISwitch } from "./ISwitch";
@@ -34,6 +35,8 @@ export class Switch implements ISwitch, IParameter {
         this.min = 0 // All start with 0
         this.max = this.data.length - 1; //All Menu entries have consecutive ids, so just the length 
         this.step = 1;
+
+        makeAutoObservable(this);
     }
 
     setValue(value: number): number {

@@ -3,11 +3,13 @@ import { VStack } from "@/components/ui/vstack";
 import { useScrolling } from "@/contexts/scroll-context";
 import { Combox } from "@/models/parameter/Combox";
 import { ParamType } from "@/models/parameter/IParameter";
+import { Switch as SwitchParam } from "@/models/parameter/Switch";
 import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 import { ScrollView, StyleSheet } from "react-native";
 import NumericParameter from "../parameter/NumericParameter";
 import SelectParameter from "../parameter/SelectParameter";
+import SwitchParameter from "../parameter/SwitchParameter";
 import EffectSelector from "./EffectSelector";
 import EffectState from "./EffectState";
 
@@ -26,13 +28,18 @@ function EffectEdit() {
                 { store.gp200.currentEffect && store.gp200.currentEffect.parameters.map(p => {
                     if (p.type === ParamType.Knob || p.type === ParamType.Slider) {
                         return <NumericParameter
-                            key={p.name + p.ID}
+                            key={p.name}
                             param={p}
                         />
-                    } else if (p.type === ParamType.Switch || p.type === ParamType.Combox ) {
+                    } else if (p.type === ParamType.Combox ) {
                         return <SelectParameter
                             key={p.name}
                             param={p as Combox}
+                        />
+                    } else if (p.type === ParamType.Switch) {
+                        return <SwitchParameter
+                            key={p.name}
+                            param={p as SwitchParam}
                         />
                     }
                     // } else {

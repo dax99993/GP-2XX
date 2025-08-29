@@ -83,7 +83,7 @@ export class EffectModel {
     //     } )
 
     setParameterValue(parameterID: number, value: number) {
-        const p = this.parameters.filter(p => p.index === parameterID);
+        const p = this.parameters.filter(p => p.ID === parameterID);
 
         if (p.length == 0) {
             throw new Error(`There is no parameter in effect ${this.name} with ID ${parameterID}`);
@@ -111,14 +111,17 @@ export class EffectModel {
 
     static fromEffectInfo(effectInfo: ISyncEffectInfo): EffectModel {
         const e = this.defaultFromID(effectInfo.ID, effectInfo.chainID);
+        console.log("Default effect", e);
+        console.log("Effect params", e.parameters);
 
         // TODO: Update the parameter values and state
         e.changeState(effectInfo.state);
 
         for(let i = 0; i < e.parameters.length; i=i+1) {
-            const index = e.parameters[i].index;
-            e.setParameterValue(index, effectInfo.paramValues[index]);
-            console.log(`Setting parameter ${index} to value ${effectInfo.paramValues[index]}`);
+            console.log("Effect param", e.parameters[i]);
+            const ID = e.parameters[i].ID;
+            e.setParameterValue(ID, effectInfo.paramValues[ID]);
+            console.log(`Setting parameter ${ID} to value ${effectInfo.paramValues[ID]}`);
         }
 
         // e.parameters.forEach(p => {

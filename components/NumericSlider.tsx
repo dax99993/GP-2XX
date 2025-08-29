@@ -1,9 +1,9 @@
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
-import { VStack } from "@/components/ui/vstack";
 import { Slider } from '@react-native-assets/slider';
 import { useMemo, useState } from "react";
 import { StyleSheet } from "react-native";
+import { Center } from "./ui/center";
 
 type NumericSliderProps = {
     name: string;
@@ -33,11 +33,11 @@ function NumericSlider(props: NumericSliderProps) {
     }, [props.shownValue, props.currentValue, value, isSliding])
 
     return (
-        <Box className="bg-secondary-300 mx-3 my-2 px-2 pt-3 pb-5 rounded-md">
-            <VStack style={styles.infoContainer}>
-                <Text size="lg" bold={true}>{props.name}</Text>
-                <Text>{shownValue}</Text>
-            </VStack>
+        <Box className="bg-secondary-300 mx-3 my-2 px-2 pt-3 pb-3 rounded-md">
+            <Center>
+                <Text size="lg" bold={true} style={styles.name}>{props.name}</Text>
+                <Text size="2xl" bold={true}>{shownValue}</Text>
+            </Center>
             <Slider
                 style={styles.controlContainer}
                 minimumValue={props.minValue}
@@ -78,6 +78,10 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginLeft: 15,
         marginRight: 15,
+    },
+    name: {
+        position: 'absolute',
+        left: 15,
     },
 });
 

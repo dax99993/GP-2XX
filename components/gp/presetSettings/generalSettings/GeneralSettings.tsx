@@ -20,9 +20,9 @@ function GeneralSettings() {
 
     return (
         <BoundBox>
-            <VStack space="lg">
+            <VStack space="xs">
                 <Center>
-                    <Heading>Preset General Settings</Heading>
+                    <Heading>General Settings</Heading>
                 </Center>
                 <NumericSlider 
                     name={"Volume"}

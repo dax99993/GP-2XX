@@ -13,7 +13,7 @@ function NumericParameter({param}: NumericParameterProps) {
 
     const { enableScrolling, disableScrolling} = useScrolling();
 
-    const getStringValue = param.getValueAsString;
+    const getStringValue = param.getValueAsString.bind(param);
 
     return (
         <NumericSlider 

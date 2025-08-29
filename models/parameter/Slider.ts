@@ -1,3 +1,4 @@
+import { makeAutoObservable } from "mobx";
 import { IParameter, ParamType } from "./IParameter";
 import { ISlider } from "./ISlider";
 
@@ -28,6 +29,8 @@ export class Slider implements ISlider, IParameter {
         
         // Initialize to default value
         this.currentValue = this.default;
+
+        makeAutoObservable(this);
     }
 
     setValue(value: number): number {
@@ -42,13 +45,13 @@ export class Slider implements ISlider, IParameter {
     }
 
     getCurrentValueAsString(): string {
-        return `${this.currentValue} ${this.suffix}`;
+        return `${this.currentValue}`;
     }
 
     getValueAsString(num: number): string {
         const n = this.clampValue(num);
 
-        return `${n} ${this.suffix}`;
+        return n.toString();
     }
 
     getName(): string {
