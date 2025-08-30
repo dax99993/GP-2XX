@@ -21,7 +21,7 @@ function CtrlsSettings() {
                 <Center>
                     <Heading>Ctrl Settings</Heading>
                 </Center>
-                <ButtonGroup space="md" flexDirection="row" style={{alignItems: 'center', justifyContent: 'space-around'}}>
+                <ButtonGroup space="md" flexDirection="row" style={{alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap'}}>
                     <Button size="sm" action="primary" variant={selectedCtrl == 0 ? "solid" : "outline"} onPress={() => changeSelectedCtrl(0)}>
                         <ButtonText>CTRL 1</ButtonText>
                     </Button>
@@ -34,8 +34,6 @@ function CtrlsSettings() {
                     <Button size="sm" action="primary" variant={selectedCtrl == 3 ? "solid" : "outline"} onPress={() => changeSelectedCtrl(3)}>
                         <ButtonText>CTRL 4</ButtonText>
                     </Button>
-                </ButtonGroup>
-                <ButtonGroup space="sm" flexDirection="row" style={{alignItems: 'center', justifyContent: 'space-around'}}>
                     <Button size="sm" action="primary" variant={selectedCtrl == 4 ? "solid" : "outline"} onPress={() => changeSelectedCtrl(4)}>
                         <ButtonText>CTRL 5</ButtonText>
                     </Button>

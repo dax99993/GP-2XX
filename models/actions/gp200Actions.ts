@@ -1,4 +1,4 @@
-import { EffectsChangeInfo } from "@/constants/EffectsChangeInfo";
+import { DefaultEffectsInfo } from "@/constants/DefaultEffects";
 import { BaseSysExMsg } from "@/constants/SysExMsg";
 import { action, makeObservable, observable } from "mobx";
 import { EffectType } from "../effect/effect";
@@ -120,6 +120,24 @@ export class GP200Actions implements IActions{
         return [lowByteHighNible, lowByteLowNible, highByteHighNible, highByteLowNible];
     }
 
+    encodeEffectIDToNibbles(num: number): number[] {
+        // Ensure the number is within the 16-bit signed integer range
+        const n = num & 0xFFFFFFFF;
+
+        // Use a DataView to handle the two's complement representation directly
+        // Create a 2-byte (16-bit) ArrayBuffer
+        const buffer = new ArrayBuffer(4);
+        // Create a DataView to manipulate the buffer
+        const view = new DataView(buffer);
+
+        // Invert order
+        view.setUint32(0, n, true);
+
+        const bytes = [...new Uint8Array(buffer)]
+
+        return this.byteArrayToNibbleArray(bytes)
+    }
+
     encodePresetName(name: string) {
         // convert to ASCII byte array
         const ascii = Array.from(name).map(char => char.charCodeAt(0));
@@ -239,10 +257,12 @@ export class GP200Actions implements IActions{
         // bytes 0x19 and 0x1a contain the volume and BPM value split in hex
         let BaseSysEx= BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
         BaseSysEx[0x16] = 0;
-        const [highNibble, lowNibble] = this.byteToNibbles(volume);
 
-        BaseSysEx[0x19] = highNibble;
-        BaseSysEx[0x1a] = lowNibble;
+        // Even if this is always positive, its encoded using twos complement  
+        const encodedValue = this.encode16BitTwosComplementToNibbles(volume);
+        for (let i = 0; i < encodedValue.length; i=i+1) {
+            BaseSysEx[0x19 + i] = encodedValue[i];
+        }
 
         //Update Model
         //this.gp200.currentPreset?.changeVolume(volume);
@@ -256,19 +276,12 @@ export class GP200Actions implements IActions{
         // bytes 0x19 and 0x1a contain the volume and BPM value split in hex
         let BaseSysEx= BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
         BaseSysEx[0x16] = 1;
-        //const [highNibble, lowNibble] = this.byteToNibbles(bpm);
-
-        // console.log("Change BPM", bpm, highNibble, lowNibble);
-        // BaseSysEx[0x19] = highNibble;
-        // BaseSysEx[0x1a] = lowNibble;
-
+        // Even if this is always positive, its encoded using twos complement  
         const encodedValue = this.encode16BitTwosComplementToNibbles(bpm);
-        console.log("Change BPM", bpm, encodedValue);
-
         for (let i = 0; i < encodedValue.length; i=i+1) {
             BaseSysEx[0x19 + i] = encodedValue[i];
         }
-
+        console.log("Change BPM", bpm, encodedValue);
         //Update Model
         //this.gp200.currentPreset?.changeBPM(bpm);
 
@@ -281,9 +294,8 @@ export class GP200Actions implements IActions{
         // bytes 0x19 to 0x1c contain the PAN value encoded in two's complement
         let BaseSysEx = BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
         BaseSysEx[0x16] = 6;
-        const encodedValue = this.encode16BitTwosComplementToNibbles(pan);
-        //const [highNibble, lowNibble] = this.byteToNibbles(bpm);
 
+        const encodedValue = this.encode16BitTwosComplementToNibbles(pan);
         for (let i = 0; i < encodedValue.length; i=i+1) {
             BaseSysEx[0x19 + i] = encodedValue[i];
         }
@@ -534,40 +546,34 @@ export class GP200Actions implements IActions{
         return baseSysEx;
     }
 
-    ChangeEffect(effectID: number[]) {
+    ChangeEffect(effectID: number) {
         if (this.gp200.currentEffect === undefined) { return; }
 
         // This is always invoked when the current effect is the one we want to change
         const pedalID = this.gp200.currentEffect.type;
+        // Map int to 8 bytes hex digits little endian
+        const effectIDNibbles = this.encodeEffectIDToNibbles(effectID)
         // Construct midi message
-        const SysExMsg = this._contructChangeEffectMessage(pedalID, effectID);
-
-        // CHECK WHEN TYPE IS AMP TO ALSO CHANGE THE APPROPIATE CAB
-        const effectsChangeInfo = EffectsChangeInfo[EffectType[pedalID] as keyof typeof EffectsChangeInfo];
-        let effectChangeInfo = effectsChangeInfo.filter(e => e.id == effectID)[0];
+        const SysExMsg = this._contructChangeEffectMessage(pedalID, effectIDNibbles);
 
         // Update model
-        //this.gp200.changeEffect(effectChangeInfo.name, pedalID);
-        this.gp200.changeEffectByID(effectID, pedalID);
+        //this.gp200.changeEffectByID(effectID, pedalID);
 
-        if (effectChangeInfo.associated != undefined) { 
-            const associated = effectChangeInfo.associated;
-            const t: EffectType = EffectType[associated.type as keyof typeof EffectType];
-            console.log(associated.name);
-            //this.gp200.changeEffect(associated.name, t);
-            this.gp200.changeEffectByID(associated.id, t);
+        // CHECK WHEN TYPE IS AMP TO ALSO CHANGE THE APPROPIATE CAB
+        const defaultEffectsInfo = DefaultEffectsInfo[EffectType[pedalID] as keyof typeof DefaultEffectsInfo];
+        let defaultEffectInfo = defaultEffectsInfo.filter(e => e.ID == effectID)[0];
+
+        // When changing AMP implementations, also CAB needs to be changed
+        if (defaultEffectInfo.cabCode != null) { 
+            const cabCodeID = defaultEffectInfo.cabCode;
+            const t: EffectType = EffectType.CAB;
+            console.log("Associated cabCode", cabCodeID);
+            const SysExMsg = this._contructChangeEffectMessage(t, this.encodeEffectIDToNibbles(cabCodeID));
+            this.midi.sendMessage(SysExMsg);
         }
 
         // Send physical device
         this.midi.sendMessage(SysExMsg);
-
-        // When changing AMP implementations, also CAB needs to be changed
-        if (effectChangeInfo.associated != undefined) { 
-            const associated = effectChangeInfo.associated;
-            const t: EffectType = EffectType[associated.type as keyof typeof EffectType];
-            const SysExMsg = this._contructChangeEffectMessage(t, associated.id);
-            this.midi.sendMessage(SysExMsg);
-        }
     }
 
     //ChangeEffectState(pedal_id: number, state: boolean) {

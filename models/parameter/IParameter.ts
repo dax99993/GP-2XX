@@ -1,34 +1,41 @@
-import { IDefaultParameterInfo } from "../effect/defaultEffect/IParameterInfo";
-import { DoubleParameterModel } from "./doubleParameter";
-import { NumericParameterModel } from "./numericParameter";
-import { SelectParameterModel } from "./selectParameter";
+import { Combox } from "./Combox";
+import { ICombox } from "./ICombox";
+import { IKnob } from "./IKnob";
+import { ISlider } from "./ISlider";
+import { ISwitch } from "./ISwitch";
+import { Knob } from "./Knob";
+import { Slider } from "./Slider";
+import { Switch } from "./Switch";
 
-export type Labels = Record<number, string>;
+export enum ParamType {
+    Slider = 0,
+    Knob = 1,
+    Combox = 2,
+    Switch = 3,
+}
 
 export interface IParameter {
     // General props
     name: string;
-    type: string;
-    min_value: number[];
-    max_value: number[];
-    step_size: number[];
-    default_value: number[];
-    current_value: number[];
-    // Only a subset of parameteres have units others are adimensional (empty units "")
-    units: string;
-    // Only for parameter with finite select options or Numeric with Off label and Double parameters others have empty label array
-    labels: Labels;
-    // Only for parameters that activate with double parameters range
-    changes_param: string;
-    // Type of values in ranges
-    numeric_type: string[];
+    index: number;
+    ID: number;
+    default: number;
+    type: ParamType;
 
-    id: number;
+    currentValue: number;
+    min: number;
+    max: number;
+    step: number;
+    // Type of values in ranges
+    //numeric_type: string[];
+
 
     // General methods
+    reset(): void;
     setValue(value: number): number;
     getValue(): number;
-    getStringValue(): string;
+    getCurrentValueAsString(): string;
+    getValueAsString(n: number): string;
     getName(): string;
 
     // util methods
@@ -44,36 +51,22 @@ export interface IParameter {
 
 
 export class DeserializeParam {
-    deserialize(p: IDefaultParameterInfo): IParameter {
-        //console.log("RECEIVED JSON: ", jsonObject);
+    //deserialize(p: IDefaultParameterInfo): IParameter {
+    deserialize(p: IKnob | ISlider | ISwitch | ICombox): IParameter {
 
         switch(p.type) {
-            case 'Numeric':
-                //console.log('Numeric param')
-                return new NumericParameterModel(
-                    p.name, p.id,
-                    p.min_value[0], p.max_value[0], p.step_size[0], p.default_value[0],
-                    p.units, p.labels,
-                    p.numeric_type, p.changes_param
-                );
-            case 'Select':
+            case ParamType.Slider:
                 //console.log('Select param')
-                return new SelectParameterModel(
-                    p.name, p.id,
-                    p.min_value[0], p.max_value[0], p.step_size[0], p.default_value[0],
-                    p.units, p.labels,
-                    p.numeric_type, p.changes_param
-                );
-            case 'Double':
+                return new Slider(p as ISlider);
+            case ParamType.Knob:
+                //console.log('Numeric param')
+                return new Knob(p as IKnob);
+            case ParamType.Combox:
+                return new Combox(p as ICombox);
+            case ParamType.Switch:
                 //console.log('Double param')
-                return new DoubleParameterModel(
-                    p.name, p.id,
-                    p.min_value, p.max_value, p.step_size, p.default_value,
-                    p.units, p.labels,
-                    p.numeric_type, p.changes_param
-                );
+                return new Switch(p as ISwitch);
         }
 
-        throw new Error("DefaulEffectInfo should only contain type Numeric, Select or Double.");
     }
 }

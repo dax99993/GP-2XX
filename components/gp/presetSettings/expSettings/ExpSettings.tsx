@@ -3,7 +3,6 @@ import PickerSelector from "@/components/pickerSelector";
 import { Divider } from "@/components/ui/divider";
 import { VStack } from "@/components/ui/vstack";
 import { useScrolling } from "@/contexts/scroll-context";
-import { DoubleParameterModel } from "@/models/parameter/doubleParameter";
 import { IParameter } from "@/models/parameter/IParameter";
 import { ExpModule } from "@/models/preset/IExpSettings";
 import { store } from "@/models/store";
@@ -27,7 +26,7 @@ function GetParamLabels(module: ExpModule): [string, string][] {
                 const l: [string, string][] = store.gp200.currentPreset.effects[module as number]
                 .parameters.map(
                     p => {
-                        return [p.id.toString(), p.name]
+                        return [p.ID.toString(), p.name]
                     }
                 )
                 return l;
@@ -48,7 +47,7 @@ function GetParam(module: ExpModule, paramID: number): IParameter | undefined {
             console.log("Get Param",store.gp200.currentPreset.effects[module as number].type);
             // get param with given id
             return store.gp200.currentPreset.effects[module as number].parameters
-                .find(p => p.id === paramID)
+                .find(p => p.ID === paramID)
     }
 }
 
@@ -64,7 +63,7 @@ function GetParamRange(module: ExpModule, paramID: number): [number, number, num
             console.log("Get Param Range:", store.gp200.currentPreset.effects[module as number].type);
             // get param with given id
             let p = store.gp200.currentPreset.effects[module as number].parameters
-                .find(p => p.id === paramID);
+                .find(p => p.ID === paramID);
 
             return p != undefined ? [p.getMinValue(), p.getMaxValue(), p.getCurrentStep()] : DefaultRange;
     }
@@ -132,22 +131,9 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
     const getStringValue = useCallback( (n: number): string => {
         if (param == undefined) return n.toString();
 
-        if (param.type == "Double") {
-            const q = param as DoubleParameterModel;
-            if (q.current_range_idx !== 0 && n in param.labels) {
-                return param.labels[n];
-            } else {
-                return `${n} ${param.units}` 
-            }
-        } else if (param.type == "Numeric") {
-            if (n in param.labels) {
-                return param.labels[n];
-            } else {
-                return `${n} ${param.units}` 
-            }
-        } else {
-            return param.labels[n];
-        }
+        // Need to check if param has Combox alternative and if its active
+        
+        return param.getValueAsString(n);
     }, [param]);
 
 

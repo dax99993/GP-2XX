@@ -20,7 +20,7 @@ function GeneralSettings() {
 
     return (
         <BoundBox>
-            <VStack space="lg">
+            <VStack space="xs">
                 <Center>
                     <Heading>General Settings</Heading>
                 </Center>

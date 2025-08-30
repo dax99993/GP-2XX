@@ -2,7 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { EffectModel } from "../effect/effect";
 import { ICtrlSettings } from "./ICtrlSettings";
 import { ExpModule, IExpSettings } from "./IExpSettings";
-import { FxLoopMode, IFxLoopSettings } from "./IFxLoopSettings";
+import { IFxLoopSettings } from "./IFxLoopSettings";
 import { IKnobSettings, KnobModule } from "./IKnobSettings";
 import { ISyncEffectInfo, ISyncPresetInfo } from "./ISyncPresetInfo";
 
@@ -78,23 +78,11 @@ export class PresetModel {
 
         // // MOBX
         makeAutoObservable(this);
-        // makeObservable(this, {
-        //     name: observable,
-        //     number: observable,
-        //     effectsChainOrder: observable,
-
-        //     // Settings
-        //     effects: observable,
-        //     //decrementPresetNum: action,
-
-
-        // });
-
     }
 
-    static default(): PresetModel {
-        return new PresetModel(itsGP200);
-    }
+    // static default(): PresetModel {
+    //     return new PresetModel(itsGP200);
+    // }
 
     clone(): PresetModel {
         // construct interface
@@ -102,14 +90,14 @@ export class PresetModel {
             // get param values
             const params = Array.from({length: 15}, (_, i) => 0);
             e.parameters.forEach((p) => {
-                params[p.id] = p.getValue();
+                params[p.index] = p.getValue();
             });
 
             return {
                 chainID: e.type,
-                id: e.id,
+                ID: e.ID,
                 state: e.state, //or should it be a number?
-                params: params, //15 elements not all used
+                paramValues: params, //15 elements not all used
             }
         });
 
@@ -267,167 +255,167 @@ export class PresetModel {
 
 
 // default GP200 preset
-const itsGP200 : ISyncPresetInfo = {
-    name: "It's GP-200",
-    number: 0,
-    volume: 50,
-    pan: 0,
-    bpm: 120,
+// const itsGP200 : ISyncPresetInfo = {
+//     name: "It's GP-200",
+//     number: 0,
+//     volume: 50,
+//     pan: 0,
+//     bpm: 120,
 
-    effectsChainOrder: [0,1,2,3,4,5,6,7,8,9,10],
+//     effectsChainOrder: [0,1,2,3,4,5,6,7,8,9,10],
 
-    fxloop: {
-        sendLevel: 0,
-        returnLevel: 0,
-        sendPosition: 4,
-        returnPosition: 4,
-        mode: FxLoopMode.Parallel
-    },
+//     fxloop: {
+//         sendLevel: 0,
+//         returnLevel: 0,
+//         sendPosition: 4,
+//         returnPosition: 4,
+//         mode: FxLoopMode.Parallel
+//     },
 
-    knob1: {
-        number: 0,
-        module: KnobModule.OFF,
-        paramID: 0
-    },
-    knob2: {
-        number: 1,
-        module: KnobModule.OFF,
-        paramID: 0
-    },
-    knob3: {
-        number: 0,
-        module: KnobModule.PATCHVOL,
-        paramID: 0
-    },
+//     knob1: {
+//         number: 0,
+//         module: KnobModule.OFF,
+//         paramID: 0
+//     },
+//     knob2: {
+//         number: 1,
+//         module: KnobModule.OFF,
+//         paramID: 0
+//     },
+//     knob3: {
+//         number: 0,
+//         module: KnobModule.PATCHVOL,
+//         paramID: 0
+//     },
 
-    ctrl1: {
-        number: 0,
-        mode: 0,
-        pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0]
-    },
+//     ctrl1: {
+//         number: 0,
+//         mode: 0,
+//         pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0]
+//     },
 
-    ctrl2: {
-        number: 1,
-        mode: 0,
-        pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0]
-    },
+//     ctrl2: {
+//         number: 1,
+//         mode: 0,
+//         pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0]
+//     },
 
-    ctrl3: {
-        number: 2,
-        mode: 0,
-        pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0]
-    },
-    ctrl4: {
-        number: 3,
-        mode: 0,
-        pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0]
-    },
-    ctrl5: {
-        number: 4,
-        mode: 0,
-        pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0]
-    },
-    ctrl6: {
-        number: 5,
-        mode: 0,
-        pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0]
-    },
-    ctrl7: {
-        number: 6,
-        mode: 0,
-        pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0]
-    },
-    ctrl8: {
-        number: 7,
-        mode: 0,
-        pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0]
-    },
+//     ctrl3: {
+//         number: 2,
+//         mode: 0,
+//         pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0]
+//     },
+//     ctrl4: {
+//         number: 3,
+//         mode: 0,
+//         pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0]
+//     },
+//     ctrl5: {
+//         number: 4,
+//         mode: 0,
+//         pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0]
+//     },
+//     ctrl6: {
+//         number: 5,
+//         mode: 0,
+//         pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0]
+//     },
+//     ctrl7: {
+//         number: 6,
+//         mode: 0,
+//         pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0]
+//     },
+//     ctrl8: {
+//         number: 7,
+//         mode: 0,
+//         pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0]
+//     },
 
-    exp1A: [
-    {
-        id: 0,
-        paramNumber: 0,
-        module: ExpModule.VOL,
-        moduleParamID: 0,
-        moduleParamNumberMin: 0,
-        moduleParamNumberMax: 100
-    },
-    {
-        id: 0,
-        paramNumber: 1,
-        module: ExpModule.OFF,
-        moduleParamID: 0,
-        moduleParamNumberMin: 0,
-        moduleParamNumberMax: 100, 
-    },
-    {
-        id: 0,
-        paramNumber: 2,
-        module: ExpModule.OFF,
-        moduleParamID: 0,
-        moduleParamNumberMin: 0,
-        moduleParamNumberMax: 100
-    },
-],
-    exp1B: [
-    {
-        id: 0,
-        paramNumber: 0,
-        module: ExpModule.WAH,
-        moduleParamID: 3,
-        moduleParamNumberMin: 0,
-        moduleParamNumberMax: 100
-    },
-    {
-        id: 0,
-        paramNumber: 1,
-        module: ExpModule.OFF,
-        moduleParamID: 0,
-        moduleParamNumberMin: 0,
-        moduleParamNumberMax: 100, 
-    },
-    {
-        id: 0,
-        paramNumber: 2,
-        module: ExpModule.OFF,
-        moduleParamID: 0,
-        moduleParamNumberMin: 0,
-        moduleParamNumberMax: 100
-    },
-    ],
-    exp2: [
-    {
-        id: 0,
-        paramNumber: 0,
-        module: ExpModule.OFF,
-        moduleParamID: 0,
-        moduleParamNumberMin: 0,
-        moduleParamNumberMax: 100
-    },
-    {
-        id: 0,
-        paramNumber: 1,
-        module: ExpModule.OFF,
-        moduleParamID: 0,
-        moduleParamNumberMin: 0,
-        moduleParamNumberMax: 100, 
-    },
-    {
-        id: 0,
-        paramNumber: 2,
-        module: ExpModule.OFF,
-        moduleParamID: 0,
-        moduleParamNumberMin: 0,
-        moduleParamNumberMax: 100
-    },
-    ],
-    effects: [
-        // COMP
-        {
-            chainID: 0,
-            id: [0,0,0,0,0,0,0,0],
-            state: false,
-            params: [20, 50]
-        }
-    ]
-}
+//     exp1A: [
+//     {
+//         id: 0,
+//         paramNumber: 0,
+//         module: ExpModule.VOL,
+//         moduleParamID: 0,
+//         moduleParamNumberMin: 0,
+//         moduleParamNumberMax: 100
+//     },
+//     {
+//         id: 0,
+//         paramNumber: 1,
+//         module: ExpModule.OFF,
+//         moduleParamID: 0,
+//         moduleParamNumberMin: 0,
+//         moduleParamNumberMax: 100, 
+//     },
+//     {
+//         id: 0,
+//         paramNumber: 2,
+//         module: ExpModule.OFF,
+//         moduleParamID: 0,
+//         moduleParamNumberMin: 0,
+//         moduleParamNumberMax: 100
+//     },
+// ],
+//     exp1B: [
+//     {
+//         id: 0,
+//         paramNumber: 0,
+//         module: ExpModule.WAH,
+//         moduleParamID: 3,
+//         moduleParamNumberMin: 0,
+//         moduleParamNumberMax: 100
+//     },
+//     {
+//         id: 0,
+//         paramNumber: 1,
+//         module: ExpModule.OFF,
+//         moduleParamID: 0,
+//         moduleParamNumberMin: 0,
+//         moduleParamNumberMax: 100, 
+//     },
+//     {
+//         id: 0,
+//         paramNumber: 2,
+//         module: ExpModule.OFF,
+//         moduleParamID: 0,
+//         moduleParamNumberMin: 0,
+//         moduleParamNumberMax: 100
+//     },
+//     ],
+//     exp2: [
+//     {
+//         id: 0,
+//         paramNumber: 0,
+//         module: ExpModule.OFF,
+//         moduleParamID: 0,
+//         moduleParamNumberMin: 0,
+//         moduleParamNumberMax: 100
+//     },
+//     {
+//         id: 0,
+//         paramNumber: 1,
+//         module: ExpModule.OFF,
+//         moduleParamID: 0,
+//         moduleParamNumberMin: 0,
+//         moduleParamNumberMax: 100, 
+//     },
+//     {
+//         id: 0,
+//         paramNumber: 2,
+//         module: ExpModule.OFF,
+//         moduleParamID: 0,
+//         moduleParamNumberMin: 0,
+//         moduleParamNumberMax: 100
+//     },
+//     ],
+//     effects: [
+//         // COMP
+//         {
+//             chainID: 0,
+//             ID: [0,0,0,0,0,0,0,0],
+//             state: false,
+//             paramValues: [20, 50]
+//         }
+//     ]
+// }

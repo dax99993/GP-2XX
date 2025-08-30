@@ -6,9 +6,9 @@ import { IKnobSettings } from "./IKnobSettings";
 
 export interface ISyncEffectInfo {
     chainID: number;
-    id: number[];
+    ID: number;
     state: boolean; //or should it be a number?
-    params: number[]; //15 elements not all used
+    paramValues: number[]; //15 elements not all used
 }
 
 export interface ISyncPresetInfo {

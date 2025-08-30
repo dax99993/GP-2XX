@@ -152,7 +152,7 @@ export class GP200DeviceActions implements IDeviceActions {
 
         switch (param) {
             case 0:
-                const volume = this.nibblesToByte(message[0x19], message[0x1a]);
+                const volume = this.decodeNibblesTo16BitTwosComplement([...message.slice(0x19, 0x1c + 1)]);
                 // //Update Model
                 this.gp200.currentPreset?.changeVolume(volume);
                 break
@@ -204,16 +204,16 @@ export class GP200DeviceActions implements IDeviceActions {
         const paramMinEncoded = [...message.slice(0x25, 0x2c + 1)];
 
         // Get parameter type for correct decoding format
-        let paramType = "";
-        if (expModule == ExpModule.OFF) {
-            paramType = "int";
-        } else {
-            this.gp200.currentPreset.effects[expModule].parameters.forEach(p => {
-                if (p.id === moduleParamID) {
-                    paramType = p.numeric_type[0];
-                }
-            });
-        }
+        let paramType = "float";
+        // if (expModule == ExpModule.OFF) {
+        //     paramType = "int";
+        // } else {
+        //     this.gp200.currentPreset.effects[expModule].parameters.forEach(p => {
+        //         if (p.id === moduleParamID) {
+        //             paramType = p.numeric_type[0];
+        //         }
+        //     });
+        // }
         const paramMax = this.decodeParamValue(paramMaxEncoded, paramType);
         const paramMin = this.decodeParamValue(paramMinEncoded, paramType);
 
@@ -267,9 +267,10 @@ export class GP200DeviceActions implements IDeviceActions {
         // 38 bytes 
         // byte 0x16 is the effect ID (0-10) ; bytes 0x1d to 0x24 are the effect ID
         const pedalID = message[0x16];
-        const effectID: number[] = Array.from(message.slice(0x1d, 0x24 + 1));
-        console.log("MIDI CHANGE EFFECT ID", effectID);
+        const effectIDNibbles: number[] = Array.from(message.slice(0x1d, 0x24 + 1));
+        console.log("MIDI CHANGE EFFECT ID", effectIDNibbles);
 
+        const effectID = this.decodeEffectIDNibbles(effectIDNibbles)
         // Update model
         this.gp200.changeEffectByID(effectID, pedalID);
     }
@@ -287,27 +288,26 @@ export class GP200DeviceActions implements IDeviceActions {
     }
 
     ChangeEffectParamValue(message: Uint8Array) {
+        if (!this.gp200.currentPreset) {return;}
+
         // byte 0x16 contains the effect chain id (0 to 10)
         // byte 0x18 containes parameter id,
         // bytes 0x25 to 0x2c contains the encoded value
-        const baseSysEx = message;
-        const effectChainID = baseSysEx[0x16];
-        const paramId = baseSysEx[0x18];
+        const effectChainID = message[0x16];
+        const paramId = message[0x18];
 
         // get encoded value bytes
-        //const encoded = baseSysEx.slice(0x25, 0x2c + 1) as number[];
-        const encoded : number[] = Array.from(baseSysEx.slice(0x25, 0x2c + 1));
+        const encoded : number[] = Array.from(message.slice(0x25, 0x2c + 1));
         
         // Get type of encoded values
-        let paramType = "";
-        if (!this.gp200.currentPreset) {return;}
+        let paramType = "float";
 
-        this.gp200.currentPreset.effects[effectChainID].parameters.forEach(p => {
-                if (p.id === paramId) {
-                    //console.log("Match Effect", effectChainID, p.name);
-                    paramType = p.numeric_type[0];
-                }
-        });
+        // this.gp200.currentPreset.effects[effectChainID].parameters.forEach(p => {
+        //         if (p.id === paramId) {
+        //             //console.log("Match Effect", effectChainID, p.name);
+        //             paramType = p.numeric_type[0];
+        //         }
+        // });
 
         const decodedValue = this.decodeParamValue(encoded, paramType);
 
@@ -347,7 +347,8 @@ export class GP200DeviceActions implements IDeviceActions {
 
         const effectChainID = msg[0x09]
         const effectState = msg[0x0b] !== 0;
-        const effectID = msg.slice(0x10, 0x17 + 1);
+        const effectIDNibbles = msg.slice(0x10, 0x17 + 1);
+        const effectID = this.decodeEffectIDNibbles(effectIDNibbles);
         let parameterValues = [];
         for(let i = 0x18; i < msg.length; i=i+8) {
             const m = msg.slice(i, i+8);
@@ -361,9 +362,9 @@ export class GP200DeviceActions implements IDeviceActions {
 
         return {
             chainID: effectChainID,
-            id: effectID,
+            ID: effectID,
             state: effectState,
-            params: parameterValues
+            paramValues: parameterValues
         }
     }
 
@@ -709,6 +710,25 @@ export class GP200DeviceActions implements IDeviceActions {
         return dataView.getFloat32(0, true); // 0 is the offset
     }
 
+    uint8BytesToUint32(bytes: number[]): number {
+        // 'float32Bytes' should be a Uint8Array containing the 4 bytes of Float32 representation
+        const uint32Bytes = new Uint8Array(bytes);
+        //console.log("Decoded float bytes", float32Bytes);
+
+        // 1. Create an ArrayBuffer
+        const buffer = new ArrayBuffer(4);
+
+        // 2. Create a Uint8Array view to populate the buffer
+        const byteView = new Uint8Array(buffer);
+        byteView.set(uint32Bytes); // Copy the bytes into the buffer
+
+        // 3. Create a DataView
+        const dataView = new DataView(buffer);
+
+        // 4. Use getFloat32() to read the number (assuming little-endian)
+        return dataView.getUint32(0, true); // 0 is the offset
+    }
+
     uint8BytesToInt16TwosComplement(bytes: number[]): number {
         //Order is in little endian
         const lowByte = bytes[0];
@@ -722,6 +742,13 @@ export class GP200DeviceActions implements IDeviceActions {
             value = (Math.pow(2, 16) - value) * -1;
         }
         return value;
+    }
+
+    decodeEffectIDNibbles(nibbles: number[]): number {
+        // Ensure the number is within the 16-bit signed integer range
+        const bytes = this.nibbleArrayToByteArray(nibbles);
+
+        return this.uint8BytesToUint32(bytes);
     }
 
     decodeParamValueFloat(encoded: number[]) {
