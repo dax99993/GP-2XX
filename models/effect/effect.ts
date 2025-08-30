@@ -1,6 +1,6 @@
 import { DefaultEffectsInfo } from "@/constants/DefaultEffects";
 import { makeAutoObservable } from "mobx";
-import { DeserializeParam, IParameter } from "../parameter/IParameter";
+import { DeserializeParam, IParameter, ParamType } from "../parameter/IParameter";
 import { Knob } from "../parameter/Knob";
 import { Switch } from "../parameter/Switch";
 import { ISyncEffectInfo } from "../preset/ISyncPresetInfo";
@@ -53,6 +53,8 @@ export class EffectModel {
     // false -> turn off; true -> turn on
     state: boolean;
     parameters: IParameter[]
+    activeBindParams: number[];
+    hasBindParameters: boolean;
 
 
     constructor(name: string, ID: number, description: string, effect_type: EffectType, state: boolean, parameters: IParameter[]) {
@@ -63,6 +65,17 @@ export class EffectModel {
         this.type = effect_type;
         this.state = state;
         this.parameters = parameters;
+        this.activeBindParams = [];
+
+        // Set if bind has parameters
+        this.hasBindParameters = false;
+        this.parameters.forEach(p => {
+            if (p instanceof Knob) {
+                if (p.bind !== null) {
+                    this.hasBindParameters = true;
+                }
+            }
+        })
 
         makeAutoObservable(this);
     }
@@ -75,37 +88,63 @@ export class EffectModel {
         this.state = state;
     }
 
-    // setParameterValue(parameter_name: string, new_value: number) {
-    //     this.parameters.forEach( parameter => {
-    //         if (parameter.name === parameter_name) {
-    //             parameter.setValue(new_value);
-    //         }
-    //     } )
+    get hasActiveBindParameter() {
+        return this.activeBindParams.length !== 0;
+    }
+
 
     setParameterValue(parameterID: number, value: number) {
-        const p = this.parameters.filter(p => p.ID === parameterID);
+        // const p = this.parameters.find(p => p.ID === parameterID);
+        const params = this.parameters.filter(p => p.ID === parameterID);
 
-        if (p.length == 0) {
+        // Get the correct param
+        let p: IParameter;
+        if (params.length == 0) {
             throw new Error(`There is no parameter in effect ${this.name} with ID ${parameterID}`);
+        } else if (params.length == 1) {
+            p = params[0];
+        } else if (params.length == 2) {
+            // Get the currently use param (combox or knob)
+            const combox_index = params.findIndex(p => p.type === ParamType.Combox);
+            if (combox_index === -1) {
+                throw new Error(`There should be one Combox parameter if there are 2 parameters in effect ${this.name} with ID ${parameterID}`);
+            }
+
+            if (this.activeBindParams.includes(parameterID)) {
+                p = params[combox_index]
+            } else {
+                p = params[1 - combox_index];
+            }
+        } else {
+            throw new Error(`There should not be more than 2 parameters in effect ${this.name} with ID ${parameterID}`);
         }
 
-        p[0].setValue(value);
-        console.log("setting param", p[0].name, "value to", value);
 
-        // check for double parameters
-        if (p[0] instanceof Switch && value != 0) {
-            const bind_index = p[0].bind;
+        // check bind parameters and activate them
+        if (p instanceof Switch) {
+            const bind_index = p.bind;
 
             //console.log("change parameter = ", other_param_name);
-            if (bind_index != null) {
-                const q = this.parameters.filter(p => p.index === bind_index);
-                if (q[0] instanceof Knob) {
-                    // const w = q[0] as DoubleParameterModel;
-                    // w.activeSecondRange(value != 0);
-                    console.log("Activate combox instead of Knob")
+            if (bind_index != null && value !== 0) {
+                // Add bind index to active bind 
+                if (!this.activeBindParams.includes(bind_index)) {
+                    this.activeBindParams.push(bind_index);
                 }
+                // Reset param
+                const q = this.parameters.find(p => p.ID === bind_index && p.type === ParamType.Combox)
+                q?.reset;
+            } else if (bind_index != null && value == 0) {
+                // remove bind from active bind
+                this.activeBindParams = this.activeBindParams.filter(bind => bind !== bind_index);
+                // Reset param
+                const q = this.parameters.find(p => p.ID === bind_index && p.type === ParamType.Knob)
+                q?.reset();
             }
         }
+
+        // Set new value
+        p.setValue(value);
+        console.log("setting param", p.name, "value to", value);
     }
 
 

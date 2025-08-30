@@ -37,6 +37,10 @@ export class Combox implements ICombox, IParameter {
         makeAutoObservable(this);
     }
 
+    reset() {
+        this.currentValue = this.default
+    }
+
     setValue(value: number): number {
         const v = this.clampValue(value);
         this.currentValue = v;

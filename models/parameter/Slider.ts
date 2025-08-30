@@ -12,7 +12,6 @@ export class Slider implements ISlider, IParameter {
     max: number;
     step: number;
     type: ParamType;
-    suffix: string;
 
     currentValue: number;
 
@@ -25,12 +24,15 @@ export class Slider implements ISlider, IParameter {
         this.max= islider.max;
         this.step = islider.step;
         this.type = islider.type;
-        this.suffix = islider.suffix;
         
         // Initialize to default value
         this.currentValue = this.default;
 
         makeAutoObservable(this);
+    }
+
+    reset() {
+        this.currentValue = this.default
     }
 
     setValue(value: number): number {
@@ -71,7 +73,7 @@ export class Slider implements ISlider, IParameter {
     }
 
     getMinStringValue(): string {
-        return `${this.min} ${this.suffix}`;
+        return this.min.toString();
     }
 
     getMaxValue(): number {
@@ -79,6 +81,6 @@ export class Slider implements ISlider, IParameter {
     }
 
     getMaxStringValue(): string {
-        return `${this.max} ${this.suffix}`;
+        return this.max.toString();
     }
 }

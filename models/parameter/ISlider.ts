@@ -12,6 +12,4 @@ export interface ISlider {
 
     // Fixed in 1
     type: ParamType,
-    // Should always be Hz
-    suffix: string,
 }

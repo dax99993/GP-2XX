@@ -26,28 +26,32 @@ function EffectEdit() {
                 scrollEnabled={isScrollingEnabled}
             >
                 { store.gp200.currentEffect && store.gp200.currentEffect.parameters.map(p => {
-                    if (p.type === ParamType.Knob || p.type === ParamType.Slider) {
+                    if (p.type === ParamType.Knob && !store.gp200.currentEffect?.activeBindParams.includes(p.ID)) {
                         return <NumericParameter
                             key={p.name}
                             param={p}
                         />
-                    } else if (p.type === ParamType.Combox ) {
-                        return <SelectParameter
+                    } else if (p.type === ParamType.Slider) {
+                        return <NumericParameter
                             key={p.name}
-                            param={p as Combox}
+                            param={p}
                         />
+                    } else if(p.type === ParamType.Combox) {
+                        if (
+                            (!store.gp200.currentEffect?.hasBindParameters) ||
+                            (store.gp200.currentEffect?.hasBindParameters && store.gp200.currentEffect?.activeBindParams.includes(p.ID))
+                        ) {
+                            return <SelectParameter
+                                key={p.name}
+                                param={p as Combox}
+                            />
+                        }
                     } else if (p.type === ParamType.Switch) {
                         return <SwitchParameter
                             key={p.name}
                             param={p as SwitchParam}
                         />
                     }
-                    // } else {
-                    //     return <DoubleParameter
-                    //         key={p.name}
-                    //         param={p as DoubleParameterModel} 
-                    //     />
-                    // }
                 }) 
                 }
             </ScrollView>

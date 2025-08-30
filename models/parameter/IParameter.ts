@@ -31,6 +31,7 @@ export interface IParameter {
 
 
     // General methods
+    reset(): void;
     setValue(value: number): number;
     getValue(): number;
     getCurrentValueAsString(): string;
