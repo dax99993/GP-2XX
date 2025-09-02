@@ -72,9 +72,9 @@ function EffectChain() {
   const {width, height} = Dimensions.get("window");
   console.log("Width", width, "Height", height);
 
-  
-  const chainWidth = Math.min(height, width, 400);
-  const chainItemSize = chainWidth / 8;
+  const MAX_WIDTH = 400;
+  const chainWidth = isLandscape ? Math.min(width / 2, MAX_WIDTH) : Math.min(width, MAX_WIDTH);
+  const chainItemSize = chainWidth / 9;
   const chainRowGap = chainItemSize / 2;
   const chainColGap = chainItemSize / 2;
   const arrowSize = chainColGap;
@@ -83,9 +83,9 @@ function EffectChain() {
 
   const styles = StyleSheet.create({
     baseContainer: {
-      //maxWidth: isLandscape ? '50%' : '100%',
       justifyContent: 'flex-start',
-      //alignItems: 'center',
+      //justifyContent: 'center',
+      alignItems: 'center',
       //backgroundColor: 'lightgreen',
     },
     sortableContainer: {
@@ -114,7 +114,7 @@ function EffectChain() {
 
       return <Sortable.Handle mode={isFixed ? 'fixed' : 'draggable'}>
         {isFixed &&
-          <SettingsChainUnit size={chainItemSize}/>
+          <SettingsChainUnit size={chainItemSize * 1.2}/>
         }
         {!isFixed &&
           <EffectChainUnit chainID={item} size={chainItemSize}/>

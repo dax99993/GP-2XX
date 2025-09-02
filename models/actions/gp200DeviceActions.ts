@@ -1,6 +1,7 @@
 import { BaseSysExMsg, GetPresetInfo, SysExGPHeader } from "@/constants/SysExMsg";
 import { MIDIMessageEvent } from "@motiz88/react-native-midi";
 import { action, makeObservable, observable } from "mobx";
+import { EffectType } from "../effect/effect";
 import { GP200Model } from "../gp200";
 import { MidiDevice } from "../midiDevice";
 import { ICtrlSettings } from "../preset/ICtrlSettings";
@@ -293,21 +294,14 @@ export class GP200DeviceActions implements IDeviceActions {
         // byte 0x16 contains the effect chain id (0 to 10)
         // byte 0x18 containes parameter id,
         // bytes 0x25 to 0x2c contains the encoded value
-        const effectChainID = message[0x16];
+        const effectChainID = message[0x16] as EffectType;
         const paramId = message[0x18];
 
         // get encoded value bytes
         const encoded : number[] = Array.from(message.slice(0x25, 0x2c + 1));
         
         // Get type of encoded values
-        let paramType = "float";
-
-        // this.gp200.currentPreset.effects[effectChainID].parameters.forEach(p => {
-        //         if (p.id === paramId) {
-        //             //console.log("Match Effect", effectChainID, p.name);
-        //             paramType = p.numeric_type[0];
-        //         }
-        // });
+        const paramType = effectChainID === EffectType.MOD ? "float" : "float";
 
         const decodedValue = this.decodeParamValue(encoded, paramType);
 

@@ -19,19 +19,16 @@ function EditEffectTopBar() {
   return (
     <TopBar>
       <TopBar.leftItems>
-        <TopBarLeft/>
+        <GoHomeButton/>
       </TopBar.leftItems>
-      <TopBar.centerItems>
-        <TopBarCenter/>
-      </TopBar.centerItems>
       <TopBar.rightItems>
-        <TopBarRightMenu/>
+        <RightElements/>
       </TopBar.rightItems>
     </TopBar>
   );
 }
 
-function TopBarLeft() {
+function GoHomeButton() {
   const router = useRouter();
 
   const goHome = () => {
@@ -46,17 +43,14 @@ function TopBarLeft() {
     )
 }
 
-function TopBarCenter() {
-  return (
-    <TopBarPresetInfo/>
-  );
-}
 
-function TopBarRightMenu() {
+function RightElements() {
   const {isLandscape, isTablet} = useOrientation();
 
   return (
-    <ButtonGroup style={{ flexDirection: 'row', alignItems: 'center' }} space="sm">
+    <>
+    <PresetInfo/>
+    <ButtonGroup style={{ flexDirection: 'row', alignItems: 'center' }} space={isLandscape ? "sm" : "xs"}>
       { ((isLandscape  && !isTablet) || isTablet) &&
       <>
       <Button
@@ -160,13 +154,13 @@ function TopBarRightMenu() {
           </MenuItem>
         </Menu>
     </ButtonGroup>
+  </>
   );
-
 }
 
 
 
-const TopBarPresetInfo = observer(() => {
+const PresetInfo = observer(() => {
   //if (store.gp200.currentPreset == undefined) {return null};
 
   const router = useRouter();
@@ -183,7 +177,10 @@ const TopBarPresetInfo = observer(() => {
 
   return (
     <TouchableOpacity style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }} onPress={goChangePreset}>
-      <Center className='bg-secondary-300 px-2 rounded-md' style={{ minWidth: 90 }}>
+      {/* <VStack className='bg-secondary-300 mx-2 px-2 rounded-md' style={{ flex: 1, minWidth: 50, justifyContent: 'center' }}>
+        <Text numberOfLines={1} size="xl" bold={true}>{bankCode + ' ' + presetName}</Text>
+      </VStack> */}
+      <Center className='bg-secondary-300 mx-2 px-2 rounded-md' style={{ flex: 1, minWidth: 50 }}>
         <Text numberOfLines={1} size="xl" bold={true}>{bankCode}</Text>
         <Text numberOfLines={1} size="md">{presetName}</Text>
       </Center>

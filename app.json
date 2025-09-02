@@ -2,7 +2,7 @@
   "expo": {
     "name": "GP-2XX",
     "slug": "GP-2XX",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "gp2",

@@ -1,9 +1,9 @@
 import { Box } from "@/components/ui/box";
-import { Text } from "@/components/ui/text";
 import { Slider } from '@react-native-assets/slider';
 import { useMemo, useState } from "react";
 import { StyleSheet } from "react-native";
 import { Center } from "./ui/center";
+import { Text } from "./ui/text";
 
 type NumericSliderProps = {
     name: string;
@@ -37,6 +37,35 @@ function NumericSlider(props: NumericSliderProps) {
             <Center>
                 <Text size="lg" bold={true} style={styles.name}>{props.name}</Text>
                 <Text size="2xl" bold={true}>{shownValue}</Text>
+                {/* <Input
+                    style={{width: 100, backgroundColor: 'pink'}}
+                    variant="underlined"
+                    size="xl"
+                    isDisabled={false}
+                    isInvalid={false}
+                    isReadOnly={false}
+                >
+                    <InputField
+                        style={{fontVariant: 'bold'}}
+                        placeholder={shownValue}
+                        // value={value.toString()}
+                        value={shownValue}
+                        onChangeText={(s: string) => {
+                            let v = s == "" ? props.minValue.toString() : s;
+                            let n = parseFloat(v);
+                            if (Number.isNaN(n)) { return; }
+                            setValue(n);
+                            if (props.onSlidingComplete) props.onSlidingComplete(n);
+                        }}
+                    />
+                    </Input> */}
+                {/* <TextInput
+                    style={{ height: 40, borderColor: 'gray', borderWidth: 0 }}
+                    // onChangeText={newText => setText(newText)}
+                    value={shownValue}
+                    underlineColorAndroid={"transparent"}
+                    placeholder="..."
+                /> */}
             </Center>
             <Slider
                 style={styles.controlContainer}
@@ -70,10 +99,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-    },
-    name: {
-        position: 'absolute',
-        left: 15,
     },
     controlContainer: {
         marginTop: 10,

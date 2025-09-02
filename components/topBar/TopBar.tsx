@@ -8,7 +8,7 @@ type TopBarProps = {
 
 function TopBar({children}: TopBarProps) {
     return  (
-        <HStack style={styles.container} className="bg-secondary-0 px-3 py-1">
+        <HStack style={styles.container} className="bg-secondary-0 px-2 py-1">
             {children}
         </HStack>
     )

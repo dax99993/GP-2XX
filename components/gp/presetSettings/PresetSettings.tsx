@@ -6,12 +6,13 @@ import ExpsSettings from '@/components/gp/presetSettings/expSettings/ExpsSetting
 import FxLoopSettings from '@/components/gp/presetSettings/fxLoopSettings/FxLoopSettings';
 import GeneralSettings from '@/components/gp/presetSettings/generalSettings/GeneralSettings';
 import KnobsSettings from '@/components/gp/presetSettings/knobSettings/knobsSettings';
-import { Button, ButtonGroup, ButtonText } from '@/components/ui/button';
+import { Button, ButtonText } from '@/components/ui/button';
 import { Center } from '@/components/ui/center';
 import { Heading } from '@/components/ui/heading';
 import { VStack } from '@/components/ui/vstack';
 import { useScrolling } from '@/contexts/scroll-context';
 import useOrientation from '@/hooks/useOrientation';
+import { FlashList } from '@shopify/flash-list';
 import { useEffect, useRef, useState } from 'react';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 
@@ -21,48 +22,41 @@ export default function PresetSettings() {
   const { isScrollingEnabled, enableScrolling, disableScrolling} = useScrolling();
   const {isLandscape} = useOrientation();
   const [selectedSettings, setSelectedSettings] = useState(0);
-  const presetScrollButtonsRef = useRef<ScrollView>(null);
+  const listRef = useRef<FlashList<any>>(null);
 
   useEffect(() => {
-    if (selectedSettings >= 2) {
-      presetScrollButtonsRef.current?.scrollToEnd();
-      //presetScrollButtonsRef.current?.scrollTo({y: 30 * 2, animated: true});
-    } else {
-      presetScrollButtonsRef.current?.scrollTo({y: 0 , animated: true});
-    }
+    listRef.current?.scrollToIndex({index: selectedSettings, animated: true, viewPosition: 0.5 });
   }, [selectedSettings, isLandscape])
 
-  //const buttonTitles = isTablet ?  ['General', 'Knobs', 'Ctrls', 'EXPs'] : ['General', 'Knobs', 'Ctrls', 'EXPs', 'FxLoop'];
-  const buttonTitles = ['General', 'Knobs', 'Ctrls', 'EXPs', 'FxLoop'];
+  const buttonTitles = ['General', 'Knobs', 'CTRLs', 'EXPs', 'FxLoop'];
 
   return (
-    <VStack space='md' className='bg-secondary-0' style={{flex:1}}>
-
+    <VStack space='md' className='bg-secondary-0' style={{flex: 1}}>
         <GestureHandlerRootView>
             <ScrollView scrollEnabled={isScrollingEnabled}>
                 <VStack space='md' className='bg-secondary-0'>
-                  <BoundBox style={{ flex: 1, }}>
+                  <BoundBox style={{ flex: 1 }}>
                     <VStack space='md'>
                       <Center>
                         <Heading>Preset Settings</Heading>
                       </Center>
-                      <Center>
-                        <ScrollView
-                          ref={presetScrollButtonsRef}
-                          horizontal={true}
-                          style={{ paddingBottom: 10 }}
-                        >
-                          <ButtonGroup space="md" flexDirection="row" style={{ flex: 1, alignItems: 'center', justifyContent: 'space-around' }}>
-                            {
-                              buttonTitles.map((title, index) => (
-                                <Button key={index} size="md" action="primary" variant={selectedSettings == index ? "solid" : "outline"} onPress={() => setSelectedSettings(index)}>
-                                  <ButtonText>{title}</ButtonText>
-                                </Button>
-                              ))
-                            }
-                          </ButtonGroup>
-                        </ScrollView>
-                      </Center>
+                      <FlashList
+                        ref={listRef}
+                        horizontal={true}
+                        data={buttonTitles}
+                        estimatedItemSize={75}
+                        renderItem={(info) => (
+                          <Button
+                            key={info.index}
+                            className='mx-1'
+                            size="md"
+                            action="primary"
+                            variant={selectedSettings == info.index ? "solid" : "outline"}
+                            onPress={() => setSelectedSettings(info.index)}>
+                              <ButtonText>{info.item}</ButtonText>
+                          </Button>
+                        )}
+                      />
                     </VStack>
                   </BoundBox>
                 {selectedSettings == 0 &&

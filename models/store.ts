@@ -71,7 +71,7 @@ class Store {
             // clearInterval when device is disconnected! otherwise infine loop occurs.
             const intervalId = setInterval(() => {
                 if (!store.gp200.isSynced && !this.gp200.syncing && tries < maxTriesPerPreset) {
-                    console.log(`Executing ask preset ${this.gp200.syncedPresets}`);
+                    console.log(`Executing ask preset ${this.gp200.syncedPresets} try:  ${tries}`);
                     // Your code to execute in each iteration
                     if (syncedPresets != this.gp200.syncedPresets) {
                         console.log("Preset", syncedPresets, "done");

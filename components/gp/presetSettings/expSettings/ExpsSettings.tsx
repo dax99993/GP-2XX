@@ -24,7 +24,7 @@ function ExpsSettings() {
                 <Center>
                     <Heading>EXP Settings</Heading>
                 </Center>
-                <ButtonGroup space="md" flexDirection="row" style={{ alignItems: 'center', justifyContent: 'space-around' }}>
+                <ButtonGroup space="md" flexDirection="row" style={{ alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap'}}>
                     <Button action="primary" variant={selectedExp == 0 ? "solid" : "outline"} onPress={() => changeSelectedExp(0)}>
                         <ButtonText>EXP 1A</ButtonText>
                     </Button>
@@ -36,7 +36,7 @@ function ExpsSettings() {
                     </Button>
                 </ButtonGroup>
                 <Divider/>
-                <ButtonGroup space="md" flexDirection="row" style={{ alignItems: 'center', justifyContent: 'space-around' }}>
+                <ButtonGroup space="md" flexDirection="row" style={{ alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap' }}>
                     <Button action="primary" variant={selectedParam == 0 ? "solid" : "outline"} onPress={() => changeSelectedParam(0)}>
                         <ButtonText>Param 1</ButtonText>
                     </Button>

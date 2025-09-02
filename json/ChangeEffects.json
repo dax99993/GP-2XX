@@ -121,7 +121,7 @@
       "description": "Vintage tape saturation simulater providing analog warmth and natural distortion."
     },
     {
-      "name": "hammy",
+      "name": "Hammy",
       "index": 18,
       "ID": 16777289,
       "description": "Based on classic Whammy\u00ae* monophonic pitch shifter pedal. Assign the Position parameter to expression pedal, then move the pedal to get the effect."
@@ -219,7 +219,7 @@
       "description": "Wah designed for basses"
     },
     {
-      "name": "hammy",
+      "name": "Hammy",
       "index": 5,
       "ID": 16777289,
       "description": "Based on classic Whammy\u00ae* monophonic pitch shifter pedal. Assign the Position parameter to expression pedal, then move the pedal to get the effect."
@@ -449,31 +449,31 @@
       "description": "Based on the famous Aguilar\u00ae Tone Hammer* Front effect, with two sounds Color, three-stage equalization and mid-frequency sweep frequency regulation, high timbre regulation, is a good shape for timbre."
     },
     {
-      "name": "DST Empty 1",
+      "name": "SnapTone",
       "index": 37,
       "ID": 251658245,
       "description": "For importing and using the.nam file."
     },
     {
-      "name": "DST Empty 2",
+      "name": "SnapTone",
       "index": 38,
       "ID": 251658246,
       "description": "For importing and using the.nam file."
     },
     {
-      "name": "DST Empty 3",
+      "name": "SnapTone",
       "index": 39,
       "ID": 251658247,
       "description": "For importing and using the.nam file."
     },
     {
-      "name": "DST Empty 4",
+      "name": "SnapTone",
       "index": 40,
       "ID": 251658248,
       "description": "For importing and using the.nam file."
     },
     {
-      "name": "DST Empty 5",
+      "name": "SnapTone",
       "index": 41,
       "ID": 251658249,
       "description": "For importing and using the.nam file."
@@ -661,7 +661,7 @@
       "description": "Based on Mesa/Boogie\u00ae Mark II C+\u2122 (Lead channel) with 2 different onboard switch combinations. In the 1980s, Mark II C + *established the position of Mesa / Boogie\u00ae metal style, and its voice appeared in the albums of Metallica and Dream Theater, and become a classic of American Higain."
     },
     {
-      "name": "Mess 2C+ 3",
+      "name": "Mess2C+ 3",
       "index": 30,
       "ID": 117440571,
       "description": "Based on Mesa/Boogie\u00ae Mark II C+\u2122 (Lead channel) with 2 different onboard switch combinations. In the 1980s, Mark II C + *established the position of Mesa / Boogie\u00ae metal style, and its voice appeared in the albums of Metallica and Dream Theater, and become a classic of American Higain."
@@ -907,31 +907,31 @@
       "description": "Based on AER\u00ae Colourizer 2* acoustic preamp. Originated in Germany, it is a preamp designed for acoustic guitar sound reinforcement. It will bring richer dynamics and overtones to your acoustic guitar, making the sound more three-dimensional and vivid."
     },
     {
-      "name": "AMP Empty 1",
+      "name": "SnapTone",
       "index": 71,
       "ID": 251658240,
       "description": "For importing and using the.nam file."
     },
     {
-      "name": "AMP Empty 2",
+      "name": "SnapTone",
       "index": 72,
       "ID": 251658241,
       "description": "For importing and using the.nam file."
     },
     {
-      "name": "AMP Empty 3",
+      "name": "SnapTone",
       "index": 73,
       "ID": 251658242,
       "description": "For importing and using the.nam file."
     },
     {
-      "name": "AMP Empty 4",
+      "name": "SnapTone",
       "index": 74,
       "ID": 251658243,
       "description": "For importing and using the.nam file."
     },
     {
-      "name": "AMP Empty 5",
+      "name": "SnapTone",
       "index": 75,
       "ID": 251658244,
       "description": "For importing and using the.nam file."
@@ -959,361 +959,361 @@
   ],
   "CAB": [
     {
-      "name": "SUP ZEP 1X6",
+      "name": "SUP ZEP",
       "index": 0,
       "ID": 167772160,
       "description": "Supro\u00ae* 1x6\" cabinet with oval speaker"
     },
     {
-      "name": "TWD CP 1X8",
+      "name": "TWD CP",
       "index": 1,
       "ID": 167772161,
       "description": "Vintage Fender\u00ae Champ* 1x8\" cabinet"
     },
     {
-      "name": "TWD PRC 1X10",
+      "name": "TWD PRC",
       "index": 2,
       "ID": 167772162,
       "description": "Vintage Fender\u00ae Princeton* 1x10\" cabinet"
     },
     {
-      "name": "DARK LUX 1X12",
+      "name": "DARK LUX",
       "index": 3,
       "ID": 167772163,
       "description": "Vintage Fender\u00ae Deluxe* 1x12\" cabinet"
     },
     {
-      "name": "DARK VIT 1X12",
+      "name": "DARK VIT",
       "index": 4,
       "ID": 167772164,
       "description": "Vintage Fender\u00ae Vibrolux* 1x12\" cabinet"
     },
     {
-      "name": "ROUT 1X12",
+      "name": "ROUT",
       "index": 5,
       "ID": 167772165,
       "description": "Carr\u00ae Rambler* 1x12\" cabinet"
     },
     {
-      "name": "BogSV 1X12",
+      "name": "BogSV",
       "index": 6,
       "ID": 167772166,
       "description": "Bogner\u00ae Shiva* 1x12\" cabinet"
     },
     {
-      "name": "Bad-KT 1X12",
+      "name": "Bad-KT",
       "index": 7,
       "ID": 167772167,
       "description": "Black Cat\u00ae Hot Cat* 1x12\" cabinet"
     },
     {
-      "name": "FOXY 1X12",
+      "name": "FOXY 1",
       "index": 8,
       "ID": 167772168,
       "description": "Vintage VOX\u00ae AC15* 1x12\" cabinet"
     },
     {
-      "name": "D STAR 1X12",
+      "name": "D STAR",
       "index": 9,
       "ID": 167772169,
       "description": "Mesa/Boogie\u00ae Lonestar* 1x12\" cabinet"
     },
     {
-      "name": "Match 2X12",
+      "name": "Match",
       "index": 10,
       "ID": 167772176,
       "description": "Matchless\u00ae Chieftain* 2x12\" cabinet"
     },
     {
-      "name": "TOM OPEN 1X12",
+      "name": "TOM OPEN",
       "index": 11,
       "ID": 167772170,
       "description": "Swart\u00ae Atomic Space* 1x12\" cabinet"
     },
     {
-      "name": "TWD LUX 1X12",
+      "name": "TWD LUX",
       "index": 12,
       "ID": 167772171,
       "description": "Fender\u00ae Tweed Deluxe* 1x12 cabinet"
     },
     {
-      "name": "US STO 1X12",
+      "name": "US STO",
       "index": 13,
       "ID": 167772172,
       "description": "1980's Mesa/Boogie\u00ae* 1x12\" cabinet"
     },
     {
-      "name": "ACE 1X12",
+      "name": "ACE",
       "index": 14,
       "ID": 167772173,
       "description": "Morgan\u00ae AC-20 Deluxe* 1x12 cabinet"
     },
     {
-      "name": "UK G12 1X12",
+      "name": "UK G12",
       "index": 15,
       "ID": 167772174,
       "description": "Marshall\u00ae* 1x12\" cabinet"
     },
     {
-      "name": "FOXY 2X12",
+      "name": "FOXY 2",
       "index": 16,
       "ID": 167772175,
       "description": "Vintage VOX\u00ae AC30* 2x12\" cabinet"
     },
     {
-      "name": "J-120 2X12",
+      "name": "J-120",
       "index": 17,
       "ID": 167772177,
       "description": "Legendary \"Jazz Chorus\" 2x12\" cabinet"
     },
     {
-      "name": "Dark Twin 2X12",
+      "name": "Dark Twin",
       "index": 18,
       "ID": 167772178,
       "description": "Vintage Fender\u00ae \u201965 Twin Reverb* 2x12\" cabinet"
     },
     {
-      "name": "US GRN 2X12",
+      "name": "UK GRN 1",
       "index": 19,
       "ID": 167772179,
       "description": "Marshall\u00ae 2550* 2x12\" cabinet"
     },
     {
-      "name": "TWD SUP 2X10",
+      "name": "TWD SUP",
       "index": 20,
       "ID": 167772180,
       "description": "A custom Fender\u00ae Tweed* 2x10\" cabinet"
     },
     {
-      "name": "BOUTI 2X12",
+      "name": "BOUTI",
       "index": 21,
       "ID": 167772181,
       "description": "A unique custom 2x12\" cabinet"
     },
     {
-      "name": "Bellman 212",
+      "name": "Bellman 1",
       "index": 22,
       "ID": 167772182,
       "description": "Vintgae Fender\u00ae \"Piggyback\" Bassman\u00ae* 2x12\" cabinet"
     },
     {
-      "name": "SUP 2X12",
+      "name": "SUP",
       "index": 23,
       "ID": 167772183,
       "description": "Supro\u00ae 1624T* 2x12 cabinet\""
     },
     {
-      "name": "MATT TWD 2X12",
+      "name": "MATT TWD",
       "index": 24,
       "ID": 167772184,
       "description": "Matchless\u00ae* 2x12\" cabinet"
     },
     {
-      "name": "SUP STAR 2X12",
+      "name": "SUP Star",
       "index": 25,
       "ID": 167772185,
       "description": "Mesa/Boogie\u00ae Lonestar* 2x12\" cabinet"
     },
     {
-      "name": "FREEMAN 2X12",
+      "name": "Freed",
       "index": 26,
       "ID": 167772186,
       "description": "Fryette\u00ae Deliverance* 2x12\" cabinet"
     },
     {
-      "name": "Dark CS 2X12",
+      "name": "Dark CS",
       "index": 27,
       "ID": 167772187,
       "description": "Custom modified Fender\u00ae* 2x12\" cabinet"
     },
     {
-      "name": "DB ROCK 2X12",
+      "name": "DB Rock",
       "index": 28,
       "ID": 167772188,
       "description": "Two-Rock\u00ae* 2x12\" cabinet"
     },
     {
-      "name": "BLUE SK 2X12",
+      "name": "Blue SK",
       "index": 29,
       "ID": 167772189,
       "description": "A custom 2x12\" cabinet with Celestion\u00ae Alnico Blue* speakers"
     },
     {
-      "name": "Bellman 410",
+      "name": "Bellman 2",
       "index": 30,
       "ID": 167772190,
       "description": "Fender\u00ae '59 Bassman\u00ae* 4x10\" cabinet"
     },
     {
-      "name": "UK LD 4X12",
+      "name": "UK LD",
       "index": 31,
       "ID": 167772191,
       "description": "Marshall\u00ae 1960AV* 4x12\" cabinet"
     },
     {
-      "name": "UK TD 2X12",
+      "name": "UK TD",
       "index": 32,
       "ID": 167772192,
       "description": "68 Marshall\u00ae Basketweave* 4x12\" cabinet"
     },
     {
-      "name": "UK MD 4X12",
+      "name": "UK MD",
       "index": 33,
       "ID": 167772193,
       "description": "Custom modified Marshall\u00ae* 4x12\" cabinet"
     },
     {
-      "name": "UK GRN 4X12",
+      "name": "UK GRN 2",
       "index": 34,
       "ID": 167772194,
       "description": "Vintage Marshall\u00ae 4x12\" cabinet with Celestion\u00ae Greenback\u00ae* speakers"
     },
     {
-      "name": "EV 4X12",
+      "name": "EV",
       "index": 35,
       "ID": 167772195,
       "description": "Peavey\u00ae 6505* 4x12\" cabinet"
     },
     {
-      "name": "Mess 4X12",
+      "name": "Mess",
       "index": 36,
       "ID": 167772196,
       "description": "Mesa/Boogie\u00ae Rectifier\u00ae* 4x12\" cabinet"
     },
     {
-      "name": "Bog 4X12",
+      "name": "Bog",
       "index": 37,
       "ID": 167772197,
       "description": "Bogner\u00ae* 4x12\" cabinet"
     },
     {
-      "name": "Eagle 4X12",
+      "name": "Eagle",
       "index": 38,
       "ID": 167772198,
       "description": "ENGL\u00ae* 4x12\" cabinet"
     },
     {
-      "name": "Uban 4X12",
+      "name": "Uban",
       "index": 39,
       "ID": 167772199,
       "description": "Bogner\u00ae Uberkab* 4x12\" cabinet"
     },
     {
-      "name": "SOLO 4X12",
+      "name": "Solo",
       "index": 40,
       "ID": 167772200,
       "description": "Soldano\u00ae* 4x12\" caninet"
     },
     {
-      "name": "Juice 4X12",
+      "name": "Juice",
       "index": 41,
       "ID": 167772201,
       "description": "Orange\u00ae PPC412* 4x12\" cabinet"
     },
     {
-      "name": "H-WAY 4X12",
+      "name": "H-WAY",
       "index": 42,
       "ID": 167772202,
       "description": "Vintage Hiwatt\u00ae SE4123* 4x12\" cabinet"
     },
     {
-      "name": "UK DARK 4X12",
+      "name": "UK Dark",
       "index": 43,
       "ID": 167772203,
       "description": "1968 Marshall\u00ae* 4x12\" cabinet"
     },
     {
-      "name": "WAY 4X12",
+      "name": "Way",
       "index": 44,
       "ID": 167772204,
       "description": "Vintage WEM\u00ae* 4x12\" cabinet"
     },
     {
-      "name": "DUMB 4X12",
+      "name": "Dumb",
       "index": 45,
       "ID": 167772205,
       "description": "Dumble\u00ae* 4x12\" cabinet"
     },
     {
-      "name": "DIZZ 4X12",
+      "name": "Dizz",
       "index": 46,
       "ID": 167772206,
       "description": "Diezel\u00ae* 4x12\" cabinet"
     },
     {
-      "name": "TRP 4X12",
+      "name": "TRP",
       "index": 47,
       "ID": 167772207,
       "description": "Hughes & Kettner\u00ae Triamp* 4x12\" cabinet"
     },
     {
-      "name": "UK 75 4X12",
+      "name": "UK 75",
       "index": 48,
       "ID": 167772208,
       "description": "Marshall\u00ae* 4x12\" cabinet with Celestion\u00ae G12T-75* speakers"
     },
     {
-      "name": "KING 4X12",
+      "name": "King",
       "index": 49,
       "ID": 167772209,
       "description": "Mesa/Boogie\u00ae Road King\u00ae* 4x12\" cabinet"
     },
     {
-      "name": "ADM 1X15",
+      "name": "ADM 1",
       "index": 50,
       "ID": 167772210,
       "description": "David Eden\u00ae* 1x15\" bass cabinet"
     },
     {
-      "name": "WORKMAN 1X15",
+      "name": "Workman 1",
       "index": 51,
       "ID": 167772211,
       "description": "SWR\u00ae* 1x15\" bass cabinet"
     },
     {
-      "name": "F-TOP 1X15",
+      "name": "F-TOP",
       "index": 52,
       "ID": 167772212,
       "description": "Ampeg\u00ae PF-115HE* 1x15\" bass cabinet"
     },
     {
-      "name": "US BASS 2X10",
+      "name": "US BASS",
       "index": 53,
       "ID": 167772213,
       "description": "Mesa/Boogie\u00ae* 2x10\" bass cabinet"
     },
     {
-      "name": "MATT 2X10",
+      "name": "MATT",
       "index": 54,
       "ID": 167772214,
       "description": "Mark Bass\u00ae* 2x10\" bass cabinet"
     },
     {
-      "name": "ADM 4X10",
+      "name": "ADM 2",
       "index": 55,
       "ID": 167772215,
       "description": "David Eden\u00ae* 4x10\" bass cabinet"
     },
     {
-      "name": "AMPG 4X10",
+      "name": "AMPG 1",
       "index": 56,
       "ID": 167772216,
       "description": "Ampeg\u00ae SVT-410HE* 4x10\" bass cabinet"
     },
     {
-      "name": "WORKMAN 4X10",
+      "name": "Workman 2",
       "index": 57,
       "ID": 167772217,
       "description": "SWR\u00ae Workingman's* 4x10\" bass cabinet"
     },
     {
-      "name": "HACK 4X12",
+      "name": "HACK",
       "index": 58,
       "ID": 167772218,
       "description": "Hartke\u00ae* 4x12\" bass cabinet"
     },
     {
-      "name": "AMPG 8X10",
+      "name": "AMPG 2",
       "index": 59,
       "ID": 167772219,
       "description": "Ampeg SVT-810E* 8x10\" bass cabinet"
@@ -1379,121 +1379,121 @@
       "description": "Simulates a double bass"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 70,
       "ID": 168820736,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 71,
       "ID": 168820737,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 72,
       "ID": 168820738,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 73,
       "ID": 168820739,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 74,
       "ID": 168820740,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 75,
       "ID": 168820741,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 76,
       "ID": 168820742,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 77,
       "ID": 168820743,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 78,
       "ID": 168820744,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 79,
       "ID": 168820745,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 80,
       "ID": 168820746,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 81,
       "ID": 168820747,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 82,
       "ID": 168820748,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 83,
       "ID": 168820749,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 84,
       "ID": 168820750,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 85,
       "ID": 168820751,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 86,
       "ID": 168820752,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 87,
       "ID": 168820753,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 88,
       "ID": 168820754,
       "description": "USER IR"
     },
     {
-      "name": "USER IR",
+      "name": "User IR",
       "index": 89,
       "ID": 168820755,
       "description": "USER IR"
@@ -1501,25 +1501,25 @@
   ],
   "EQ": [
     {
-      "name": "EQ 1",
+      "name": "Guitar EQ 1",
       "index": 0,
       "ID": 16777269,
       "description": "Equalizer designed for guitars"
     },
     {
-      "name": "EQ 3",
+      "name": "Guitar EQ 2",
       "index": 1,
       "ID": 16777270,
       "description": "Equalizer designed for guitars"
     },
     {
-      "name": "EQ 2",
+      "name": "Bass EQ 2",
       "index": 2,
       "ID": 16777274,
       "description": "Equalizer designed for basses"
     },
     {
-      "name": "EQ 6",
+      "name": "Bass EQ 1",
       "index": 3,
       "ID": 16777273,
       "description": "Equalizer designed for basses"
@@ -1531,7 +1531,7 @@
       "description": "10-band graphic EQ suitable for any instrument"
     },
     {
-      "name": "5-Band EQ",
+      "name": "Mess EQ",
       "index": 5,
       "ID": 16777276,
       "description": "Based on the 5-band EQ module on Mesa/Boogie\u00ae* amps"

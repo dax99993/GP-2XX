@@ -21,7 +21,7 @@ function KnobsSettings() {
                 <Center>
                     <Heading>Knob Settings</Heading>
                 </Center>
-                <ButtonGroup space="md" flexDirection="row" style={{alignItems: 'center', justifyContent: 'space-around'}}>
+                <ButtonGroup space="md" flexDirection="row" style={{alignItems: 'center', justifyContent: 'space-around', flexWrap: 'wrap'}}>
                     <Button action="primary" variant={selectedKnob == 0 ? "solid" : "outline"} onPress={() => changeSelectedKnob(0)}>
                         <ButtonText>Knob 1</ButtonText>
                     </Button>

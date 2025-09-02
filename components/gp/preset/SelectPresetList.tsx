@@ -1,13 +1,14 @@
+import SearchBar from "@/components/SearchBar";
 import { Box } from "@/components/ui/box";
 import { HStack } from "@/components/ui/hstack";
-import { Input, InputField } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { store } from "@/models/store";
+import { FlashList } from "@shopify/flash-list";
 import { useRouter } from "expo-router";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import { FlatList, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 
 interface IChangePreset {
     name: string,
@@ -37,72 +38,37 @@ function SelectPresetList() {
         }
     }
 
+
     return (
         <VStack style={{flex:1}} className="bg-secondary-0">
-            <FlatList
+            <SearchBar placeholder="Search preset" onChange={onSearchChange} />
+            <FlashList
                 data={filteredData}
-                renderItem={(item) => <SelectPresetListItem
-                    name={item.item.name} code={item.item.code}
-                    number={item.item.number} 
-                    //selected={item.item.name == store.gp200.currentPreset?.name}
-                />}
+                drawDistance={1500}
+                initialScrollIndex={store.gp200.currentPresetNumber}
+                estimatedItemSize={60}
                 keyExtractor={item => item.number.toString()}
-                ListHeaderComponent={
-                    <SearchBar placeholder="Search preset" onChange={onSearchChange}/>
+                renderItem={(item) => 
+                    <SelectPresetListItem
+                        name={item.item.name}
+                        code={item.item.code}
+                        number={item.item.number} 
+                        selected={item.item.number == store.gp200.currentPresetNumber}
+                    />
                 }
             />
         </VStack>
     );
 }
 
-// Search bar
-type SearchProps = {
-    placeholder: string;
-    onChange: (s: string) => void;
-}
 
-function SearchBar(props: SearchProps) {
-    const [query, setQuery] = useState("");
-
-    const onChangeText = (q: string) => {
-        console.log(q);
-        setQuery(q);
-
-        // Execute external callback
-        props.onChange(q);
-    };
-    
-    const handleClear = () => {
-        setQuery("");
-
-        // Execute external callback
-        props.onChange("");
-    }
-
-    return (
-        <Box className="bg-secondary-0 mx-5 my-5">
-            <Input style={{flex:1}} className="bg-secondary-300">
-                <InputField 
-                    type="text"
-                    value={query}
-                    onChangeText={onChangeText}
-                    placeholder={props.placeholder}
-                    autoCorrect={false}
-                    autoComplete="off"
-                    contextMenuHidden={true}
-                    spellCheck={false}
-                    />
-            </Input>
-        </Box>
-    )
-}
 
 // List item
 type ListItemProps = {
     name: string;
     number: number;
     code: string;
-    //selected: boolean
+    selected: boolean
 }
 
 const SelectPresetListItem = observer((props: ListItemProps) => {
@@ -110,35 +76,30 @@ const SelectPresetListItem = observer((props: ListItemProps) => {
     const router = useRouter();
 
     const onPress = () => {
-        //console.log("Selected ", props.name);
         // Go back to edit screen
         router.back();
         store.gpActions.ChangePreset(props.number);
     };
 
-    // const onButtonPress = () => {
-    //     console.log("Button pressed!");
-    // }
+    const onLongPress = () => {
+        console.log("Long pressed!");
+    }
 
-    const isSelected = store.gp200.currentPreset ?
-        props.name == store.gp200.currentPreset.name && props.number == store.gp200.currentPreset.number :
-        false;
 
     return (
-        <Box className="bg-secondary-0">
-            <Box className={`${isSelected ? "bg-info-300" : "bg-secondary-300"} mx-5 my-3 rounded-md`}>
-                <TouchableOpacity onPress={onPress}>
-                    <HStack className="px-3 py-3" style={{justifyContent: 'space-between', alignItems: 'center'}}>
-                        <VStack >
-                            <Text size="md" bold={true}>{props.code}</Text>
-                            <Text>{props.name}</Text>
-                        </VStack>
-                        {/* <Button onPress={onButtonPress} size="md" variant="outline" className={`${isSelected ? "bg-info-200" : "bg-secondary-200"} rounded-md`}>
-                            <ButtonText>!</ButtonText>
-                        </Button> */}
-                    </HStack>
-                </TouchableOpacity>
-            </Box>
+        <Box className={`${props.selected ? "bg-info-300" : "bg-secondary-300"} mx-1 mb-1`} >
+            <TouchableOpacity
+                onPress={onPress}
+                onLongPress={onLongPress}
+            >
+                <HStack className="px-2 py-2" style={{justifyContent: 'space-between', alignItems: 'center', }}>
+                    <VStack >
+                        <Text size="md" bold={true}>{props.code}</Text>
+                        <Text size="md">{props.name}</Text>
+                    </VStack>
+                    {/* Add buttons to do actions */}
+                </HStack>
+            </TouchableOpacity>
         </Box>
     );
 });

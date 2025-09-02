@@ -88,7 +88,10 @@
     "react-native-webview": "13.13.5",
     "rn-range-slider": "^2.2.2",
     "tailwindcss": "^3.4.17",
-    "undefined": "github:jamtools/react-native-midi#8e5b0798dc7333cd434421b514e521671b496c4e"
+    "undefined": "github:jamtools/react-native-midi#8e5b0798dc7333cd434421b514e521671b496c4e",
+    "@shopify/flash-list": "1.7.6",
+    "expo-file-system": "~18.1.11",
+    "expo-sharing": "~13.1.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
