@@ -8,7 +8,10 @@ import { MidiDevice } from "../midiDevice";
 import { ExpModule } from "../preset/IExpSettings";
 import { IPresetInfo } from "../preset/IPresetInfo";
 import { PresetModel } from "../preset/preset";
+import { decodePresetData } from "../preset/presetFile";
 import { IDeviceActions } from "./IActions";
+
+import { Buffer } from "buffer";
 
 function compareArrays(a: number[] | Uint8Array, b: number[] | Uint8Array) {
     // console.log("Sizes = ", a.length, b.length);
@@ -314,15 +317,6 @@ export class GP200DeviceActions implements IDeviceActions {
 
 
     GetPresetInfo(): IPresetInfo {
-        console.log("Processing preset info messages");
-        console.log(this.presetInfoMessages);
-
-    // ---------------------------------
-    // Obtain Information from Message1 (PresetName, PresetSettings)
-    // ---------------------------------
-        if (this.presetInfoMessages.length != 7) {
-            throw new Error("There are should be 7 preset Info messages to decode!");
-        }
 
         const msg1  = this.presetInfoMessages[0];
         const msg2  = this.presetInfoMessages[1];
@@ -332,203 +326,248 @@ export class GP200DeviceActions implements IDeviceActions {
         const msg6  = this.presetInfoMessages[5];
         const msg7  = this.presetInfoMessages[6];
 
-        // Preset number in bytes 0x19, 0x1a (hex digits)
-        const presetNumber : number = this.decoder.nibblesToByte(msg1[0x19], msg1[0x1a]);
-        // Preset number in bytes 0x25, 0x26 (hex digits)
+        // Combine message to form all the preset data
+        const presetDataNibbles = [
+            ...msg1.slice(0x25, msg1.length - 1),
+            ...msg2.slice(0x0d, msg2.length - 1),
+            ...msg3.slice(0x0d, msg3.length - 1),
+            ...msg4.slice(0x0d, msg4.length - 1),
+            ...msg5.slice(0x0d, msg5.length - 1),
+            ...msg6.slice(0x0d, msg6.length - 1),
+            ...msg7.slice(0x0d, msg7.length - 1),
+        ]
 
-        // BPM value in bytes 0x29 and 0x2a
-        const presetBpm: number = this.decoder.nibblesToByte(msg1[0x29], msg1[0x2a]);
-        // Patch / Preset Volume 0x2d and 0x2e
-        const presetVolume : number= this.nibblesToByte(msg1[0x2d], msg1[0x2e]);
-        // Patch / Preset Pan - encoded as 16bit twos complements split in nibbles, due to range only low byte is needed in bytes 0x33 and 0x34
-        const presetPan = this.decodePanValuePresetInfo(msg1[0x33], msg1[0x34]);
+        console.log("----------------------------------------------------------------------------\n\n");
+        //console.log("Preset Nibbles", presetDataNibbles.length, presetDataNibbles);
+        const presetData = this.decoder.nibbleArrayToByteArray(presetDataNibbles);
+        // This should have 1164 length as it does not contain the last 8 bytes as the .prst file does IDK why.
+        console.log("Preset DATA", presetData.length, presetData);
+        console.log("----------------------------------------------------------------------------\n\n");
 
-        // FX
-        // FX send level in bytes 0x39 and 0x3a
-        const fxSendLevel :number = this.nibblesToByte(msg1[0x39], msg1[0x3a]);
-        // FX send level in bytes 0x3d to 0x3e
-        const fxReturnLevel :number = this.nibblesToByte(msg1[0x3d], msg1[0x3e]);
-        // FX mode in bytes 0x42 (0 -> parallel ; 1 -> series)
-        const fxMode :number = msg1[0x42];
-
-        // Patch Name in bytes 0x45 to 0x64 (encoded in ascii characters split in hex digits)
-        const presetName = this.decodePresetName(Array.from(msg1.slice(0x45, 0x64 + 1)));
-        // Patch Description maybe??? bytes 0x65 to 0xd5
-        // IDK bytes 0xd4 to 0xd6
-        // IDK bytes 0xd7 to 0xda
-        // preset number in bytes 0xdd and 0xde
-
-        // FX loop IN position in byte 0xe2
-        const fxInPosition :number = msg1[0xe2];
-        // FX loop OUT position in byte 0xe4
-        const fxOutPosition :number = msg1[0xe4];
-        // Effect Chain order in bytes 0xe5 to 0xfa, encoded in two bytes, only low byte has meaningful data
-        const effectsChain: number[] = Array.from( msg1.slice(0xe5, 0xfa + 1).filter((_, index) => index % 2 !== 0) );
-
-    // Obtain effects info (messages 1 to message5)
-
-        // PRE 
-        const msgPre = [...msg1.slice(0xfd, 0x17e + 1), ...msg2.slice(0x0d, 0x1a +1)];
-        const msgWah = [...msg2.slice(0x1b, 0xaa +1)];
-        const msgDst = [...msg2.slice(0xab, 0x13a +1)];
-        const msgAmp = [...msg2.slice(0x13b, 0x17e + 1), ...msg3.slice(0x0d, 0x58 +1)];
-        const msgNr = [...msg3.slice(0x59, 0xe8 +1)];
-        const msgCab = [...msg3.slice(0xe9, 0x178 +1)];
-        const msgEq = [...msg3.slice(0x179, 0x17e + 1), ...msg4.slice(0x0d, 0x96 +1)];
-        const msgMod = [...msg4.slice(0x97, 0x126 +1)];
-        const msgDly = [...msg4.slice(0x127, 0x17e + 1), ...msg5.slice(0x0d, 0x44 +1)];
-        const msgRvb = [...msg5.slice(0x45, 0xd4 +1)];
-        const msgVol = [...msg5.slice(0xd5, 0x164 +1)];
-
-
-        const pre = this.decodeEffectInfo(msgPre);
-        const wah = this.decodeEffectInfo(msgWah);
-        const dst = this.decodeEffectInfo(msgDst);
-        const amp = this.decodeEffectInfo(msgAmp);
-        const nr = this.decodeEffectInfo(msgNr);
-        const cab = this.decodeEffectInfo(msgCab);
-        const eq = this.decodeEffectInfo(msgEq);
-        const mod = this.decodeEffectInfo(msgMod);
-        const dly = this.decodeEffectInfo(msgDly);
-        const rvb = this.decodeEffectInfo(msgRvb);
-        const vol = this.decodeEffectInfo(msgVol);
-
-
-        // LOGGING DATA
-        // console.log("PRESET INFO IN MESSAGE 1");
-        // console.log("Preset Number", presetNumber);
-        // console.log("BPM value", presetBpm);
-        // console.log("Preset Volume", presetVolume);
-        // console.log("Preset Pan", presetPan);
-
-        // console.log("FX send level", fxSendLevel);
-        // console.log("FX return level", fxReturnLevel);
-        // console.log("FX Mode", fxMode);
-
-        // console.log("Preset name", presetName);
-
-        // console.log("FX IN position", fxInPosition);
-        // console.log("FX Out position", fxOutPosition);
-
-        // console.log("Effect chain", effectsChain);
-
-
-        // ---------------------------------
-        // Obtain EXP assign info
-        // ---------------------------------
-
-        const msgExp1AParam1 = [...msg5.slice(0x165, 0x17e + 1), ...msg6.slice(0xd, 0x12 + 1)];
-        const msgExp1AParam2 = [...msg6.slice(0x13, 0x32 + 1)];
-        const msgExp1AParam3 = [...msg6.slice(0x33, 0x52 + 1)];
-
-        const msgExp1BParam1 = [...msg6.slice(0x53, 0x72 + 1)];
-        const msgExp1BParam2 = [...msg6.slice(0x73, 0x92 + 1)];
-        const msgExp1BParam3 = [...msg6.slice(0x93, 0xb2 + 1)];
-
-        const msgExp2Param1 = [...msg6.slice(0xb3, 0xd2 + 1)];
-        const msgExp2Param2 = [...msg6.slice(0xd3, 0xf2 + 1)];
-        const msgExp2Param3 = [...msg6.slice(0xf3, 0x112 + 1)];
-
-        const exp1AParam1 = this.decodeExpAssignInfo(msgExp1AParam1);
-        const exp1AParam2 = this.decodeExpAssignInfo(msgExp1AParam2);
-        const exp1AParam3 = this.decodeExpAssignInfo(msgExp1AParam3);
-
-        const exp1BParam1 = this.decodeExpAssignInfo(msgExp1BParam1);
-        const exp1BParam2 = this.decodeExpAssignInfo(msgExp1BParam2);
-        const exp1BParam3 = this.decodeExpAssignInfo(msgExp1BParam3);
-
-        const exp2Param1 = this.decodeExpAssignInfo(msgExp2Param1);
-        const exp2Param2 = this.decodeExpAssignInfo(msgExp2Param2);
-        const exp2Param3 = this.decodeExpAssignInfo(msgExp2Param3);
-
-
-        // ---------------------------------
-        // Obtain Knob Assign Info
-        // ---------------------------------
-        const msgKnob1 = [...msg6.slice(0x113, 0x122 + 1)];
-        const msgKnob2 = [...msg6.slice(0x123, 0x132 + 1)];
-        const msgKnob3 = [...msg6.slice(0x133, 0x142 + 1)];
-
-        const knobAssign1 = this.decodeKnobAssignInfo(msgKnob1);
-        const knobAssign2 = this.decodeKnobAssignInfo(msgKnob2);
-        const knobAssign3 = this.decodeKnobAssignInfo(msgKnob3);
-
-        // ---------------------------------
-        // Obtain CTRL Assign Info
-        // ---------------------------------
-
-        const msgCtrl1 = [...msg6.slice(0x143, 0x15a + 1)];
-        const msgCtrl2 = [...msg6.slice(0x15b, 0x172 + 1)];
-        const msgCtrl3 = [...msg6.slice(0x173, 0x17e + 1), ...msg7.slice(0xd, 0x18 + 1)];
-        const msgCtrl4 = [...msg7.slice(0x19, 0x30 + 1)];
-
-        const msgCtrl5 = [...msg7.slice(0x31, 0x48 + 1)];
-        const msgCtrl6 = [...msg7.slice(0x49, 0x60 + 1)];
-        const msgCtrl7 = [...msg7.slice(0x61, 0x78 + 1)];
-        const msgCtrl8 = [...msg7.slice(0x79, 0x90 + 1)];
-
-        const ctrlAssign1 = this.decodeCtrlAssignInfo(msgCtrl1);
-        const ctrlAssign2 = this.decodeCtrlAssignInfo(msgCtrl2);
-        const ctrlAssign3 = this.decodeCtrlAssignInfo(msgCtrl3);
-        const ctrlAssign4 = this.decodeCtrlAssignInfo(msgCtrl4);
-        const ctrlAssign5 = this.decodeCtrlAssignInfo(msgCtrl5);
-        const ctrlAssign6 = this.decodeCtrlAssignInfo(msgCtrl6);
-        const ctrlAssign7 = this.decodeCtrlAssignInfo(msgCtrl7);
-        const ctrlAssign8 = this.decodeCtrlAssignInfo(msgCtrl8);
-
-        // Create IGPPreset object
-        const presetInfo: IPresetInfo = {
-            name: presetName,
-            number: presetNumber,
-
-            // Settings
-            volume: presetVolume,
-            pan: presetPan,
-            bpm: presetBpm,
-            effectsChainOrder: effectsChain,
-
-            // Fxloop
-            fxloop: {
-                sendLevel: fxSendLevel,
-                returnLevel: fxReturnLevel,
-                sendPosition: fxInPosition,
-                returnPosition: fxOutPosition,
-                mode: fxMode
-            },
-
-            // Knob
-            knob1: knobAssign1,
-            knob2: knobAssign2,
-            knob3: knobAssign3,
-
-            // CTRL
-            ctrl1: ctrlAssign1,
-            ctrl2: ctrlAssign2,
-            ctrl3: ctrlAssign3,
-            ctrl4: ctrlAssign4,
-
-            ctrl5: ctrlAssign5,
-            ctrl6: ctrlAssign6,
-            ctrl7: ctrlAssign7,
-            ctrl8: ctrlAssign8,
-
-            // EXP
-            exp1A: [exp1AParam1, exp1AParam2, exp1AParam3],
-            exp1B: [exp1BParam1, exp1BParam2, exp1BParam3],
-            exp2: [exp2Param1, exp2Param2, exp2Param3],
-
-            // Effects
-            effects: [pre, wah, dst, amp, nr, cab, eq, mod, dly, rvb, vol],
-        }
-
-        //console.log("Preset Info Object", presetInfo);
 
         // Reset meessage accumulator
         this.presetInfoMessages = [];
 
-
-        return presetInfo;
+        // decode preset data
+        return decodePresetData(Buffer.from(presetData), 0);
     }
+
+    // GetPresetInfo(): IPresetInfo {
+    //     console.log("Processing preset info messages");
+    //     console.log(this.presetInfoMessages);
+
+    // // ---------------------------------
+    // // Obtain Information from Message1 (PresetName, PresetSettings)
+    // // ---------------------------------
+    //     if (this.presetInfoMessages.length != 7) {
+    //         throw new Error("There are should be 7 preset Info messages to decode!");
+    //     }
+
+    //     const msg1  = this.presetInfoMessages[0];
+    //     const msg2  = this.presetInfoMessages[1];
+    //     const msg3  = this.presetInfoMessages[2];
+    //     const msg4  = this.presetInfoMessages[3];
+    //     const msg5  = this.presetInfoMessages[4];
+    //     const msg6  = this.presetInfoMessages[5];
+    //     const msg7  = this.presetInfoMessages[6];
+
+    //     // Preset number in bytes 0x19, 0x1a (hex digits)
+    //     const presetNumber : number = this.decoder.nibblesToByte(msg1[0x19], msg1[0x1a]);
+    //     // Preset number in bytes 0x25, 0x26 (hex digits)
+
+    //     // BPM value in bytes 0x29 and 0x2a
+    //     const presetBpm: number = this.decoder.nibblesToByte(msg1[0x29], msg1[0x2a]);
+    //     // Patch / Preset Volume 0x2d and 0x2e
+    //     const presetVolume : number= this.nibblesToByte(msg1[0x2d], msg1[0x2e]);
+    //     // Patch / Preset Pan - encoded as 16bit twos complements split in nibbles, due to range only low byte is needed in bytes 0x33 and 0x34
+    //     const presetPan = this.decodePanValuePresetInfo(msg1[0x33], msg1[0x34]);
+
+    //     // FX
+    //     // FX send level in bytes 0x39 and 0x3a
+    //     const fxSendLevel :number = this.nibblesToByte(msg1[0x39], msg1[0x3a]);
+    //     // FX send level in bytes 0x3d to 0x3e
+    //     const fxReturnLevel :number = this.nibblesToByte(msg1[0x3d], msg1[0x3e]);
+    //     // FX mode in bytes 0x42 (0 -> parallel ; 1 -> series)
+    //     const fxMode :number = msg1[0x42];
+
+    //     // Patch Name in bytes 0x45 to 0x64 (encoded in ascii characters split in hex digits)
+    //     const presetName = this.decodePresetName(Array.from(msg1.slice(0x45, 0x64 + 1)));
+    //     // Patch Description maybe??? bytes 0x65 to 0xd5
+    //     // IDK bytes 0xd4 to 0xd6
+    //     // IDK bytes 0xd7 to 0xda
+    //     // preset number in bytes 0xdd and 0xde
+
+    //     // FX loop IN position in byte 0xe2
+    //     const fxInPosition :number = msg1[0xe2];
+    //     // FX loop OUT position in byte 0xe4
+    //     const fxOutPosition :number = msg1[0xe4];
+    //     // Effect Chain order in bytes 0xe5 to 0xfa, encoded in two bytes, only low byte has meaningful data
+    //     const effectsChain: number[] = Array.from( msg1.slice(0xe5, 0xfa + 1).filter((_, index) => index % 2 !== 0) );
+
+    // // Obtain effects info (messages 1 to message5)
+
+    //     // PRE 
+    //     const msgPre = [...msg1.slice(0xfd, 0x17e + 1), ...msg2.slice(0x0d, 0x1a +1)];
+    //     const msgWah = [...msg2.slice(0x1b, 0xaa +1)];
+    //     const msgDst = [...msg2.slice(0xab, 0x13a +1)];
+    //     const msgAmp = [...msg2.slice(0x13b, 0x17e + 1), ...msg3.slice(0x0d, 0x58 +1)];
+    //     const msgNr = [...msg3.slice(0x59, 0xe8 +1)];
+    //     const msgCab = [...msg3.slice(0xe9, 0x178 +1)];
+    //     const msgEq = [...msg3.slice(0x179, 0x17e + 1), ...msg4.slice(0x0d, 0x96 +1)];
+    //     const msgMod = [...msg4.slice(0x97, 0x126 +1)];
+    //     const msgDly = [...msg4.slice(0x127, 0x17e + 1), ...msg5.slice(0x0d, 0x44 +1)];
+    //     const msgRvb = [...msg5.slice(0x45, 0xd4 +1)];
+    //     const msgVol = [...msg5.slice(0xd5, 0x164 +1)];
+
+
+    //     const pre = this.decodeEffectInfo(msgPre);
+    //     const wah = this.decodeEffectInfo(msgWah);
+    //     const dst = this.decodeEffectInfo(msgDst);
+    //     const amp = this.decodeEffectInfo(msgAmp);
+    //     const nr = this.decodeEffectInfo(msgNr);
+    //     const cab = this.decodeEffectInfo(msgCab);
+    //     const eq = this.decodeEffectInfo(msgEq);
+    //     const mod = this.decodeEffectInfo(msgMod);
+    //     const dly = this.decodeEffectInfo(msgDly);
+    //     const rvb = this.decodeEffectInfo(msgRvb);
+    //     const vol = this.decodeEffectInfo(msgVol);
+
+
+    //     // LOGGING DATA
+    //     // console.log("PRESET INFO IN MESSAGE 1");
+    //     // console.log("Preset Number", presetNumber);
+    //     // console.log("BPM value", presetBpm);
+    //     // console.log("Preset Volume", presetVolume);
+    //     // console.log("Preset Pan", presetPan);
+
+    //     // console.log("FX send level", fxSendLevel);
+    //     // console.log("FX return level", fxReturnLevel);
+    //     // console.log("FX Mode", fxMode);
+
+    //     // console.log("Preset name", presetName);
+
+    //     // console.log("FX IN position", fxInPosition);
+    //     // console.log("FX Out position", fxOutPosition);
+
+    //     // console.log("Effect chain", effectsChain);
+
+
+    //     // ---------------------------------
+    //     // Obtain EXP assign info
+    //     // ---------------------------------
+
+    //     const msgExp1AParam1 = [...msg5.slice(0x165, 0x17e + 1), ...msg6.slice(0xd, 0x12 + 1)];
+    //     const msgExp1AParam2 = [...msg6.slice(0x13, 0x32 + 1)];
+    //     const msgExp1AParam3 = [...msg6.slice(0x33, 0x52 + 1)];
+
+    //     const msgExp1BParam1 = [...msg6.slice(0x53, 0x72 + 1)];
+    //     const msgExp1BParam2 = [...msg6.slice(0x73, 0x92 + 1)];
+    //     const msgExp1BParam3 = [...msg6.slice(0x93, 0xb2 + 1)];
+
+    //     const msgExp2Param1 = [...msg6.slice(0xb3, 0xd2 + 1)];
+    //     const msgExp2Param2 = [...msg6.slice(0xd3, 0xf2 + 1)];
+    //     const msgExp2Param3 = [...msg6.slice(0xf3, 0x112 + 1)];
+
+    //     const exp1AParam1 = this.decodeExpAssignInfo(msgExp1AParam1);
+    //     const exp1AParam2 = this.decodeExpAssignInfo(msgExp1AParam2);
+    //     const exp1AParam3 = this.decodeExpAssignInfo(msgExp1AParam3);
+
+    //     const exp1BParam1 = this.decodeExpAssignInfo(msgExp1BParam1);
+    //     const exp1BParam2 = this.decodeExpAssignInfo(msgExp1BParam2);
+    //     const exp1BParam3 = this.decodeExpAssignInfo(msgExp1BParam3);
+
+    //     const exp2Param1 = this.decodeExpAssignInfo(msgExp2Param1);
+    //     const exp2Param2 = this.decodeExpAssignInfo(msgExp2Param2);
+    //     const exp2Param3 = this.decodeExpAssignInfo(msgExp2Param3);
+
+
+    //     // ---------------------------------
+    //     // Obtain Knob Assign Info
+    //     // ---------------------------------
+    //     const msgKnob1 = [...msg6.slice(0x113, 0x122 + 1)];
+    //     const msgKnob2 = [...msg6.slice(0x123, 0x132 + 1)];
+    //     const msgKnob3 = [...msg6.slice(0x133, 0x142 + 1)];
+
+    //     const knobAssign1 = this.decodeKnobAssignInfo(msgKnob1);
+    //     const knobAssign2 = this.decodeKnobAssignInfo(msgKnob2);
+    //     const knobAssign3 = this.decodeKnobAssignInfo(msgKnob3);
+
+    //     // ---------------------------------
+    //     // Obtain CTRL Assign Info
+    //     // ---------------------------------
+
+    //     const msgCtrl1 = [...msg6.slice(0x143, 0x15a + 1)];
+    //     const msgCtrl2 = [...msg6.slice(0x15b, 0x172 + 1)];
+    //     const msgCtrl3 = [...msg6.slice(0x173, 0x17e + 1), ...msg7.slice(0xd, 0x18 + 1)];
+    //     const msgCtrl4 = [...msg7.slice(0x19, 0x30 + 1)];
+
+    //     const msgCtrl5 = [...msg7.slice(0x31, 0x48 + 1)];
+    //     const msgCtrl6 = [...msg7.slice(0x49, 0x60 + 1)];
+    //     const msgCtrl7 = [...msg7.slice(0x61, 0x78 + 1)];
+    //     const msgCtrl8 = [...msg7.slice(0x79, 0x90 + 1)];
+
+    //     const ctrlAssign1 = this.decodeCtrlAssignInfo(msgCtrl1);
+    //     const ctrlAssign2 = this.decodeCtrlAssignInfo(msgCtrl2);
+    //     const ctrlAssign3 = this.decodeCtrlAssignInfo(msgCtrl3);
+    //     const ctrlAssign4 = this.decodeCtrlAssignInfo(msgCtrl4);
+    //     const ctrlAssign5 = this.decodeCtrlAssignInfo(msgCtrl5);
+    //     const ctrlAssign6 = this.decodeCtrlAssignInfo(msgCtrl6);
+    //     const ctrlAssign7 = this.decodeCtrlAssignInfo(msgCtrl7);
+    //     const ctrlAssign8 = this.decodeCtrlAssignInfo(msgCtrl8);
+
+    //     // Create IGPPreset object
+    //     const presetInfo: IPresetInfo = {
+    //         name: presetName,
+    //         number: presetNumber,
+
+    //         // Settings
+    //         volume: presetVolume,
+    //         pan: presetPan,
+    //         bpm: presetBpm,
+    //         effectsChainOrder: effectsChain,
+
+    //         // Fxloop
+    //         fxloop: {
+    //             sendLevel: fxSendLevel,
+    //             returnLevel: fxReturnLevel,
+    //             sendPosition: fxInPosition,
+    //             returnPosition: fxOutPosition,
+    //             mode: fxMode
+    //         },
+
+    //         // Knob
+    //         knob1: knobAssign1,
+    //         knob2: knobAssign2,
+    //         knob3: knobAssign3,
+
+    //         // CTRL
+    //         ctrl1: ctrlAssign1,
+    //         ctrl2: ctrlAssign2,
+    //         ctrl3: ctrlAssign3,
+    //         ctrl4: ctrlAssign4,
+
+    //         ctrl5: ctrlAssign5,
+    //         ctrl6: ctrlAssign6,
+    //         ctrl7: ctrlAssign7,
+    //         ctrl8: ctrlAssign8,
+
+    //         // EXP
+    //         exp1A: [exp1AParam1, exp1AParam2, exp1AParam3],
+    //         exp1B: [exp1BParam1, exp1BParam2, exp1BParam3],
+    //         exp2: [exp2Param1, exp2Param2, exp2Param3],
+
+    //         // Effects
+    //         effects: [pre, wah, dst, amp, nr, cab, eq, mod, dly, rvb, vol],
+    //     }
+
+    //     //console.log("Preset Info Object", presetInfo);
+
+    //     // Reset meessage accumulator
+    //     this.presetInfoMessages = [];
+
+
+    //     return presetInfo;
+    // }
 
     // Setup MIDI listener
     sendSysEx(message: Uint8Array | number[]) {

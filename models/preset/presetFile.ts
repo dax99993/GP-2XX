@@ -46,62 +46,82 @@ export function decodePRSTFile(buffer: Buffer): IPresetInfo {
     offset += 4; 
     //should contain 94 04 00 00
     offset += 4; 
-    //should contain 4d 52 41 50 MRAP (PARAM LE)
+    //should contain 4d 52 41 50 MRAP (PARAM ascii in LE)
     offset += 4; 
     //should contain 94 04 00 00
     offset += 4; 
     //should contain 02 00 58 00
     offset += 4; 
+    console.log(offset);
 
     // Actual DATA
+    // const b = buffer.subarray(offset);
+
+    // const b = buffer.
+    // console.log(b.length, b);
+    // console.log();
+    // console.log(b.readUint8(0));
+    // decodePresetData(buffer.subarray(offset));
+
+    const presetInfo = decodePresetData(buffer, offset);
+
+    return presetInfo;
+}
+
+export function decodePresetData(buffer: Buffer, offset: number): IPresetInfo {
+// function decodePresetData(buffer: Buffer) {
+    console.log("Decode Preset Data", buffer.length - offset);
+
+    //let offset = 0;
+
     const presetNumber = buffer.readUint8(offset);
-    console.log("Preset Number", presetNumber);
+    //console.log("Preset Number", presetNumber);
     offset += 1;
 
     const bpm = buffer.readInt16BE(offset);
-    console.log("Preset BPM", bpm);
+    //console.log("Preset BPM", bpm);
     offset += 2;
 
     const volume = buffer.readInt16BE(offset);
-    console.log("Preset Volume", volume);
+    //console.log("Preset Volume", volume);
     offset += 2;
 
     const pan = buffer.readInt16BE(offset);
-    console.log("Preset Pan", pan);
+    //console.log("Preset Pan", pan);
     offset += 2;
 
     const category = buffer.readUInt16BE(offset);
-    console.log("Preset Category", category);
+    //console.log("Preset Category", category);
     offset += 2;
 
     const fxSendLevel = buffer.readUInt16BE(offset);
-    console.log("Fx Send level", fxSendLevel);
+    //console.log("Fx Send level", fxSendLevel);
     offset += 2;
 
     const fxReturnLevel = buffer.readUInt16BE(offset);
-    console.log("Fx Return level", fxReturnLevel);
+    //console.log("Fx Return level", fxReturnLevel);
     offset += 2;
 
     const fxMode = buffer.readUInt16BE(offset);
-    console.log("Fx Mode ", fxMode);
+    //console.log("Fx Mode ", fxMode);
     offset += 2;
 
-    offset += 1; // Separation byte
+    offset += 1; // Separation byte - 00
 
 
     // Preset name is encoded as 16 ascii characters
     const presetName : string = String.fromCharCode(...buffer.subarray(offset, offset+16));
-    console.log("Preset Name", presetName);
+    //console.log("Preset Name", presetName);
     offset += 16;
 
     // Preset Author is encoded as 16 ascii characters
     const presetAuthor: string = String.fromCharCode(...buffer.subarray(offset, offset+16));
-    console.log("Preset Author", presetAuthor);
+    //console.log("Preset Author", presetAuthor);
     offset += 16;
 
     // Preset Author is encoded as 30 ascii characters ; maybe is 32 characters
     const presetNote: string = String.fromCharCode(...buffer.subarray(offset, offset+30));
-    console.log("Preset Note", presetNote);
+    //console.log("Preset Note", presetNote);
     offset += 30;
 
     //should contain 00 00
@@ -111,32 +131,36 @@ export function decodePRSTFile(buffer: Buffer): IPresetInfo {
     //should contain 00 00 00 00
     offset += 4; 
     //should can be 08 00 10 00 or some other numbers IDK what this mean
+    const effectChainSequence = buffer.readUInt32BE(offset);
+    if (effectChainSequence !== 0x08_00_10_00) {
+        console.log("Efffect chain Bad alignment", presetNote);
+    }
     offset += 4; 
 
-    // I think this byte is the currently stored preset position
+    // I think this byte is the preset position where it is currently stored
     const presetStoredNumber = buffer.readUint8(offset);
-    console.log("Preset Store Number???", presetStoredNumber);
+    //console.log("Preset Position Store Number ???", presetStoredNumber);
     offset += 1;
 
-    offset += 1; // Separation byte
+    offset += 1; // Separation byte - 00
 
 
     // Effect Chain
     const fxSendPosition = buffer.readUint8(offset);
-    console.log("Fx Send Position", fxSendPosition);
+    //console.log("Fx Send Position", fxSendPosition);
     offset += 1;
 
     const fxReturnPosition= buffer.readUint8(offset);
-    console.log("Fx Return Position", fxReturnPosition);
+    //console.log("Fx Return Position", fxReturnPosition);
     offset += 1;
 
 
     const effectChainOrder = [...buffer.subarray(offset, offset+11)];
-    console.log("Effect Chain Order", effectChainOrder);
+    //console.log("Effect Chain Order", effectChainOrder);
     offset += 11;
 
-    offset += 1; // Separation byte
-    console.log(offset);
+    offset += 1; // Separation byte - 00
+    console.log("Offset starting effect module information", offset);
 
     // EFFECT MODULE DETAILS 
     const effectsInfo : IEffectInfo[] = [];
@@ -149,7 +173,7 @@ export function decodePRSTFile(buffer: Buffer): IPresetInfo {
         effectsInfo[i] = effectInfo;
     }
 
-    console.log(offset);
+    //console.log(offset);
 
     // EXP Settings
     const expSettings: IExpSettings[] = [];
@@ -221,40 +245,34 @@ export function decodePRSTFile(buffer: Buffer): IPresetInfo {
 }
 
 function decodeEffectModule(buffer: Buffer, offset: number): IEffectInfo {
-    console.log(buffer.length, buffer);
-    // This buffer should be 48 bytes
-    // if (buffer.length !== 48) {
+    console.log(buffer.length);
+    // This buffer should be 72 bytes
+    // if (buffer.length !== 72) {
     //     throw new Error("Effect Module buffer should be 48 bytes");
     // }
-
-    // const b = buffer.subarray(offset, offset+48);
-    // // const hexString : string = b.map((byte) => byte.toString(16).padStart(2, '0')).join(' ');
-    // const hexString = Array.from(b).reduce((hex, byte) => {
-    //     return hex + byte.toString(16).padStart(2, '0') + ' ';
-    // }, '');
-    // console.log("Hex", hexString);
 
     // Should be equal to 0x14_00_44_00
     const startSequence = buffer.readUInt32BE(offset);
     if (startSequence !== 0x14_00_44_00) {
-        console.log("Bad alignment")
+        console.log("Effect Module Bad alignment")
     }
     offset += 4;
 
     const chainID = buffer.readUint8(offset)
-    console.log("Effect Chain ID", chainID);
+    //console.log("Effect Chain ID", chainID);
     offset += 1;
 
     const state = buffer.readUint8(offset)
-    console.log("Effect state", state);
+    //console.log("Effect state", state);
     offset += 1;
 
-    offset += 1; // Separation byte
+    // should contain 0f 00 - constant sequence
+    offset += 2;
 
 
     //console.log(buffer.subarray(offset, offset+4));
     const moduleID = buffer.readInt32LE(offset);
-    console.log("Effect Module ID", moduleID);
+    //console.log("Effect Module ID", moduleID);
     offset += 4;
 
     const params: number[] = []
@@ -269,7 +287,7 @@ function decodeEffectModule(buffer: Buffer, offset: number): IEffectInfo {
         params[i] = param;
     }
 
-    console.log(offset);
+    //console.log(offset);
 
     return {
         chainID: chainID,
@@ -290,19 +308,19 @@ function decodeExpSettings(buffer: Buffer, offset: number): IExpSettings {
 
     // This are combine in a single byte
     const id = buffer.readUint8(offset) >> 4;
-    console.log("Exp ID", id);
+    //console.log("Exp ID", id);
 
     const paramNumber = buffer.readUint8(offset) & 0x0F;
-    console.log("Exp param Number", paramNumber);
+    //console.log("Exp param Number", paramNumber);
 
     offset += 1;
 
     const moduleID = buffer.readUint8(offset)
-    console.log("Exp Module ID", moduleID);
+    //console.log("Exp Module ID", moduleID);
     offset += 1;
 
     const moduleParamID = buffer.readUint8(offset)
-    console.log("Exp Module ID", moduleParamID);
+    //console.log("Exp Module ID", moduleParamID);
     offset += 1;
 
     //should contain 00
@@ -333,15 +351,15 @@ function decodeKnobSettings(buffer: Buffer, offset: number): IKnobSettings {
 
     // This are combine in a single byte
     const knobID = buffer.readUint8(offset);
-    console.log("Knob ID", knobID);
+    //console.log("Knob ID", knobID);
     offset += 1;
 
     const moduleID = buffer.readUint8(offset)
-    console.log("Knob Module ID", moduleID);
+    //console.log("Knob Module ID", moduleID);
     offset += 1;
 
     const moduleParamID = buffer.readUint8(offset)
-    console.log("Exp Module ID", moduleParamID);
+    //console.log("Exp Module ID", moduleParamID);
     offset += 1;
 
     //should contain 00
@@ -364,11 +382,11 @@ function decodeCtrlSettings(buffer: Buffer, offset: number): ICtrlSettings {
 
     // This are combine in a single byte
     const ctrlID = buffer.readUint8(offset);
-    console.log("Ctrl ID", ctrlID);
+    //console.log("Ctrl ID", ctrlID);
     offset += 1;
 
     const ctrlMode = buffer.readUint8(offset);
-    console.log("Ctrl Mode", ctrlMode);
+    //console.log("Ctrl Mode", ctrlMode);
     offset += 1;
 
     //should contain 00 00
