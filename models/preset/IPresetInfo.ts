@@ -4,14 +4,14 @@ import { IFxLoopSettings } from "./IFxLoopSettings";
 import { IKnobSettings } from "./IKnobSettings";
 
 
-export interface ISyncEffectInfo {
+export interface IEffectInfo {
     chainID: number;
     ID: number;
     state: boolean; //or should it be a number?
     paramValues: number[]; //15 elements not all used
 }
 
-export interface ISyncPresetInfo {
+export interface IPresetInfo {
     // General info
     name: string;
     number: number;
@@ -47,5 +47,5 @@ export interface ISyncPresetInfo {
     exp2: [IExpSettings, IExpSettings, IExpSettings];
 
     // Effects
-    effects: ISyncEffectInfo[];
+    effects: IEffectInfo[];
 }

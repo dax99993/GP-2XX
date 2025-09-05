@@ -1,13 +1,12 @@
 import { BaseSysExMsg, GetPresetInfo, SysExGPHeader } from "@/constants/SysExMsg";
+import { DecoderUtils } from "@/utils/decodeUtils";
 import { MIDIMessageEvent } from "@motiz88/react-native-midi";
 import { action, makeObservable, observable } from "mobx";
 import { EffectType } from "../effect/effect";
 import { GP200Model } from "../gp200";
 import { MidiDevice } from "../midiDevice";
-import { ICtrlSettings } from "../preset/ICtrlSettings";
-import { ExpModule, IExpSettings } from "../preset/IExpSettings";
-import { IKnobSettings } from "../preset/IKnobSettings";
-import { ISyncEffectInfo, ISyncPresetInfo } from "../preset/ISyncPresetInfo";
+import { ExpModule } from "../preset/IExpSettings";
+import { IPresetInfo } from "../preset/IPresetInfo";
 import { PresetModel } from "../preset/preset";
 import { IDeviceActions } from "./IActions";
 
@@ -29,6 +28,7 @@ export class GP200DeviceActions implements IDeviceActions {
 
     gp200: GP200Model;
     midi: MidiDevice;
+    decoder: DecoderUtils;
 
     //messages: midiMessage[];
     presetInfoMessages: Uint8Array[];
@@ -38,6 +38,7 @@ export class GP200DeviceActions implements IDeviceActions {
     constructor(gp200: GP200Model, midi: MidiDevice) {
         this.midi = midi;
         this.gp200 = gp200;
+        this.decoder = new DecoderUtils();
 
         //this.messages = [];
         this.presetInfoMessages = [];
@@ -85,7 +86,7 @@ export class GP200DeviceActions implements IDeviceActions {
         const high_byte = baseSysEx[0x19] 
         const low_byte = baseSysEx[0x1a]
 
-        const num = this.nibblesToByte(high_byte, low_byte);
+        const num = this.decoder.nibblesToByte(high_byte, low_byte);
 
         // Update model
         this.gp200.changePreset(num);
@@ -98,7 +99,7 @@ export class GP200DeviceActions implements IDeviceActions {
         // bytes 0x1b and 0x1c have the Fx loop return position
         // bytes 0x1d to 0x32 have the effect chain order
         // set preset number
-        const presetNumber = this.nibblesToByte(message[0x15], message[0x16]);
+        const presetNumber = this.decoder.nibblesToByte(message[0x15], message[0x16]);
 
         // set fx loop send pos (since value is in range 0-11) the high byte is always 0
         const sendPosition = message[0x1a];
@@ -131,12 +132,12 @@ export class GP200DeviceActions implements IDeviceActions {
         // bytes 0x1d to 0x3c Preset Name: ASCII encoded split in hex digits
         const highByte = message[0x15];
         const lowByte = message[0x16];
-        const presetNumberToSave = this.nibblesToByte(highByte, lowByte)
+        const presetNumberToSave = this.decoder.nibblesToByte(highByte, lowByte)
 
         // sanity check presetName should be at most 16 ASCII characters
         // Enforce only ASCII characters
         const encodedName = [...message.slice(0x1d, 0x3c + 1)];
-        const presetName = this.decodePresetName(encodedName);
+        const presetName = this.decoder.decodePresetName(encodedName);
 
         console.log(presetNumberToSave, presetName);
 
@@ -153,32 +154,32 @@ export class GP200DeviceActions implements IDeviceActions {
 
         switch (param) {
             case 0:
-                const volume = this.decodeNibblesTo16BitTwosComplement([...message.slice(0x19, 0x1c + 1)]);
+                const volume = this.decoder.nibblesTo16BitTwosComplement([...message.slice(0x19, 0x1c + 1)]);
                 // //Update Model
                 this.gp200.currentPreset?.changeVolume(volume);
                 break
             case 1:
-                const bpm = this.decodeNibblesTo16BitTwosComplement([...message.slice(0x19, 0x1c + 1)]);
+                const bpm = this.decoder.nibblesTo16BitTwosComplement([...message.slice(0x19, 0x1c + 1)]);
                 // //Update Model
                 this.gp200.currentPreset?.changeBPM(bpm);
                 break
             case 3:
-                const sendLevel = this.nibblesToByte(message[0x19], message[0x1a]);
+                const sendLevel = this.decoder.nibblesToByte(message[0x19], message[0x1a]);
                 // //Update Model
                 this.gp200.currentPreset?.changeFXLoopSendLevel(sendLevel);
                 break;
             case 4:
-                const returnLevel = this.nibblesToByte(message[0x19], message[0x1a]);
+                const returnLevel = this.decoder.nibblesToByte(message[0x19], message[0x1a]);
                 // //Update Model
                 this.gp200.currentPreset?.changeFxLoopReturnLevel(returnLevel);
                 break
             case 5:
-                const mode = this.nibblesToByte(message[0x19], message[0x1a]);
+                const mode = this.decoder.nibblesToByte(message[0x19], message[0x1a]);
                 // //Update Model
                 this.gp200.currentPreset?.changeFxLoopMode(mode);
                 break;
             case 6:
-                const pan = this.decodeNibblesTo16BitTwosComplement([...message.slice(0x19, 0x1c + 1)]);
+                const pan = this.decoder.nibblesTo16BitTwosComplement([...message.slice(0x19, 0x1c + 1)]);
                 // //Update Model
                 this.gp200.currentPreset?.changePan(pan);
                 break;
@@ -198,7 +199,7 @@ export class GP200DeviceActions implements IDeviceActions {
         // bytes 0x25 to 0x2c Parameter minimum value encoded
         const expID = message[0x15];
         const expParamID = message[0x16];
-        const expModule = this.nibblesToByte(message[0x17], message[0x18]) as ExpModule;
+        const expModule = this.decoder.nibblesToByte(message[0x17], message[0x18]) as ExpModule;
         const moduleParamID = message[0x1a];
         
         const paramMaxEncoded = [...message.slice(0x1d, 0x24 + 1)];
@@ -215,8 +216,8 @@ export class GP200DeviceActions implements IDeviceActions {
         //         }
         //     });
         // }
-        const paramMax = this.decodeParamValue(paramMaxEncoded, paramType);
-        const paramMin = this.decodeParamValue(paramMinEncoded, paramType);
+        const paramMax = this.decoder.decodeParamValue(paramMaxEncoded, paramType);
+        const paramMin = this.decoder.decodeParamValue(paramMinEncoded, paramType);
 
         // //Update Model
         this.gp200.currentPreset.changeExpSettings(expID, expParamID, expModule, moduleParamID, paramMin, paramMax);
@@ -229,7 +230,7 @@ export class GP200DeviceActions implements IDeviceActions {
         // bytes 0x17 and 0x18 Module number split in nibbles
         // byte 0x1a Parameter number: Number in range (0 to 14)
         const knobID = message[0x16];
-        const knobModule = this.nibblesToByte(message[0x17], message[0x18]);
+        const knobModule = this.decoder.nibblesToByte(message[0x17], message[0x18]);
         const knobParameter = message[0x1a];
 
         // //Update Model
@@ -271,7 +272,7 @@ export class GP200DeviceActions implements IDeviceActions {
         const effectIDNibbles: number[] = Array.from(message.slice(0x1d, 0x24 + 1));
         console.log("MIDI CHANGE EFFECT ID", effectIDNibbles);
 
-        const effectID = this.decodeEffectIDNibbles(effectIDNibbles)
+        const effectID = this.decoder.decodeEffectIDNibbles(effectIDNibbles)
         // Update model
         this.gp200.changeEffectByID(effectID, pedalID);
     }
@@ -303,7 +304,7 @@ export class GP200DeviceActions implements IDeviceActions {
         // Get type of encoded values
         const paramType = effectChainID === EffectType.MOD ? "float" : "float";
 
-        const decodedValue = this.decodeParamValue(encoded, paramType);
+        const decodedValue = this.decoder.decodeParamValue(encoded, paramType);
 
         //console.log(`Change parameter ${paramType} :`, effectChainID, paramId, decodedValue);
 
@@ -311,123 +312,8 @@ export class GP200DeviceActions implements IDeviceActions {
         this.gp200.changeParamValue(effectChainID, paramId, decodedValue);
     }
 
-    // PRESET INFORMATION EXTRACTION METHODS
-    // ASK PRESET
 
-    decodePanValuePresetInfo(high_nibble: number, low_nibble: number) {
-        const low = this.nibblesToByte(high_nibble, low_nibble);
-        const high = low <= 0x64 ? 0x00 : 0xff;
-
-        const bytes = [low, high];
-        //console.log("Decoding pan value bytes", bytes);
-
-        return this.uint8BytesToInt16TwosComplement(bytes);
-    }
-
-    decodePresetName(msg: number[]) {
-        // each characters is represented in ascii, split in to nibles
-        const bytes = this.nibbleArrayToByteArray(msg);
-        // remove empty characters
-        const filtered_bytes = bytes.filter(b => b !== 0);
-        const chars = filtered_bytes.map(b => String.fromCharCode(b));
-
-        return chars.join("");
-    }
-
-    decodeEffectInfo(msg: number[]): ISyncEffectInfo {
-        if (msg.length != 0x90) {
-            throw new Error("Effect info msg has to be 0x90 bytes");
-        }
-
-        const effectChainID = msg[0x09]
-        const effectState = msg[0x0b] !== 0;
-        const effectIDNibbles = msg.slice(0x10, 0x17 + 1);
-        const effectID = this.decodeEffectIDNibbles(effectIDNibbles);
-        let parameterValues = [];
-        for(let i = 0x18; i < msg.length; i=i+8) {
-            const m = msg.slice(i, i+8);
-            parameterValues.push(this.decodeParamValueFloat(m));
-        }
-
-        // console.log("Effect Chain ID", effectChainID);
-        // console.log("Effect ID", effectID);
-        // console.log("Effect State", effectState);
-        // console.log("Parameter encoded values\n", parameterValues);
-
-        return {
-            chainID: effectChainID,
-            ID: effectID,
-            state: effectState,
-            paramValues: parameterValues
-        }
-    }
-
-    decodeExpAssignInfo(msg: number[]): IExpSettings {
-        const expPedalID = msg[0x8];
-        const expPedalParamNumber = msg[0x9];
-        const expPedalModule = this.nibblesToByte(msg[0xa], msg[0xb]);
-        const expPedalModuleParamID = msg[0xd];
-        const maxValue = this.decodeParamValueFloat(msg.slice(0x10, 0x17 + 1));
-        const minValue = this.decodeParamValueFloat(msg.slice(0x18, 0x1f + 1));
-
-        //console.log(`Exp ${expPedalID} Param ${expPedalParamNumber} Assign to\nModule ${expPedalModule} Param ${expPedalModuleParamID} range [${minValue}, ${maxValue}]`);
-
-        return {
-            id: expPedalID,
-            paramNumber: expPedalParamNumber,
-
-            module: expPedalModule,
-            moduleParamID: expPedalModuleParamID,
-            moduleParamNumberMin: minValue,
-            moduleParamNumberMax: maxValue,
-        }
-    }
-
-    decodeKnobAssignInfo(msg: number[]): IKnobSettings {
-        if (msg.length != 0x10) {
-            throw new Error ("Knob assign msg has to be 0x10 bytes");
-        }
-
-        const knobNumber = msg[0x9];
-        const knobModule = this.nibblesToByte(msg[0xa], msg[0xb]);
-        const paramID = msg[0xd];
-
-        //console.log(`Knob ${knobNumber} assign to Module ${knobModule} Param ${paramID}`);
-
-        return {
-            number: knobNumber,
-            module: knobModule,
-            paramID: paramID
-        };
-    }
-
-    decodeCtrlAssignInfo(msg: number[]): ICtrlSettings {
-        const ctrlNumber = msg[0x9];
-        const ctrlMode = msg[0xb];
-
-        const pedals7To4 = msg[0x10];
-        const pedals3To0 = msg[0x11];
-        const pedals10To8 = msg[0x13];
-
-        const pedalsBitFlags = ( (pedals10To8 << 8) | (pedals7To4 << 4) | (pedals3To0) ) & 0x07ff;
-
-        const pedalArray = []
-        for (let i = 0; i <= 10; i = i+1){
-            const v = pedalsBitFlags & (1 << i) ? 1: 0;
-            pedalArray.push(v);
-        }
-
-        //console.log(`CTRL ${ctrlNumber} mode ${ctrlMode} Assign to pedals ${pedalsBitFlags.toString(2).padStart(12, '0')}`);
-        //console.log(`CTRL ${ctrlNumber} mode ${ctrlMode} Assign to pedals ${pedalArray}`);
-
-        return {
-            number: ctrlNumber,
-            mode: ctrlMode,
-            pedalsAssign: pedalArray,
-        }
-    }
-
-    GetPresetInfo(): ISyncPresetInfo {
+    GetPresetInfo(): IPresetInfo {
         console.log("Processing preset info messages");
         console.log(this.presetInfoMessages);
 
@@ -447,11 +333,11 @@ export class GP200DeviceActions implements IDeviceActions {
         const msg7  = this.presetInfoMessages[6];
 
         // Preset number in bytes 0x19, 0x1a (hex digits)
-        const presetNumber : number = this.nibblesToByte(msg1[0x19], msg1[0x1a]);
+        const presetNumber : number = this.decoder.nibblesToByte(msg1[0x19], msg1[0x1a]);
         // Preset number in bytes 0x25, 0x26 (hex digits)
 
         // BPM value in bytes 0x29 and 0x2a
-        const presetBpm: number = this.nibblesToByte(msg1[0x29], msg1[0x2a]);
+        const presetBpm: number = this.decoder.nibblesToByte(msg1[0x29], msg1[0x2a]);
         // Patch / Preset Volume 0x2d and 0x2e
         const presetVolume : number= this.nibblesToByte(msg1[0x2d], msg1[0x2e]);
         // Patch / Preset Pan - encoded as 16bit twos complements split in nibbles, due to range only low byte is needed in bytes 0x33 and 0x34
@@ -591,7 +477,7 @@ export class GP200DeviceActions implements IDeviceActions {
         const ctrlAssign8 = this.decodeCtrlAssignInfo(msgCtrl8);
 
         // Create IGPPreset object
-        const presetInfo: ISyncPresetInfo = {
+        const presetInfo: IPresetInfo = {
             name: presetName,
             number: presetNumber,
 
@@ -668,124 +554,6 @@ export class GP200DeviceActions implements IDeviceActions {
         this.midi.addMIDIMessageListener(listener);
     }
 
-
-    // Util methods
-    nibblesToByte(high_byte: number, low_byte: number): number {
-        return ((high_byte & 0x0f) << 4) | (low_byte & 0x0f);
-    }
-
-    nibbleArrayToByteArray(nibbles: number[] | Uint8Array): number[] {
-        let bytes: number[] = [];
-        for (let i = 0; i < nibbles.length; i = i + 2) {
-            const byte = ((nibbles[i] & 0x0f) << 4) | (nibbles[i + 1] & 0x0f);
-            //const b = ((encoded[i] << 4) & 0xf0) | (encoded[i+1] & 0x0f);
-            bytes.push(byte);
-        }
-
-        return bytes
-    }
-
-    uint8BytesToFloat32(bytes: number[]): number {
-        // 'float32Bytes' should be a Uint8Array containing the 4 bytes of Float32 representation
-        const float32Bytes = new Uint8Array(bytes);
-        //console.log("Decoded float bytes", float32Bytes);
-
-        // 1. Create an ArrayBuffer
-        const buffer = new ArrayBuffer(4);
-
-        // 2. Create a Uint8Array view to populate the buffer
-        const byteView = new Uint8Array(buffer);
-        byteView.set(float32Bytes); // Copy the bytes into the buffer
-
-        // 3. Create a DataView
-        const dataView = new DataView(buffer);
-
-        // 4. Use getFloat32() to read the number (assuming little-endian)
-        return dataView.getFloat32(0, true); // 0 is the offset
-    }
-
-    uint8BytesToUint32(bytes: number[]): number {
-        // 'float32Bytes' should be a Uint8Array containing the 4 bytes of Float32 representation
-        const uint32Bytes = new Uint8Array(bytes);
-        //console.log("Decoded float bytes", float32Bytes);
-
-        // 1. Create an ArrayBuffer
-        const buffer = new ArrayBuffer(4);
-
-        // 2. Create a Uint8Array view to populate the buffer
-        const byteView = new Uint8Array(buffer);
-        byteView.set(uint32Bytes); // Copy the bytes into the buffer
-
-        // 3. Create a DataView
-        const dataView = new DataView(buffer);
-
-        // 4. Use getFloat32() to read the number (assuming little-endian)
-        return dataView.getUint32(0, true); // 0 is the offset
-    }
-
-    uint8BytesToInt16TwosComplement(bytes: number[]): number {
-        //Order is in little endian
-        const lowByte = bytes[0];
-        const highByte = bytes[1];
-
-        let value = (highByte << 8) | lowByte;
-
-        // Check if the most significant bit (sign bit) is set
-        if (value & 0x8000) {
-            // If it's negative, apply two's complement conversion
-            value = (Math.pow(2, 16) - value) * -1;
-        }
-        return value;
-    }
-
-    decodeEffectIDNibbles(nibbles: number[]): number {
-        // Ensure the number is within the 16-bit signed integer range
-        const bytes = this.nibbleArrayToByteArray(nibbles);
-
-        return this.uint8BytesToUint32(bytes);
-    }
-
-    decodeParamValueFloat(encoded: number[]) {
-        // combine pair of encoded bytes (contains nibbles) to form a complete byte
-        const bytes = this.nibbleArrayToByteArray(encoded);
-        //console.log("Decoding float32", encoded, bytes);
-        // convert bytes to float32
-        const numberValue = this.uint8BytesToFloat32(bytes)
-
-        return numberValue;
-    }
-
-    decodeParamValue(encoded: number[], type: string): number {
-        let decodedValue = this.decodeParamValueFloat(encoded);
-        if (type === "float") {
-            // round value to one decimal
-            decodedValue = Math.round(decodedValue * 10) / 10;
-        } else {
-            // remove decimals
-            decodedValue = Math.round(decodedValue);
-        }
-
-        return decodedValue;
-    }
-
-    decodeNibblesTo16BitTwosComplement(nibbles: number[]): number {
-        // convert nibbles to bytes
-        const lowByte = this.nibblesToByte(nibbles[0], nibbles[1]);
-        const highByte = this.nibblesToByte(nibbles[2], nibbles[3]);
-
-        // Use a DataView to handle the two's complement representation directly
-        // Create a 2-byte (16-bit) ArrayBuffer
-        const buffer = new ArrayBuffer(2);
-        // Create a DataView to manipulate the buffer
-        const view = new DataView(buffer);
-
-        view.setUint8(0, lowByte);
-        view.setUint8(1, highByte);
-
-        // Ensure the number is within the 16-bit signed integer range
-        //const n = num & 0xFFFF;
-        return view.getInt16(0, true);
-    }
 
     // MIDI utils
     _isSysEx(message: number[] | Uint8Array) {
@@ -953,10 +721,6 @@ export class GP200DeviceActions implements IDeviceActions {
             this.ChangePresetKnobSettings(message);
         }
     }
-
-
-
-
 
 }
 

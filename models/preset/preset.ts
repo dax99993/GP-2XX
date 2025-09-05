@@ -4,7 +4,7 @@ import { ICtrlSettings } from "./ICtrlSettings";
 import { ExpModule, IExpSettings } from "./IExpSettings";
 import { IFxLoopSettings } from "./IFxLoopSettings";
 import { IKnobSettings, KnobModule } from "./IKnobSettings";
-import { ISyncEffectInfo, ISyncPresetInfo } from "./ISyncPresetInfo";
+import { IEffectInfo, IPresetInfo } from "./IPresetInfo";
 
 
 export class PresetModel {
@@ -45,7 +45,7 @@ export class PresetModel {
     effects: EffectModel[];
 
     // METHODS
-    constructor(presetInfo: ISyncPresetInfo) {
+    constructor(presetInfo: IPresetInfo) {
         // General info
         this.name = presetInfo.name;
         this.number = presetInfo.number;
@@ -86,7 +86,7 @@ export class PresetModel {
 
     clone(): PresetModel {
         // construct interface
-        const efffectsInfo: ISyncEffectInfo[] = this.effects.map(e =>{
+        const efffectsInfo: IEffectInfo[] = this.effects.map(e =>{
             // get param values
             const params = Array.from({length: 15}, (_, i) => 0);
             e.parameters.forEach((p) => {
@@ -101,7 +101,7 @@ export class PresetModel {
             }
         });
 
-        const presetInfo : ISyncPresetInfo = 
+        const presetInfo : IPresetInfo = 
         {
             // General info
             name: this.name,

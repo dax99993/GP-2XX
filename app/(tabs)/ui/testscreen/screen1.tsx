@@ -2,24 +2,54 @@
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 
 
-import ChainTest from '@/components/ChainTest';
-import NumericSlider from '@/components/NumericSlider';
 import TopBar from '@/components/topBar/TopBar';
-import { Button, ButtonText } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import useOrientation from '@/hooks/useOrientation';
-import { store } from '@/models/store';
 import { Orientation } from 'expo-screen-orientation';
 import React from 'react';
+
+
+import { Button, ButtonText } from '@/components/ui/button';
+
+import { decodePRSTFile } from '@/models/preset/presetFile';
+import { Buffer } from "buffer";
+import * as DocumentPicker from 'expo-document-picker';
+import { readAsStringAsync } from "expo-file-system";
 
 
 export default function TestScreen() {
   const {orientation, isLandscape} = useOrientation();
   console.log(Orientation[orientation]);
 
-  return (
+  const onClick = async () => {
+    const documents = await DocumentPicker.getDocumentAsync({
+      multiple: true,
+      type:"application/octet-stream"
+    });
 
+    if (!documents.canceled) {
+      console.log(documents.assets);
+      for (let i = 0; i < documents.assets.length; i=i+1) {
+        const asset = documents.assets[i];
+        console.log("Asset", i, asset);
+        // Read file
+        const s = await readAsStringAsync(asset.uri, {encoding: 'base64'});
+        console.log(s);
+        // Convert to uint8array
+        const buffer = Buffer.from(s, 'base64');
+        console.log("Buffer", buffer);
+
+        const presetInfo = decodePRSTFile(buffer);
+        console.log(presetInfo);
+
+      }
+
+      // Evoke action on presets
+    }
+  }
+
+  return (
     <VStack space='xs' style={styles.maincontainer}>
       <TopBar>
         <TopBar.leftItems>
@@ -32,18 +62,12 @@ export default function TestScreen() {
           <Text>Right</Text>
         </TopBar.rightItems>
       </TopBar>
-      <View style={isLandscape ? styles.landscapeContainer : styles.portraitContainer} >
-          <ChainTest />
-          <VStack style={{flex:1}}>
-            <Button size="xl" action='primary' onPress={() => { store.modals.openModal("savePresetModal") }}>
-              <ButtonText>Open Save Preset Modal</ButtonText>
-            </Button>
-            <NumericSlider name={"Slider"} minValue={0} maxValue={100} step={1} currentValue={50}
-              onChange={function (n: number): void {
-              }} />
-          </VStack>
+      {/* <View style={isLandscape ? styles.landscapeContainer : styles.portraitContainer} > */}
+      <View style={{flex:0 , backgroundColor: 'red'}} >
+        <Button onPress={onClick}>
+          <ButtonText>Load file</ButtonText>
+        </Button>
       </View>
-      <Text style={{backgroundColor: 'gray'}}>Bottom Text</Text>
     </VStack>
   );
 }

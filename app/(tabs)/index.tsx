@@ -84,6 +84,16 @@ function Buttons() {
                 action="primary"
                 onPress={() => { 
                     //router.replace('/ui/testscreen/screen1') 
+                    router.replace('/ui/testscreen/screen1');
+                 }}
+            >
+                <ButtonText>Test Screen</ButtonText>
+            </Button>
+            <Button size="md"
+                variant="solid"
+                action="primary"
+                onPress={() => { 
+                    //router.replace('/ui/testscreen/screen1') 
                     router.replace('/ui/edit/edit_effect');
                  }}
             >

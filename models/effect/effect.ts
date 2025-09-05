@@ -3,7 +3,7 @@ import { makeAutoObservable } from "mobx";
 import { DeserializeParam, IParameter, ParamType } from "../parameter/IParameter";
 import { Knob } from "../parameter/Knob";
 import { Switch } from "../parameter/Switch";
-import { ISyncEffectInfo } from "../preset/ISyncPresetInfo";
+import { IEffectInfo } from "../preset/IPresetInfo";
 import { IDefaultEffect } from "./defaultEffect/IDefaultEffects";
 
 // this also encodes the natural order of pedal types id in default chain order
@@ -148,7 +148,7 @@ export class EffectModel {
     }
 
 
-    static fromEffectInfo(effectInfo: ISyncEffectInfo): EffectModel {
+    static fromEffectInfo(effectInfo: IEffectInfo): EffectModel {
         const e = this.defaultFromID(effectInfo.ID, effectInfo.chainID);
         console.log("Default effect", e);
         console.log("Effect params", e.parameters);
