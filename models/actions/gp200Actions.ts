@@ -1,5 +1,6 @@
 import { DefaultEffectsInfo } from "@/constants/DefaultEffects";
 import { BaseSysExMsg } from "@/constants/SysExMsg";
+import { EncoderUtils } from "@/utils/encodeUtils";
 import { action, makeObservable, observable } from "mobx";
 import { EffectType } from "../effect/effect";
 import { GP200Model } from "../gp200";
@@ -14,11 +15,13 @@ export class GP200Actions implements IActions{
 
     gp200: GP200Model;
     midi: MidiDevice;
+    encoder: EncoderUtils;
 
 
     constructor(gp200: GP200Model, midi: MidiDevice) {
         this.midi = midi;
         this.gp200 = gp200;
+        this.encoder = new EncoderUtils;
 
 
         makeObservable(this, {
@@ -47,105 +50,6 @@ export class GP200Actions implements IActions{
     }
     
     //  --------------------------------------------------------------------------------
-    //      UTIL METHODS
-    //  ---------------------------------------------------------------------------------
-    byteToNibbles(n: number): number[] {
-        const high_byte = (n >> 4) & 0x0f;
-        const low_byte = (n) & 0x0f;
-
-        return [high_byte, low_byte];
-    }
-
-
-    byteArrayToNibbleArray(bytes: number[] | Uint8Array): number[] {
-        let nibbles: number[] = [];
-        bytes.forEach(b => {
-            nibbles.push((b >> 4) & 0x0f);
-            nibbles.push((b >> 0) & 0x0f);
-        })
-
-        return nibbles; 
-    }
-
-    float32ToUint8Bytes(n : number): Uint8Array {
-        // Create an ArrayBuffer with enough space for a Float32 (4 bytes)
-        const buffer = new ArrayBuffer(4);
-        // Create a DataView to write the Float32 value into the buffer
-        const dataView = new DataView(buffer);
-
-        // Write the Float32 value at offset 0 (little-endian by default for DataView)
-        dataView.setFloat32(0, n, true); // true for little-endian
-
-        // Create a Uint8Array from the same ArrayBuffer to access the bytes
-        return new Uint8Array(buffer);
-    }
-
-    encodeParamValueFloat(n: number) {
-        // Get byte representation of float32
-        const uint8Array = this.float32ToUint8Bytes(n);
-
-        // Split bytes into nibbles
-        const nibbles = this.byteArrayToNibbleArray(uint8Array);
-
-        //console.log(uint8Array);
-        //console.log(nibbles)
-
-        return nibbles; 
-    }
-
-    encode16BitTwosComplementToNibbles(num: number) {
-        // Ensure the number is within the 16-bit signed integer range
-        const n = num & 0xFFFF;
-
-        // Use a DataView to handle the two's complement representation directly
-        // Create a 2-byte (16-bit) ArrayBuffer
-        const buffer = new ArrayBuffer(2);
-        // Create a DataView to manipulate the buffer
-        const view = new DataView(buffer);
-
-        // Write the number as a 16-bit signed integer (Int16)
-        // The second argument (false) specifies little-endian byte order.
-        // Set to true for big-endian.
-        view.setInt16(0, n, false);
-
-        // Extract the bytes
-        const lowByte = view.getUint8(0); // First byte (low byte in little-endian)
-        const highByte = view.getUint8(1); // Second byte (high byte in little-endian)
-
-        console.log(highByte.toString(16), lowByte.toString(16)); // Return as [highByte, lowByte] for common usage
-        const [highByteHighNible, highByteLowNible] = this.byteToNibbles(lowByte);
-        const [lowByteHighNible, lowByteLowNible] = this.byteToNibbles(highByte);
-
-        console.log(lowByteHighNible, lowByteLowNible, highByteHighNible, highByteLowNible);
-        return [lowByteHighNible, lowByteLowNible, highByteHighNible, highByteLowNible];
-    }
-
-    encodeEffectIDToNibbles(num: number): number[] {
-        // Ensure the number is within the 16-bit signed integer range
-        const n = num & 0xFFFFFFFF;
-
-        // Use a DataView to handle the two's complement representation directly
-        // Create a 2-byte (16-bit) ArrayBuffer
-        const buffer = new ArrayBuffer(4);
-        // Create a DataView to manipulate the buffer
-        const view = new DataView(buffer);
-
-        // Invert order
-        view.setUint32(0, n, true);
-
-        const bytes = [...new Uint8Array(buffer)]
-
-        return this.byteArrayToNibbleArray(bytes)
-    }
-
-    encodePresetName(name: string) {
-        // convert to ASCII byte array
-        const ascii = Array.from(name).map(char => char.charCodeAt(0));
-        // split in nibbles
-        return this.byteArrayToNibbleArray(ascii);
-    }
-
-    //  --------------------------------------------------------------------------------
     //      MIDI/MODEL ENCODE ACTIONS
     //  ---------------------------------------------------------------------------------
 
@@ -157,7 +61,7 @@ export class GP200Actions implements IActions{
         // Construc message
         // bytes 0x19 and 0x1a encode the preset/patch number (Hex digits)
         let msg = BaseSysExMsg.PresetAction.changePreset;
-        const [high_byte, low_byte] = this.byteToNibbles(num);
+        const [high_byte, low_byte] = this.encoder.byteToNibbles(num);
         msg[0x19] = high_byte;
         msg[0x1a] = low_byte;
 
@@ -226,16 +130,17 @@ export class GP200Actions implements IActions{
         // ** bytes 0x1b and 0x1c must be 0x00 and 0x02 repectively IDK what they do
         // bytes 0x1d to 0x3c Preset Name: ASCII encoded split in hex digits
         let BaseSysEx = BaseSysExMsg.PresetAction.savePreset;
-        const [highByte, lowByte] = this.byteToNibbles(presetNumberToSave);
+        const [highByte, lowByte] = this.encoder.byteToNibbles(presetNumberToSave);
         BaseSysEx[0x15] = highByte;
         BaseSysEx[0x16] = lowByte;
 
         // sanity check presetName should be at most 16 ASCII characters
         // Enforce only ASCII characters
         presetName.replace(/[^\x00-\x7F]/g, "");
-        const safePresetName = presetName.slice(0, 16);
+        const safePresetName = presetName.slice(0, 16).padEnd(16, " ");
+
         // Maximum of 16 characters
-        const encodedName = this.encodePresetName(safePresetName);
+        const encodedName = this.encoder.encodePresetName(safePresetName);
 
         for(let i = 0; i < encodedName.length; i=i+1) {
             BaseSysEx[0x1d + i] = encodedName[i];
@@ -259,7 +164,7 @@ export class GP200Actions implements IActions{
         BaseSysEx[0x16] = 0;
 
         // Even if this is always positive, its encoded using twos complement  
-        const encodedValue = this.encode16BitTwosComplementToNibbles(volume);
+        const encodedValue = this.encoder.encode16BitTwosComplementToNibbles(volume);
         for (let i = 0; i < encodedValue.length; i=i+1) {
             BaseSysEx[0x19 + i] = encodedValue[i];
         }
@@ -277,7 +182,7 @@ export class GP200Actions implements IActions{
         let BaseSysEx= BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
         BaseSysEx[0x16] = 1;
         // Even if this is always positive, its encoded using twos complement  
-        const encodedValue = this.encode16BitTwosComplementToNibbles(bpm);
+        const encodedValue = this.encoder.encode16BitTwosComplementToNibbles(bpm);
         for (let i = 0; i < encodedValue.length; i=i+1) {
             BaseSysEx[0x19 + i] = encodedValue[i];
         }
@@ -295,7 +200,7 @@ export class GP200Actions implements IActions{
         let BaseSysEx = BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
         BaseSysEx[0x16] = 6;
 
-        const encodedValue = this.encode16BitTwosComplementToNibbles(pan);
+        const encodedValue = this.encoder.encode16BitTwosComplementToNibbles(pan);
         for (let i = 0; i < encodedValue.length; i=i+1) {
             BaseSysEx[0x19 + i] = encodedValue[i];
         }
@@ -322,7 +227,7 @@ export class GP200Actions implements IActions{
         // bytes 0x1d to 0x32 have the effect chain order
         let msg = BaseSysExMsg.PresetSettingsAction.changeChainOrder;
         // set preset number
-        const [high_byte, low_byte] = this.byteToNibbles(preset_num);
+        const [high_byte, low_byte] = this.encoder.byteToNibbles(preset_num);
         msg[0x15] = high_byte;
         msg[0x16] = low_byte;
 
@@ -363,7 +268,7 @@ export class GP200Actions implements IActions{
         // bytes 0x1d to 0x32 have the effect chain order
         let msg = BaseSysExMsg.PresetSettingsAction.changeChainOrder;
         // set preset number
-        const [high_byte, low_byte] = this.byteToNibbles(preset_num);
+        const [high_byte, low_byte] = this.encoder.byteToNibbles(preset_num);
         msg[0x15] = high_byte;
         msg[0x16] = low_byte;
 
@@ -395,7 +300,7 @@ export class GP200Actions implements IActions{
         // bytes 0x19 and 0x1a Parameter Value: split in hex digits (nibbles)
         let BaseSysEx= BaseSysExMsg.PresetSettingsAction.FxLoopSettings;
         BaseSysEx[0x16] = 3;
-        const [highNibble, lowNibble] = this.byteToNibbles(sendLevel);
+        const [highNibble, lowNibble] = this.encoder.byteToNibbles(sendLevel);
 
         BaseSysEx[0x19] = highNibble;
         BaseSysEx[0x1a] = lowNibble;
@@ -412,7 +317,7 @@ export class GP200Actions implements IActions{
         // bytes 0x19 and 0x1a Parameter Value: split in hex digits (nibbles)
         let BaseSysEx= BaseSysExMsg.PresetSettingsAction.FxLoopSettings;
         BaseSysEx[0x16] = 4;
-        const [highNibble, lowNibble] = this.byteToNibbles(returnLevel);
+        const [highNibble, lowNibble] = this.encoder.byteToNibbles(returnLevel);
 
         BaseSysEx[0x19] = highNibble;
         BaseSysEx[0x1a] = lowNibble;
@@ -429,7 +334,7 @@ export class GP200Actions implements IActions{
         // bytes 0x19 and 0x1a Parameter Value: split in hex digits (nibbles)
         let BaseSysEx = BaseSysExMsg.PresetSettingsAction.FxLoopSettings;
         BaseSysEx[0x16] = 5;
-        const [highNibble, lowNibble] = this.byteToNibbles(mode);
+        const [highNibble, lowNibble] = this.encoder.byteToNibbles(mode);
 
         BaseSysEx[0x19] = highNibble;
         BaseSysEx[0x1a] = lowNibble;
@@ -487,14 +392,14 @@ export class GP200Actions implements IActions{
         let BaseSysEx = BaseSysExMsg.PresetSettingsAction.ExpSetting;
         BaseSysEx[0x15] = expID;
         BaseSysEx[0x16] = expParamID;
-        const [highNibble, lowNibble] = this.byteToNibbles(expModule);
+        const [highNibble, lowNibble] = this.encoder.byteToNibbles(expModule);
         BaseSysEx[0x17] = highNibble;
         BaseSysEx[0x18] = lowNibble;
 
         BaseSysEx[0x1a] = paramID;
 
-        const encodedMin = this.encodeParamValueFloat(paramMin);
-        const encodedMax = this.encodeParamValueFloat(paramMax);
+        const encodedMin = this.encoder.encodeParamValueFloat(paramMin);
+        const encodedMax = this.encoder.encodeParamValueFloat(paramMax);
 
 
         // write both params
@@ -517,7 +422,7 @@ export class GP200Actions implements IActions{
         // byte 0x1a Parameter number: Number in range (0 to 14)
         let BaseSysEx= BaseSysExMsg.PresetSettingsAction.KnobSettings;
         BaseSysEx[0x16] = knobID;
-        const [highNibble, lowNibble] = this.byteToNibbles(knobModule);
+        const [highNibble, lowNibble] = this.encoder.byteToNibbles(knobModule);
         BaseSysEx[0x17] = highNibble;
         BaseSysEx[0x18] = lowNibble;
 
@@ -552,7 +457,7 @@ export class GP200Actions implements IActions{
         // This is always invoked when the current effect is the one we want to change
         const pedalID = this.gp200.currentEffect.type;
         // Map int to 8 bytes hex digits little endian
-        const effectIDNibbles = this.encodeEffectIDToNibbles(effectID)
+        const effectIDNibbles = this.encoder.encodeEffectIDToNibbles(effectID)
         // Construct midi message
         const SysExMsg = this._contructChangeEffectMessage(pedalID, effectIDNibbles);
 
@@ -568,7 +473,7 @@ export class GP200Actions implements IActions{
             const cabCodeID = defaultEffectInfo.cabCode;
             const t: EffectType = EffectType.CAB;
             console.log("Associated cabCode", cabCodeID);
-            const SysExMsg = this._contructChangeEffectMessage(t, this.encodeEffectIDToNibbles(cabCodeID));
+            const SysExMsg = this._contructChangeEffectMessage(t, this.encoder.encodeEffectIDToNibbles(cabCodeID));
             this.midi.sendMessage(SysExMsg);
         }
 
@@ -612,11 +517,11 @@ export class GP200Actions implements IActions{
         let encodedValue: number[];
         if (paramNumericType == "float") {
             // round number to first decimal
-            encodedValue = this.encodeParamValueFloat(n);
+            encodedValue = this.encoder.encodeParamValueFloat(n);
         // should i check explictly for int?
         } else {
             // round number
-            encodedValue = this.encodeParamValueFloat(n);
+            encodedValue = this.encoder.encodeParamValueFloat(n);
         }
 
         // set the encoded values in message (8 bytes)
@@ -640,7 +545,7 @@ export class GP200Actions implements IActions{
         // bytes 25 and 26 contain the preset Number (hex digits)
         // bytes 29 and 2a contain the preset Number (hex digits)
         let msg = BaseSysExMsg.askInfo.askPresetInfo;
-        const [high_byte, low_byte] = this.byteToNibbles(num);
+        const [high_byte, low_byte] = this.encoder.byteToNibbles(num);
         msg[0x19] = high_byte;
         msg[0x1a] = low_byte;
 

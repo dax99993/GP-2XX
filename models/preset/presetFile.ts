@@ -183,7 +183,7 @@ export function decodePresetData(buffer: Buffer, offset: number): IPresetInfo {
         // Each block is 16 bytes
         const expSetting = decodeExpSettings(buffer, offset);
         offset += 16
-        console.log(expSetting);
+        // console.log(expSetting);
         expSettings[i] = expSetting;
     }
 
@@ -193,7 +193,7 @@ export function decodePresetData(buffer: Buffer, offset: number): IPresetInfo {
         // Each block is 8 bytes
         const knobSetting = decodeKnobSettings(buffer, offset);
         offset += 8
-        console.log(knobSetting);
+        // console.log(knobSetting);
         knobSettings[i] = knobSetting;
     }
 
@@ -203,7 +203,7 @@ export function decodePresetData(buffer: Buffer, offset: number): IPresetInfo {
         // Each block is 12 bytes
         const ctrlSetting = decodeCtrlSettings(buffer, offset);
         offset += 12
-        console.log(ctrlSetting);
+        // console.log(ctrlSetting);
         ctrlSettings[i] = ctrlSetting;
     }
 
@@ -245,7 +245,7 @@ export function decodePresetData(buffer: Buffer, offset: number): IPresetInfo {
 }
 
 function decodeEffectModule(buffer: Buffer, offset: number): IEffectInfo {
-    console.log(buffer.length);
+    // console.log(buffer.length);
     // This buffer should be 72 bytes
     // if (buffer.length !== 72) {
     //     throw new Error("Effect Module buffer should be 48 bytes");
