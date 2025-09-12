@@ -12,10 +12,7 @@ import React from 'react';
 
 import { Button, ButtonText } from '@/components/ui/button';
 
-import { decodePRSTFile } from '@/models/preset/presetFile';
-import { Buffer } from "buffer";
-import * as DocumentPicker from 'expo-document-picker';
-import { readAsStringAsync } from "expo-file-system";
+import { store } from '@/models/store';
 
 
 export default function TestScreen() {
@@ -23,30 +20,20 @@ export default function TestScreen() {
   console.log(Orientation[orientation]);
 
   const onClick = async () => {
-    const documents = await DocumentPicker.getDocumentAsync({
-      multiple: true,
-      type:"application/octet-stream"
-    });
+      const status = await store.presetImporter.LoadFiles();
+      if (status) {
+        const presetsInfo = store.presetImporter.decodeFiles();
 
-    if (!documents.canceled) {
-      console.log(documents.assets);
-      for (let i = 0; i < documents.assets.length; i=i+1) {
-        const asset = documents.assets[i];
-        console.log("Asset", i, asset);
-        // Read file
-        const s = await readAsStringAsync(asset.uri, {encoding: 'base64'});
-        console.log(s);
-        // Convert to uint8array
-        const buffer = Buffer.from(s, 'base64');
-        console.log("Buffer", buffer);
+        // Get memory positions to load presets
+        // Open Modal with selection
+        console.log("Open modal");
+        store.modals.openModal("loadPresetsModal");
 
-        const presetInfo = decodePRSTFile(buffer);
-        console.log(presetInfo);
-
+        // Load to GP200 memory
+        presetsInfo.forEach(p => {
+          console.log("\nPreset INFO: ", p);
+        })
       }
-
-      // Evoke action on presets
-    }
   }
 
   return (
@@ -67,6 +54,10 @@ export default function TestScreen() {
         <Button onPress={onClick}>
           <ButtonText>Load file</ButtonText>
         </Button>
+        {/* <Button onPress={() => store.modals.openModal("savePresetModal")}> */}
+        <Button onPress={() => store.modals.openModal("loadPresetsModal")}>
+          <ButtonText>Open load presets modal</ButtonText>
+        </Button>
       </View>
     </VStack>
   );
@@ -74,7 +65,7 @@ export default function TestScreen() {
 
 const styles = StyleSheet.create({
   maincontainer: {
-    flex: 1,
+    //flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',

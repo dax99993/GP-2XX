@@ -1,3 +1,4 @@
+import { PresetImporter } from "@/utils/presetImporter";
 import { action, makeObservable, observable, runInAction } from "mobx";
 import { GP200Actions } from "./actions/gp200Actions";
 import { GP200DeviceActions } from "./actions/gp200DeviceActions";
@@ -12,6 +13,7 @@ class Store {
     gpActions: GP200Actions;
     midi: MidiDevice;
     gpDeviceActions: GP200DeviceActions;
+    presetImporter: PresetImporter;
 
     modals: ModalStore;
 
@@ -20,6 +22,7 @@ class Store {
     constructor() {
         this.gp200 = new GP200Model();
         this.modals = new ModalStore();
+        this.presetImporter = new PresetImporter();
 
         const midiDisconnectCb = () => {
             this.modals.openModal("disconnectModal");

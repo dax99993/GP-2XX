@@ -47,6 +47,23 @@ function GoHomeButton() {
 function RightElements() {
   const {isLandscape, isTablet} = useOrientation();
 
+  const onClickImport = async () => {
+      const status = await store.presetImporter.LoadFiles();
+      if (status) {
+        const presetsInfo = store.presetImporter.decodeFiles();
+
+        // Get memory positions to load presets
+        // Open Modal with selection
+        console.log("Open modal");
+        store.modals.openModal("loadPresetsModal");
+
+        // Load to GP200 memory
+        presetsInfo.forEach(p => {
+          console.log("\nPreset INFO: ", p);
+        })
+      }
+  }
+
   return (
     <>
     <PresetInfo/>
@@ -126,6 +143,7 @@ function RightElements() {
             textValue="Import preset"
             onPress={() => {
               console.log("import preset");
+              onClickImport();
             }}
           >
             <Icon as={FolderInputIcon} size="sm" className="mr-2" />
@@ -136,6 +154,7 @@ function RightElements() {
             textValue="Export preset"
             onPress={() => {
               console.log("export preset");
+              store.modals.openModal("loadPresetsModal");
             }}
           >
             <Icon as={FolderOutputIcon} size="sm" className="mr-2" />

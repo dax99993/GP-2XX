@@ -8,9 +8,9 @@ import { MidiDevice } from "../midiDevice";
 import { ExpModule } from "../preset/IExpSettings";
 import { IPresetInfo } from "../preset/IPresetInfo";
 import { PresetModel } from "../preset/preset";
-import { decodePresetData } from "../preset/presetFile";
 import { IDeviceActions } from "./IActions";
 
+import { PresetImporter } from "@/utils/presetImporter";
 import { Buffer } from "buffer";
 
 function compareArrays(a: number[] | Uint8Array, b: number[] | Uint8Array) {
@@ -32,6 +32,7 @@ export class GP200DeviceActions implements IDeviceActions {
     gp200: GP200Model;
     midi: MidiDevice;
     decoder: DecoderUtils;
+    presetImporter: PresetImporter;
 
     //messages: midiMessage[];
     presetInfoMessages: Uint8Array[];
@@ -42,6 +43,7 @@ export class GP200DeviceActions implements IDeviceActions {
         this.midi = midi;
         this.gp200 = gp200;
         this.decoder = new DecoderUtils();
+        this.presetImporter = new PresetImporter;
 
         //this.messages = [];
         this.presetInfoMessages = [];
@@ -349,7 +351,7 @@ export class GP200DeviceActions implements IDeviceActions {
         this.presetInfoMessages = [];
 
         // decode preset data
-        return decodePresetData(Buffer.from(presetData), 0);
+        return this.presetImporter.decodePresetData(Buffer.from(presetData), 0);
     }
 
     // GetPresetInfo(): IPresetInfo {
