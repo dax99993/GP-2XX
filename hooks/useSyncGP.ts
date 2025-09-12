@@ -16,7 +16,7 @@ function useSyncGP() {
 
     useEffect(()=> {
         if (!isSyncing) {
-            store.gpActions.AskPresetInfo(syncedPresets);
+            store.gpMidiEncoder.AskPresetInfo(syncedPresets);
         }
     },[isSyncing])
 

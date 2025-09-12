@@ -76,7 +76,7 @@ function RightElements() {
         className='rounded-xl px-3'
         onPress={() => {
           console.log("Change to previous bank");
-          store.gpActions.PrevBank();
+          store.gpMidiEncoder.PrevBank();
         }}
       >
         <ButtonIcon as={ChevronsLeftIcon} />
@@ -87,7 +87,7 @@ function RightElements() {
         className='rounded-xl px-3'
         onPress={() => {
           console.log("Change to next bank");
-          store.gpActions.NextBank();
+          store.gpMidiEncoder.NextBank();
         }}
       >
         <ButtonIcon as={ChevronsRightIcon} />
@@ -100,7 +100,7 @@ function RightElements() {
         className='rounded-xl px-3'
         onPress={() => {
           console.log("Change to previous preset");
-          store.gpActions.PreviousPreset();
+          store.gpMidiEncoder.PreviousPreset();
         }}
       >
         <ButtonIcon as={ChevronLeftIcon} />
@@ -111,7 +111,7 @@ function RightElements() {
         className='rounded-xl px-3'
         onPress={() => {
           console.log("Change to next preset");
-          store.gpActions.NextPreset();
+          store.gpMidiEncoder.NextPreset();
         }}
       >
         <ButtonIcon as={ChevronRightIcon} />

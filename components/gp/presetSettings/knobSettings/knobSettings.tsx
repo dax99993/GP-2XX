@@ -52,7 +52,7 @@ function KnobSettings({knobID}: KnobSettingsProps) {
                 labels={MODULE_LABELS}
                 onChange={function (s: string, n: number): void {
                     console.log("selected Knob Module", s, n);
-                    store.gpActions.ChangePresetKnobSettings(knobID, parseInt(s) as KnobModule);
+                    store.gpMidiEncoder.ChangePresetKnobSettings(knobID, parseInt(s) as KnobModule);
                 }}
             />
             <PickerSelector name={"Param Name"}
@@ -60,7 +60,7 @@ function KnobSettings({knobID}: KnobSettingsProps) {
                 labels={param_labels}
                 onChange={function (s: string, n: number): void {
                     console.log("selected Knob Param", s, n);
-                    store.gpActions.ChangePresetKnobSettings(knobID, knobModule, parseInt(s));
+                    store.gpMidiEncoder.ChangePresetKnobSettings(knobID, knobModule, parseInt(s));
                 }}
             />
         </>

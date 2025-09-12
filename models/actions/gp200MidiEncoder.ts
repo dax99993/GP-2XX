@@ -11,7 +11,7 @@ import { KnobModule } from "../preset/IKnobSettings";
 import { IActions } from "./IActions";
 
 
-export class GP200Actions implements IActions{
+export class GP200MidiEncoder implements IActions{
 
     gp200: GP200Model;
     midi: MidiDevice;

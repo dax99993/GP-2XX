@@ -33,7 +33,7 @@ function SwitchParameter({param}: SwitchParameterProps) {
                     ios_backgroundColor="#d4d4d4"
                     value={param.currentValue != 0}
                     onValueChange={(n: boolean) => {
-                        store.gpActions.ChangeEffectParamValue(param.ID, "float", Number(n));
+                        store.gpMidiEncoder.ChangeEffectParamValue(param.ID, "float", Number(n));
                     }}
                 />
             </HStack>

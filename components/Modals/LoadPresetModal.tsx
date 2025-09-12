@@ -21,10 +21,10 @@ function LoadPresetsModal() {
     const onSave = (presetNumber: number, presetName: string) => {
         console.log("Save preset", presetNumber, "with name:", presetName);
         // Save preset
-        store.gpActions.SaveCurrentPreset(presetNumber, presetName);
+        store.gpMidiEncoder.SaveCurrentPreset(presetNumber, presetName);
 
         // Go to new saved preset
-        store.gpActions.ChangePreset(presetNumber);
+        store.gpMidiEncoder.ChangePreset(presetNumber);
 
         // CloseModal
         onClose();

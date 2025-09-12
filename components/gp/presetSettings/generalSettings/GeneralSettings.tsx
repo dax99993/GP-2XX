@@ -35,7 +35,7 @@ function GeneralSettings() {
                     }}
                     onSlidingComplete={(n: number) => {
                         enableScrolling();
-                        store.gpActions.ChangePresetVolume(n);
+                        store.gpMidiEncoder.ChangePresetVolume(n);
                     }}                
                 />
                 <NumericSlider 
@@ -49,7 +49,7 @@ function GeneralSettings() {
                     }}
                     onSlidingComplete={(n: number) => {
                         enableScrolling();
-                        store.gpActions.ChangePresetBPM(n);
+                        store.gpMidiEncoder.ChangePresetBPM(n);
                     }}                
                 />
                 <NumericSlider 
@@ -63,7 +63,7 @@ function GeneralSettings() {
                     }}
                     onSlidingComplete={(n: number) => {
                         enableScrolling();
-                        store.gpActions.ChangePresetPan(n);
+                        store.gpMidiEncoder.ChangePresetPan(n);
                     }}                
                 />
             </VStack>

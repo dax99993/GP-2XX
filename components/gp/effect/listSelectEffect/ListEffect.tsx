@@ -103,7 +103,7 @@ function ListEffectItem(props: ListEffectItemProps) {
 
     const onPress = () => {
         //console.log("Selected ", props.name);
-        store.gpActions.ChangeEffect(props.id);
+        store.gpMidiEncoder.ChangeEffect(props.id);
         // go back to edit screen
         router.back();
     };

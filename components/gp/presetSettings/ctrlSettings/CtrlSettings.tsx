@@ -29,7 +29,7 @@ function CtrlSettings({ctrlID}: CtrlSettingsProps) {
             let newPedalBinding: number[] = [...pedals];
             newPedalBinding[index] = 1 - newPedalBinding[index];
             //console.log(newPedalBinding);
-            store.gpActions.ChangePresetCtrlSettings(ctrlID, newPedalBinding);
+            store.gpMidiEncoder.ChangePresetCtrlSettings(ctrlID, newPedalBinding);
         };
 
         return (

@@ -1,7 +1,7 @@
 import { PresetImporter } from "@/utils/presetImporter";
 import { action, makeObservable, observable, runInAction } from "mobx";
-import { GP200Actions } from "./actions/gp200Actions";
-import { GP200DeviceActions } from "./actions/gp200DeviceActions";
+import { GP200MidiDecoder } from "./actions/gp200MidiDecoder";
+import { GP200MidiEncoder } from "./actions/gp200MidiEncoder";
 import { GP200Model } from "./gp200";
 import { MidiDevice } from "./midiDevice";
 import ModalStore from "./modalStore";
@@ -10,9 +10,9 @@ import ModalStore from "./modalStore";
 
 class Store {
     gp200: GP200Model;
-    gpActions: GP200Actions;
     midi: MidiDevice;
-    gpDeviceActions: GP200DeviceActions;
+    gpMidiEncoder: GP200MidiEncoder;
+    gpMidiDecoder: GP200MidiDecoder;
     presetImporter: PresetImporter;
 
     modals: ModalStore;
@@ -35,11 +35,11 @@ class Store {
 
         this.midi = new MidiDevice(midiConnectCb, midiDisconnectCb);
 
-        this.gpActions = new GP200Actions(this.gp200, this.midi);
-        this.gpDeviceActions = new GP200DeviceActions(this.gp200, this.midi);
+        this.gpMidiEncoder = new GP200MidiEncoder(this.gp200, this.midi);
+        this.gpMidiDecoder = new GP200MidiDecoder(this.gp200, this.midi);
 
         // Add listener socan be add to input in case device already connected when this is loaded
-        this.gpDeviceActions.setupReceivedSysEx();
+        this.gpMidiDecoder.setupReceivedSysEx();
 
         // Start to get midi access
         this.midi.getMidiAccess();
@@ -49,7 +49,7 @@ class Store {
 
         makeObservable(this,{
             gp200: observable,
-            gpActions: observable,
+            gpMidiEncoder: observable,
 
             showPatchSettings: observable,
 
@@ -62,11 +62,25 @@ class Store {
         this.showPatchSettings = state;
     }
 
+    // SyncGP() {
+        // Reset state to start Syncing again
+        // this.gp200.SetToStartSyncing();
+
+        // Maybe each of these one in a try catch block and if failed set store.gp200.syncingErrorOccur = true; to show modal
+        // Sync USER IR names
+        // Sync DST NAM names
+        // Sync AMP NAM names
+        // Sync UserStyle category names
+        // ** Sync switches mode and current configuration **
+        // Sync presets
+        // Sync current temporal preset
+// 
+    // }
 
     SyncGP() {
         // Reset state to start Syncing again
         this.gp200.SetToStartSyncing();
-        const maxTriesPerPreset = 5;
+        const maxTriesPerPreset = 4;
         let tries = 0;
         let syncedPresets = 0;
         // Start syncing process after 1 seconds
@@ -82,7 +96,7 @@ class Store {
                         tries = 0;
                     }
                     tries++;
-                    this.gpActions.AskPresetInfo(this.gp200.syncedPresets);
+                    this.gpMidiEncoder.AskPresetInfo(this.gp200.syncedPresets);
                 } else {
                     // Could not sync the device stop this and reconnect to try again
                     if (!this.gp200.isSynced) {
@@ -96,14 +110,14 @@ class Store {
 
                         // Execute action to changePreset to current preset in device
                         runInAction(() => {
-                            store.gpActions.ChangePreset(0);
+                            store.gpMidiEncoder.ChangePreset(0);
                         })
 
                     }
                     clearInterval(intervalId); // Stop the interval when the condition is met
                 }
-            }, 250); // Execute every quater of second
-        }, 1500);
+            }, 500); // Execute every quater of second
+        }, 3500);
 
         //clearTimeout(timeoutID);
     }

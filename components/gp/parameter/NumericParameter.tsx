@@ -28,7 +28,7 @@ function NumericParameter({param}: NumericParameterProps) {
             }}
             onSlidingComplete={(n: number) => {
                 enableScrolling();
-                store.gpActions.ChangeEffectParamValue(param.ID, "float", n);
+                store.gpMidiEncoder.ChangeEffectParamValue(param.ID, "float", n);
             }}
         />
     );

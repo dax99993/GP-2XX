@@ -130,7 +130,7 @@ function EffectChain() {
     // remove the -1 for fixed item 
     const chainOrder = ids.filter(i => i !== -1);
     console.log("New chain order = ", chainOrder);
-    store.gpActions.ChangePresetChainOrder(ids);
+    store.gpMidiEncoder.ChangePresetChainOrder(ids);
   }, []);
 
   // Default values

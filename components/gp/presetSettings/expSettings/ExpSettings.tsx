@@ -151,7 +151,7 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
                         // Get range of current effect to set them
                         const [min, max, _] = GetParamRange(module, paramID);
                         //console.log("Range",min, max, step);
-                        store.gpActions.ChangePresetExpSettings(expID, expParamID,
+                        store.gpMidiEncoder.ChangePresetExpSettings(expID, expParamID,
                             module, paramID, min, max);
                     }
                 }}
@@ -165,7 +165,7 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
                         //console.log("Set EXP MODULE ", expModule, moduleParamID);
                         const [min, max, _]= GetParamRange(expModule, moduleParamID);
                         //console.log("Ranges: ", min, max, step);
-                        store.gpActions.ChangePresetExpSettings(expID, expParamID,
+                        store.gpMidiEncoder.ChangePresetExpSettings(expID, expParamID,
                             expModule, moduleParamID, min, max);
                     }
                 }}
@@ -188,7 +188,7 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
                     console.log("Change Exp Param Min value:", n);
                     enableScrolling();
                     setMin(n);
-                    store.gpActions.ChangePresetExpSettings(expID, expParamID,
+                    store.gpMidiEncoder.ChangePresetExpSettings(expID, expParamID,
                         expModule, expParam, n, max);
                 }}
             />
@@ -206,7 +206,7 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
                     console.log("Change Exp Param Max value:", n);
                     enableScrolling();
                     setMax(n);
-                    store.gpActions.ChangePresetExpSettings(expID, expParamID,
+                    store.gpMidiEncoder.ChangePresetExpSettings(expID, expParamID,
                         expModule, expParam, min, n);
                 }}
             />

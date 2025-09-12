@@ -78,7 +78,7 @@ const SelectPresetListItem = observer((props: ListItemProps) => {
     const onPress = () => {
         // Go back to edit screen
         router.back();
-        store.gpActions.ChangePreset(props.number);
+        store.gpMidiEncoder.ChangePreset(props.number);
     };
 
     const onLongPress = () => {

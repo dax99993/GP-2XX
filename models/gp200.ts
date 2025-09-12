@@ -3,9 +3,9 @@ import { action, computed, makeObservable, observable } from "mobx";
 import { EffectModel, EffectType } from "./effect/effect";
 import { PresetModel } from "./preset/preset";
 
+import { eventHandler } from "@/utils/eventHandler";
 
 export class GP200Model {
-
 
     presets: PresetModel[];
 
@@ -20,6 +20,8 @@ export class GP200Model {
 
 
     constructor() {
+      // Add all syncing events
+        eventHandler.addEventListener('syncPreset', (presetNumber: number) => this.SyncPreset(presetNumber))
 
         // initialize internal values
         this.presets = []
@@ -68,6 +70,15 @@ export class GP200Model {
       this.syncedPresets = 0
       this.syncing = false; 
       this.syncingErrorOccur = false;
+
+    }
+
+    SyncPresets() {
+
+    }
+
+    SyncPreset(presetNumber: number) {
+      // Ask for preset information
     }
 
     SyncingPresetDone() {
@@ -81,7 +92,7 @@ export class GP200Model {
 
     get isSynced(): boolean {
       //return this.syncedPresets == 256;
-      return this.syncedPresets == 32;
+      return this.syncedPresets == 40;
     }
 
     get presetBankCode(): string {

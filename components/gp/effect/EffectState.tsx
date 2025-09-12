@@ -22,7 +22,7 @@ function EffectState() {
                 value={state}
                 onValueChange={(v) => {
                     console.log(v);
-                    store.gpActions.ChangeEffectState(v);
+                    store.gpMidiEncoder.ChangeEffectState(v);
                 }}
             />
         </Center>

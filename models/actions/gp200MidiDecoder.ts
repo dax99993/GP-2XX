@@ -10,6 +10,7 @@ import { IPresetInfo } from "../preset/IPresetInfo";
 import { PresetModel } from "../preset/preset";
 import { IDeviceActions } from "./IActions";
 
+import { eventHandler } from "@/utils/eventHandler";
 import { PresetImporter } from "@/utils/presetImporter";
 import { Buffer } from "buffer";
 
@@ -20,14 +21,7 @@ function compareArrays(a: number[] | Uint8Array, b: number[] | Uint8Array) {
 }
 
 
-// type midiMessage = {
-//     data: number[];
-//     timestamp: number;
-// }
-
-
-
-export class GP200DeviceActions implements IDeviceActions {
+export class GP200MidiDecoder implements IDeviceActions {
 
     gp200: GP200Model;
     midi: MidiDevice;
@@ -50,6 +44,9 @@ export class GP200DeviceActions implements IDeviceActions {
         this.message_received_counter = 0;
 
         // Maybe add event listener to midi device
+
+        eventHandler.addEventListener('onPresetInfoReceived', () => this.SyncPresetInfo)
+        eventHandler.addEventListener('syncPreset', (presetNumber: number) => this.SyncPresetInfo)
 
         makeObservable(this, {
             gp200: observable,

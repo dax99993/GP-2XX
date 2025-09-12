@@ -19,28 +19,28 @@ function HomeScreen() {
     // Testing preset 63-D 251 number
     const preset_num = 0;
     // send action
-    store.gpActions.ChangePreset(preset_num);
+    store.gpMidiEncoder.ChangePreset(preset_num);
     console.log("Setting bank to", store.gp200.presetBankCode);
   }, []);
 
 
   const incrementPreset = () => {
-    store.gpActions.NextPreset();
+    store.gpMidiEncoder.NextPreset();
     console.log("Setting preset Num to", store.gp200.presetBankCode);
   }
 
   const decrementPreset = () => {
-    store.gpActions.PreviousPreset();
+    store.gpMidiEncoder.PreviousPreset();
     console.log("Setting preset Num to", store.gp200.presetBankCode);
   }
 
   const incrementBank = () => {
-    store.gpActions.NextBank();
+    store.gpMidiEncoder.NextBank();
     console.log("Setting bank to", store.gp200.presetBankCode);
   }
 
   const decrementBank = () => {
-    store.gpActions.PrevBank();
+    store.gpMidiEncoder.PrevBank();
     console.log("Setting bank to", store.gp200.presetBankCode);
   }
   const getPresetInfo = () => {

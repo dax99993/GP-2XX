@@ -23,7 +23,7 @@ function FxLoopSettings() {
 
     const onSlidingComplete = (values: number []) => {
         console.log("New FxLoop position values", values);
-        store.gpActions.ChangePresetFxLoopPosition(values[0], values[1]);
+        store.gpMidiEncoder.ChangePresetFxLoopPosition(values[0], values[1]);
     }
 
     return (
@@ -58,7 +58,7 @@ function FxLoopSettings() {
                 onSlidingComplete={(n: number) => {
                     //console.log(n);
                     enableScrolling();
-                    store.gpActions.ChangePresetFxLoopSendLevel(n);
+                    store.gpMidiEncoder.ChangePresetFxLoopSendLevel(n);
                 }}
             />
             <NumericSlider
@@ -72,7 +72,7 @@ function FxLoopSettings() {
                 }}
                 onSlidingComplete={(n: number) => {
                     enableScrolling();
-                    store.gpActions.ChangePresetFxLoopReturnLevel(n);
+                    store.gpMidiEncoder.ChangePresetFxLoopReturnLevel(n);
                 } }
             />
             <PickerSelector
@@ -81,7 +81,7 @@ function FxLoopSettings() {
                 labels={[["0", "Parallel"], ["1", "Series"]]}
                 onChange={function (s: string, n: number): void {
                     //console.log(s);
-                    store.gpActions.ChangePresetFxLoopMode(n);
+                    store.gpMidiEncoder.ChangePresetFxLoopMode(n);
                 }}            
             />
         </BoundBox>

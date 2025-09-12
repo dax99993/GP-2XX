@@ -10,7 +10,7 @@ type SelectParameterProps = {
 function SelectParameter({param}: SelectParameterProps) {
 
     const onChange = (v:string, n: number) => {
-       store.gpActions.ChangeEffectParamValue(param.ID, "float", n);
+       store.gpMidiEncoder.ChangeEffectParamValue(param.ID, "float", n);
        console.log(`Select assign value (${param.name})= ${v}, ${n}`);
     };
 

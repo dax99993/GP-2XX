@@ -45,7 +45,7 @@ function DoubleParameter({param}: DoubleParameterProps) {
                     }}
                     onSlidingComplete={(n:number) => {
                         enableScrolling();
-                        store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
+                        store.gpMidiEncoder.ChangeEffectParamValue(param.id, param.type[0], n);
                     }}
                 />
             }
@@ -56,7 +56,7 @@ function DoubleParameter({param}: DoubleParameterProps) {
                     currentValue={param.current_value[1].toString()}
                     labels={labels}
                     onChange={(_: string, n: number) => {
-                        store.gpActions.ChangeEffectParamValue(param.id, param.type[0], n);
+                        store.gpMidiEncoder.ChangeEffectParamValue(param.id, param.type[0], n);
                     }}
                 />
             }
