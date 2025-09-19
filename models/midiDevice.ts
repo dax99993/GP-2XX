@@ -1,5 +1,6 @@
-import { MIDIAccess, MIDIConnectionEvent, MIDIInput, MIDIMessageEvent, MIDIOutput, MIDIPort, requestMIDIAccess } from "@motiz88/react-native-midi";
+// import { MIDIAccess, MIDIConnectionEvent, MIDIInput, MIDIMessageEvent, MIDIOutput, MIDIPort, requestMIDIAccess } from "@motiz88/react-native-midi";
 import { action, makeObservable, observable } from "mobx";
+import { MIDIAccess, MIDIConnectionEvent, MIDIInput, MIDIMessageEvent, MIDIOutput, MIDIPort, requestMIDIAccess } from "react-native-midi";
 
 export class MidiDevice {
     midiAccess?: MIDIAccess = undefined;

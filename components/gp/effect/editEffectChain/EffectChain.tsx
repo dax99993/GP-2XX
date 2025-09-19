@@ -125,7 +125,7 @@ function EffectChain() {
   );
 
   const onDragEnd = useCallback((params: SortableGridDragEndParams<number>) => {
-    //'worklet';
+    'worklet';
     const ids = params.indexToKey.map(i => Number(i));
     // remove the -1 for fixed item 
     const chainOrder = ids.filter(i => i !== -1);

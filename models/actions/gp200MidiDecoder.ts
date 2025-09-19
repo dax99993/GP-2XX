@@ -1,13 +1,13 @@
 import { BaseSysExMsg, GetPresetInfo, SysExGPHeader } from "@/constants/SysExMsg";
 import { DecoderUtils } from "@/utils/decodeUtils";
-import { MIDIMessageEvent } from "@motiz88/react-native-midi";
+// import { MIDIMessageEvent } from "@motiz88/react-native-midi";
 import { action, makeObservable, observable } from "mobx";
+import { MIDIMessageEvent } from "react-native-midi";
 import { EffectType } from "../effect/effect";
 import { GP200Model } from "../gp200";
 import { MidiDevice } from "../midiDevice";
 import { ExpModule } from "../preset/IExpSettings";
 import { IPresetInfo } from "../preset/IPresetInfo";
-import { PresetModel } from "../preset/preset";
 import { IDeviceActions } from "./IActions";
 
 import { eventHandler } from "@/utils/eventHandler";
@@ -63,20 +63,15 @@ export class GP200MidiDecoder implements IDeviceActions {
         // Extract Preset Information
         const presetInfo = this.GetPresetInfo();
         // Convert Info to model
-        const preset = new PresetModel(presetInfo);
         console.log(`PRESET MODEL (${presetInfo.number})`);
-        //console.log(preset);
 
         // Update model
-        this.gp200.addPreset(preset);
+        this.gp200.addPreset(presetInfo);
 
         // Notify synced preset
         this.gp200.SyncingPresetDone();
+        // eventHandler.emitEvent(SyncEvents.PresetSynced, this.syncedPresets);
 
-        // When finished change to preset 0
-        // if (this.gp200.isSynced) {
-        //     this.gp200.changePreset(0);
-        // }
     }
 
 
@@ -655,30 +650,37 @@ export class GP200MidiDecoder implements IDeviceActions {
         const presetInfoMsg6 = GetPresetInfo.message6;
 
         if ( this.isSameMessage(message, presetInfoMsg1, 12) ) {
-            console.log("Preset Info message 1 received!.");
             // Set syncing flag
             this.gp200.syncing = true;
+
             if (this.presetInfoMessages.length > 1) {return}
+
             this.presetInfoMessages[0] = message;
+            console.log("Preset Info message 1 received!.");
         } else if ( this.isSameMessage(message, presetInfoMsg2, 12) ) {
-            console.log("Preset Info message 2 received!.");
+
             if (this.presetInfoMessages.length > 2) {return}
             this.presetInfoMessages[1] = message;
+            console.log("Preset Info message 2 received!.");
         } else if ( this.isSameMessage(message, presetInfoMsg3, 12) ) {
-            console.log("Preset Info message 3 received!.");
             if (this.presetInfoMessages.length > 3) {return}
+
+            console.log("Preset Info message 3 received!.");
             this.presetInfoMessages[2] = message;
         } else if ( this.isSameMessage(message, presetInfoMsg4, 12) ) {
-            console.log("Preset Info message 4 received!.");
             if (this.presetInfoMessages.length > 4) {return}
+
             this.presetInfoMessages[3] = message;
+            console.log("Preset Info message 4 received!.");
         } else if ( this.isSameMessage(message, presetInfoMsg5, 12) ) {
-            console.log("Preset Info message 5 received!.");
             if (this.presetInfoMessages.length > 5) {return}
+
+            console.log("Preset Info message 5 received!.");
             this.presetInfoMessages[4] = message;
         } else if ( this.isSameMessage(message, presetInfoMsg6, 12) ) {
-            console.log("Preset Info message 6 received!.");
             if (this.presetInfoMessages.length > 6) {return}
+            
+            console.log("Preset Info message 6 received!.");
             this.presetInfoMessages[5] = message;
         }
     }
@@ -689,9 +691,10 @@ export class GP200MidiDecoder implements IDeviceActions {
         const presetInfoMsg7 = GetPresetInfo.message7;
 
         if ( this.isSameMessage(message, presetInfoMsg7, 12)) {
-            console.log("Preset Info message 7 received!.");
             if (this.presetInfoMessages.length > 7) {return}
+
             this.presetInfoMessages[6] = message;
+            console.log("Preset Info message 7 received!.");
             this.SyncPresetInfo();
         }
     }

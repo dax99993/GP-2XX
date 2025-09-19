@@ -158,22 +158,20 @@ export class PresetImporter {
 
 
         // Preset name is encoded as 16 ascii characters
-        const presetName: string = String.fromCharCode(...buffer.subarray(offset, offset + 16));
+        const presetName: string = String.fromCharCode(...buffer.subarray(offset, offset + 16).filter(b => b != 0));
         //console.log("Preset Name", presetName);
         offset += 16;
 
         // Preset Author is encoded as 16 ascii characters
-        const presetAuthor: string = String.fromCharCode(...buffer.subarray(offset, offset + 16));
+        const presetAuthor: string = String.fromCharCode(...buffer.subarray(offset, offset + 16).filter(b => b != 0));
         //console.log("Preset Author", presetAuthor);
         offset += 16;
 
         // Preset Author is encoded as 30 ascii characters ; maybe is 32 characters
-        const presetNote: string = String.fromCharCode(...buffer.subarray(offset, offset + 30));
+        const presetNote: string = String.fromCharCode(...buffer.subarray(offset, offset + 32).filter(b => b != 0));
         //console.log("Preset Note", presetNote);
-        offset += 30;
+        offset += 32;
 
-        //should contain 00 00
-        offset += 2;  // If its 32 characters i should remove this
         //should contain 00 00 00 00
         offset += 4;
         //should contain 00 00 00 00
@@ -267,14 +265,24 @@ export class PresetImporter {
         return {
             name: presetName,
             number: presetNumber,
+            bankCode: this.bankCode(presetNumber),
+
+            category: category,
+            author: presetAuthor,
+            note: presetNote,
+
             volume: volume,
             pan: pan,
             bpm: bpm,
+
             effectsChainOrder: effectChainOrder,
+            
             fxloop: fxLoop,
+
             knob1: knobSettings[0],
             knob2: knobSettings[1],
             knob3: knobSettings[2],
+
             ctrl1: ctrlSettings[0],
             ctrl2: ctrlSettings[1],
             ctrl3: ctrlSettings[2],
@@ -288,6 +296,7 @@ export class PresetImporter {
             exp1A: [expSettings[0], expSettings[1], expSettings[2]],
             exp1B: [expSettings[3], expSettings[4], expSettings[5]],
             exp2: [expSettings[4], expSettings[5], expSettings[6]],
+
             effects: effectsInfo,
         }
     }
@@ -477,5 +486,32 @@ export class PresetImporter {
 
         // 4. Use getFloat32() to read the number (assuming little-endian)
         return dataView.getFloat32(0, true); // 0 is the offset
+    }
+
+    bankCode(presetNumber: number): string {
+      const number = presetNumber;
+
+      if (number === undefined) {
+          return "";
+      }
+
+      const bankNumber = Math.floor(number / 4) + 1;
+      let bankLetter: string = "";
+      switch (number % 4) {
+        case 0:
+          bankLetter = 'A';
+          break;
+        case 1:
+          bankLetter = 'B';
+          break;
+        case 2:
+          bankLetter = 'C';
+          break;
+        case 3:
+          bankLetter = 'D';
+          break;
+      }
+
+      return bankNumber.toString().padStart(2, '0') + '-' + bankLetter;
     }
 }

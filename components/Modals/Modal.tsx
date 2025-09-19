@@ -24,7 +24,10 @@ function MyModal({id, headerStyle, headerElements, bodyElements, footerElements}
             isOpen={isOpen}
         >
             <ModalBackdrop/>
-            <ModalContent>
+            <ModalContent
+            // style={{maxHeight: height* 1.0}}
+            style={{maxHeight: '70%'}}
+            >
                 {
                     headerElements && 
                     <ModalHeader style={[headerStyle]}>

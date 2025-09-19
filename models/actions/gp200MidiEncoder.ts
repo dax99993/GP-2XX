@@ -39,16 +39,10 @@ export class GP200MidiEncoder implements IActions{
             ChangeEffectParamValue: action,
             ChangeEffect: action,
 
-            SyncingNextPreset: action,
         });
 
     }
 
-    SyncingNextPreset() {
-        console.log("Start syncing Preset", this.gp200.syncedPresets);
-        this.AskPresetInfo(this.gp200.syncedPresets);
-    }
-    
     //  --------------------------------------------------------------------------------
     //      MIDI/MODEL ENCODE ACTIONS
     //  ---------------------------------------------------------------------------------
@@ -536,7 +530,7 @@ export class GP200MidiEncoder implements IActions{
         this.midi.sendMessage(baseSysEx);
     }
 
-    AskPresetInfo(presetNumber: number) {
+    AskStoredPresetInfo(presetNumber: number) {
         // Checks num in range [0, 255]
         const num = Math.min(Math.max(presetNumber, 0), 255);
 

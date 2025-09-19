@@ -3,11 +3,13 @@ import { action, computed, makeObservable, observable } from "mobx";
 import { EffectModel, EffectType } from "./effect/effect";
 import { PresetModel } from "./preset/preset";
 
-import { eventHandler } from "@/utils/eventHandler";
+import { eventHandler, SyncEvents } from "@/utils/eventHandler";
+import { IPresetInfo } from "./preset/IPresetInfo";
 
 export class GP200Model {
 
-    presets: PresetModel[];
+    //presets: PresetModel[];
+    presets: IPresetInfo[];
 
     // Currently available for editing
     currentPresetNumber: number | undefined;
@@ -21,7 +23,7 @@ export class GP200Model {
 
     constructor() {
       // Add all syncing events
-        eventHandler.addEventListener('syncPreset', (presetNumber: number) => this.SyncPreset(presetNumber))
+        // eventHandler.addEventListener('syncPreset', (presetNumber: number) => this.SyncPreset(presetNumber))
 
         // initialize internal values
         this.presets = []
@@ -70,29 +72,31 @@ export class GP200Model {
       this.syncedPresets = 0
       this.syncing = false; 
       this.syncingErrorOccur = false;
-
-    }
-
-    SyncPresets() {
-
-    }
-
-    SyncPreset(presetNumber: number) {
-      // Ask for preset information
     }
 
     SyncingPresetDone() {
       this.syncedPresets = this.presets.length;
       this.syncing = false;
+
+      // Notify
+      console.log("----------------------------------------------------------------");
+      console.log("Preset Synced", this.syncedPresets - 1);
+      console.log("----------------------------------------------------------------");
+
+      // eventHandler.emitEvent(SyncEvents.PresetSynced, this.syncedPresets);
+      console.log("Sync event emitted!");
+      eventHandler.emitEvent(SyncEvents.PresetSynced, this.syncedPresets);
+      // eventHandler.emitEvent(SyncEvents.PresetSynced, {presetNumber: this.syncedPresets});
     }
 
-    addPreset(preset: PresetModel) {
+    addPreset(preset: IPresetInfo) {
       this.presets[preset.number] = preset;
     }
 
     get isSynced(): boolean {
-      //return this.syncedPresets == 256;
-      return this.syncedPresets == 40;
+      // return this.syncedPresets == 256;
+      // return this.syncedPresets == 50;
+      return this.syncedPresets == 16;
     }
 
     get presetBankCode(): string {
@@ -127,8 +131,9 @@ export class GP200Model {
         // Clamp to valid range
         const num = Math.min(Math.max(preset_number, 0), 255);
         this.currentPresetNumber = num;
+
         // clone the preset
-        this.currentPreset = this.presets[num].clone();
+        this.currentPreset = new PresetModel(this.presets[num]);
 
         // select to pre by default
         this.changeSelectedEffect(0);
@@ -141,7 +146,8 @@ export class GP200Model {
 
         this.currentPreset.name = presetName;
         this.currentPreset.number = presetNumber;
-        this.presets[presetNumber] = this.currentPreset;
+
+        this.presets[presetNumber] = this.currentPreset.toPresetInfo();
     }
 
 

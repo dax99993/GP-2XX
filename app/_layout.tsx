@@ -1,4 +1,5 @@
 import DisconnectModal from "@/components/Modals/DisconnectModal";
+import ExportPresetsModal from "@/components/Modals/ExportPresetsModal";
 import LoadPresetModal from "@/components/Modals/LoadPresetModal";
 import SaveModal from "@/components/Modals/SaveModal";
 import SyncModal from "@/components/Modals/SyncModal";
@@ -31,6 +32,7 @@ export default function RootLayout() {
         <DisconnectModal/>
         <SaveModal/>
         <LoadPresetModal/>
+        <ExportPresetsModal/>
       <ThemeProvider value={DarkTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

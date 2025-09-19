@@ -55,13 +55,19 @@ function RightElements() {
         // Get memory positions to load presets
         // Open Modal with selection
         console.log("Open modal");
-        store.modals.openModal("loadPresetsModal");
+        store.modals.openModal("importPresetsModal");
 
         // Load to GP200 memory
         presetsInfo.forEach(p => {
           console.log("\nPreset INFO: ", p);
         })
       }
+  }
+
+  const onClickExport = async () => {
+
+        console.log("Open modal");
+        store.modals.openModal("exportPresetsModal");
   }
 
   return (
@@ -154,7 +160,7 @@ function RightElements() {
             textValue="Export preset"
             onPress={() => {
               console.log("export preset");
-              store.modals.openModal("loadPresetsModal");
+              onClickExport();
             }}
           >
             <Icon as={FolderOutputIcon} size="sm" className="mr-2" />
@@ -185,9 +191,7 @@ const PresetInfo = observer(() => {
   const router = useRouter();
 
   const bankCode = store.gp200.currentPreset ? store.gp200.currentPreset.bankCode : "YY-XX";
-  let presetName = store.gp200.currentPreset ? store.gp200.currentPreset.name : "a".repeat(12);
-  // presetName = presetName.length > 10 ? 
-  //   presetName.slice(0, 10 - 3) + '...' : presetName
+  let presetName = store.gp200.currentPreset ? store.gp200.currentPreset.name : "z".repeat(16);
 
   const goChangePreset = () => {
     console.log("Go change preset");
@@ -196,9 +200,6 @@ const PresetInfo = observer(() => {
 
   return (
     <TouchableOpacity style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }} onPress={goChangePreset}>
-      {/* <VStack className='bg-secondary-300 mx-2 px-2 rounded-md' style={{ flex: 1, minWidth: 50, justifyContent: 'center' }}>
-        <Text numberOfLines={1} size="xl" bold={true}>{bankCode + ' ' + presetName}</Text>
-      </VStack> */}
       <Center className='bg-secondary-300 mx-2 px-2 rounded-md' style={{ flex: 1, minWidth: 50 }}>
         <Text numberOfLines={1} size="xl" bold={true}>{bankCode}</Text>
         <Text numberOfLines={1} size="md">{presetName}</Text>

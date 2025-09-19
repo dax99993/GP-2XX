@@ -15,6 +15,11 @@ export interface IPresetInfo {
     // General info
     name: string;
     number: number;
+    bankCode: string; //Useful in export import & export
+
+    category: number;
+    author: string;
+    note: string;
 
     // Settings
     volume: number;

@@ -12,9 +12,9 @@ export class PresetModel {
     name: string;
     number: number;
 
-    // category
-    // author
-    // description
+    category: number; //change later to enum
+    author: string;
+    note: string;
 
     // Settings
     volume: number;
@@ -49,6 +49,9 @@ export class PresetModel {
         // General info
         this.name = presetInfo.name;
         this.number = presetInfo.number;
+        this.category = presetInfo.category;
+        this.author = presetInfo.author
+        this.note = presetInfo.note;
 
         // Settings
         this.volume = presetInfo.volume;
@@ -85,6 +88,10 @@ export class PresetModel {
     // }
 
     clone(): PresetModel {
+        return new PresetModel(this.toPresetInfo());
+    }
+
+    toPresetInfo(): IPresetInfo{
         // construct interface
         const efffectsInfo: IEffectInfo[] = this.effects.map(e =>{
             // get param values
@@ -106,6 +113,11 @@ export class PresetModel {
             // General info
             name: this.name,
             number: this.number,
+            bankCode: this.bankCode,
+
+            category: this.category,
+            author: this.author,
+            note: this.note,
 
             // Settings
             volume: this.volume,
@@ -143,7 +155,7 @@ export class PresetModel {
             effects: efffectsInfo,
         }
 
-        return new PresetModel(presetInfo);
+        return presetInfo;
     }
 
     get bankCode(): string {
