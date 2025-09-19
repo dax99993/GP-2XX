@@ -59,8 +59,12 @@ function RightElements() {
 
         // Load to GP200 memory
         presetsInfo.forEach(p => {
-          console.log("\nPreset INFO: ", p);
+          console.log("\nPreset INFO: ", p.name);
         })
+
+        // Update selected preset position to load
+        const selectedPresets = Array.from({ length: presetsInfo.length }, (_, i) =>  store.gp200.currentPresetNumber ?? 0+ i)
+        store.presetImporter.SetSelectedPresets(selectedPresets);
       }
   }
 

@@ -8,20 +8,50 @@ import * as DocumentPicker from 'expo-document-picker';
 import { readAsStringAsync } from "expo-file-system";
 
 import { Buffer } from "buffer";
+import { action, makeObservable, observable } from 'mobx';
 
 
 export class PresetImporter {
     binaryFiles: Buffer[];
     presets: IPresetInfo[];
+    selectedPresets: number[];
 
     constructor() {
         this.binaryFiles = [];
         this.presets = [];
+        this.selectedPresets = [];
+        
+        makeObservable(this, {
+            selectedPresets: observable,
+
+            SetSelectedPresets: action,
+            SelectedPresetsHas: action,
+            AddToSelectPresets: action,
+            RemoveFromSelectPresets: action,
+        });
     }
+
+    SetSelectedPresets(positions: number[]) {
+        this.selectedPresets = positions;
+    }
+
+    SelectedPresetsHas(position: number): boolean {
+        return this.selectedPresets.includes(position);
+    }
+
+    AddToSelectPresets(position: number) {
+        this.selectedPresets = [...this.selectedPresets, position].sort((a, b) => a - b)
+    }
+
+    RemoveFromSelectPresets(position: number) {
+        this.selectedPresets= this.selectedPresets.filter(n => n != position).sort((a, b) => a - b)
+    }
+
 
     async LoadFiles(): Promise<Boolean> {
         // Reset storage
         this.binaryFiles = [];
+        this.selectedPresets = [];
 
         const documents = await DocumentPicker.getDocumentAsync({
             multiple: true,

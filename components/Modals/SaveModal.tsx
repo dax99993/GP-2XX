@@ -7,6 +7,7 @@ import SavePresetForm from "../gp/preset/SavePresetForm";
 import MyModal from "./Modal";
 
 
+
 function SaveModal() {
     const headerTitle = "Save Preset";
 
@@ -49,9 +50,6 @@ function SaveModal() {
                         onSave={onSave}
                     />
                 </HStack>
-            }
-            footerElements={
-
             }
         />
     );

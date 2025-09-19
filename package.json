@@ -11,6 +11,7 @@
     "lint": "expo lint"
   },
   "dependencies": {
+    "@craftzdog/react-native-buffer": "^6.1.0",
     "@expo/html-elements": "^0.4.2",
     "@expo/vector-icons": "^14.1.0",
     "@gluestack-ui/accordion": "^1.0.14",
@@ -81,6 +82,7 @@
     "react-native-css-interop": "^0.1.22",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-midi": "github:jamtools/react-native-midi#8e5b0798dc7333cd434421b514e521671b496c4e",
+    "react-native-quick-base64": "^2.2.2",
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",

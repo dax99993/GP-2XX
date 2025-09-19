@@ -3,42 +3,77 @@ import { ICtrlSettings } from '@/models/preset/ICtrlSettings';
 import { IExpSettings } from '@/models/preset/IExpSettings';
 import { IKnobSettings } from '@/models/preset/IKnobSettings';
 import { IEffectInfo, IPresetInfo } from '@/models/preset/IPresetInfo';
-import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
-import { Buffer } from "buffer";
+// import { Buffer } from "buffer";
+import { Buffer } from "@craftzdog/react-native-buffer";
+import { action, makeObservable, observable } from 'mobx';
 import { EncoderUtils } from './encodeUtils';
 
 
 export class PresetExporter{
     binaryFiles: Buffer[];
     presets: IPresetInfo[];
+    selectedPresets: number[];
 
     encoder: EncoderUtils;
 
     constructor() {
         this.binaryFiles = [];
         this.presets = [];
+        this.selectedPresets = [];
 
         this.encoder = new EncoderUtils();
+
+        makeObservable(this, {
+            selectedPresets: observable,
+
+            SetSelectedPresets: action,
+            SelectedPresetsHas: action,
+            AddToSelectPresets: action,
+            RemoveFromSelectPresets: action,
+        });
     }
 
-    async SaveFiles(presetsInfo: IPresetInfo[]): Promise<Boolean> {
-        // Reset storage
-        this.binaryFiles = [];
+    SetSelectedPresets(positions: number[]) {
+        this.selectedPresets = positions;
+    }
+
+    SelectedPresetsHas(position: number): boolean {
+        return this.selectedPresets.includes(position);
+    }
+
+    AddToSelectPresets(position: number) {
+        this.selectedPresets = [...this.selectedPresets, position].sort((a, b) => a - b)
+    }
+
+    RemoveFromSelectPresets(position: number) {
+        this.selectedPresets= this.selectedPresets.filter(n => n != position).sort((a, b) => a - b)
+    }
+
+    async SharePresetFiles(presets: IPresetInfo[]): Promise<Boolean> {
+        // // Reset storage
+        // this.binaryFiles = [];
+
+        const decoder = new TextDecoder('utf-8');
 
         if (await Sharing.isAvailableAsync()) {
-            presetsInfo.forEach(async (presetInfo: IPresetInfo) => {
+            presets.forEach(async (presetInfo: IPresetInfo) => {
                 // For each file share
-                const encodedBuffer = this.encodePreset();
+                const encodedBuffer = this.encodePreset(presetInfo);
+                console.log("Encoded buffer");
+
                 // Get URI from cacheDirectory
-                const filename = FileSystem.cacheDirectory + presetInfo.bankCode + ' ' + presetInfo.name + '.prst';
-                try {
-                    const file = new FileSystem.File
-                    console.log('File created successfully at:', filename);
-                }
-                const uri = "";
-                await Sharing.shareAsync(uri, { mimeType: "application/octet-stream" });
+                const fileUri = FileSystem.cacheDirectory + presetInfo.bankCode + ' ' + presetInfo.name + '.prst';
+                console.log('File uri:', fileUri);
+                // Write buffer to uri
+                const content = decoder.decode(encodedBuffer);
+                // const content = decoder.decode([...encodedBuffer]);
+                await FileSystem.writeAsStringAsync(fileUri, content, {encoding: 'utf8'});
+                console.log('File created successfully at:', fileUri);
+
+                await Sharing.shareAsync(fileUri, { mimeType: "application/octet-stream" });
             })
         } else {
             return false;
@@ -47,136 +82,145 @@ export class PresetExporter{
         return true;
     }
 
-    encodePreset(): Buffer[] {
-        // Reset storage
-        this.presets = [];
+    encodePreset(presetInfo: IPresetInfo): Uint8Array {
+        const buffer = this.encodePresetBinaryFile(presetInfo);
+        //this.presets.push(presetInfo);
 
-        this.binaryFiles.forEach(buffer => {
-            const presetInfo = this.encodePRSTBinaryFile();
-            this.presets.push(presetInfo);
-        });
-
-        return this.presets;
-    }
-
-    encodePRSTBinaryFile(presetInfo: IPresetInfo): Buffer {
-        console.log("Start Encoding");
-        let offset = 0;
-        const buffer = Buffer.alloc(1172);
-        console.log("Buffer byte offset:", buffer.byteOffset);
-
-        // WRITE METADATA
-        // header is TSRP
-        const header = 0x54_53_52_50 
-        offset += buffer.writeUInt32BE(header, offset);
-        //should contain 00 00 00 00
-        offset += buffer.writeUInt32BE(0, offset);
-        //should contain 00 00 00 06
-        offset += buffer.writeUInt32BE(6, offset);
-        //should contain 00 00 00 00
-        offset += buffer.writeUInt32BE(0, offset);
-        // 2-PG
-        const gpModel = 0x32_2d_50_47
-        offset += buffer.writeUInt32BE(gpModel, offset);
-        //should contain 00 01 01 00
-        offset += buffer.writeUInt32BE(0x00_01_01_00, offset);
-        //can contain 00 00 00 00 (IDK what these bytes mean)
-        offset += buffer.writeUInt32BE(0, offset);
-        //can contain b8 f4 8f 02 (IDK what these bytes mean but are not constant)
-        offset += buffer.writeUInt32BE(0xb8_f4_8f_02, offset);
-        //should contain 28 00 00 00
-        offset += buffer.writeUInt32BE(0x28_00_00_00, offset);
-        //should contain 94 04 00 00
-        offset += buffer.writeUInt32BE(0x94_04_00_00, offset);
-        //should contain 4d 52 41 50 MRAP (PARAM ascii in LE)
-        offset += buffer.writeUInt32BE(0x4d_52_41_50, offset);
-        //should contain 94 04 00 00
-        offset += buffer.writeUInt32BE(0x94_04_00_00, offset);
-        //should contain 02 00 58 00
-        offset += buffer.writeUInt32BE(0x28_00_00_00, offset);
-        console.log("Offset after meta data:", offset);
-
-        // WRITE ACTUAL DATA
-        const end_offset = this.encodePresetData(buffer, offset, presetInfo);
-        console.log("Result offset should be 1772", end_offset);
-        
         return buffer;
     }
 
-    encodePresetData(buffer: Buffer, offset: number, presetInfo: IPresetInfo): number{
-        // function decodePresetData(buffer: Buffer) {
+    encodePresetBinaryFile(presetInfo: IPresetInfo): Uint8Array {
+        console.log("Start Encoding");
+        let offset = 0;
+        // const buffer = Buffer.alloc(1172, 0, "binary");
+        const buffer = new ArrayBuffer(1224);
+        const view = new DataView(buffer);
+        console.log("Buffer byte length:", buffer.byteLength);
+
+        // WRITE METADATA 52 BYTES
+        const metadata = [
+            // TRSP (header) ; 0
+            0x54, 0x53, 0x52, 0x52, 0x00, 0x00, 0x00, 0x00,
+            // 6 ; 0
+            0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00,
+            // GP-Model ; 
+            0x32, 0x2d, 0x50, 0x47, 0x00, 0x01, 0x01, 0x00,
+            // 0 ; This bytes are diffent always maybe a timestamp
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            // Sequence 1 ; Sequence 2
+            0x28, 0x00, 0x00, 0x00, 0x94, 0x04, 0x00, 0x00,
+            // PARM in LE ; Sequence 2
+            0x4d, 0x52, 0x41, 0x50, 0x94, 0x04, 0x00, 0x00,
+            // Sequence 1
+            0x28, 0x00, 0x00, 0x00, 
+            ];
+        // Write metadata
+        metadata.forEach((b, i) => {
+            view.setUint8(i, b)
+        })
+        offset += metadata.length;
+        console.log("Offset after meta data:", offset);
+
+        // WRITE ACTUAL DATA 1172 bytes
+        const end_offset = this.encodePresetData(view, offset, presetInfo);
+        console.log("Result offset should be 1224", end_offset);
+        
+        return new Uint8Array(buffer);
+    }
+
+    encodePresetData(view: DataView, offset: number, presetInfo: IPresetInfo): number{
         console.log("Encode Preset Data", offset);
 
         // preset number
-        offset += buffer.writeUint8(presetInfo.number, offset);
+        view.setUint8(offset, presetInfo.number);
+        offset += 1;
 
         // Preset bpm, volume and pan
-        offset += buffer.writeInt16BE(presetInfo.bpm, offset);
+        view.setInt16(offset, presetInfo.bpm);
+        offset += 1;
 
-        offset += buffer.writeInt16BE(presetInfo.volume, offset);
+        view.setInt16(offset, presetInfo.volume);
+        offset += 2;
 
-        offset += buffer.writeInt16BE(presetInfo.pan, offset);
+        view.setInt16(offset, presetInfo.pan);
+        offset += 2;
 
         // Preset category
-        // offset = buffer.writeUInt16BE(presetInfo.category, offset);
-        offset = buffer.writeUInt16BE(0, offset);
+        view.setInt16(offset, presetInfo.category);
+        offset += 2;
 
         // FX send level, return level, mode
-        offset += buffer.writeUInt16BE(presetInfo.fxloop.sendLevel, offset);
+        view.setUint16(offset, presetInfo.fxloop.sendLevel);
+        offset += 2;
 
-        offset += buffer.writeUInt16BE(presetInfo.fxloop.returnLevel, offset);
+        view.setUint16(offset, presetInfo.fxloop.returnLevel);
+        offset += 2;
 
-        offset += buffer.writeUInt16BE(presetInfo.fxloop.mode, offset);
+        view.setUint16(offset, presetInfo.fxloop.mode);
+        offset += 2;
 
         // Separation byte - 00
-        offset += buffer.writeUInt8(0, offset);
+        view.setUint8(offset, 0);
+        offset += 1;
 
         // Preset name is encoded as 16 ascii characters
         // const presetName: string = String.fromCharCode(...buffer.subarray(offset, offset + 16));
         const presetName: string = presetInfo.name.padEnd(16, '\0');
         for (let i=0; i<presetName.length; i=i+1) {
-            offset += buffer.writeUInt8(presetName.charCodeAt(i), offset);
+            view.setUint8(offset, presetName.charCodeAt(i));
+            offset += 1;
         }
 
         // Preset Author is encoded as 16 ascii characters
         // const presetAuthor: string = String.fromCharCode(...buffer.subarray(offset, offset + 16));
         const presetAuthor: string = presetInfo.author.padEnd(16, '\0');
         for (let i=0; i < presetAuthor.length; i=i+1) {
-            offset += buffer.writeUInt8(presetAuthor.charCodeAt(i), offset);
+            view.setUint8(offset, presetAuthor.charCodeAt(i));
+            offset += 1;
         }
 
         // Preset Author is encoded as 30 ascii characters ; maybe is 32 characters
         // const presetNote: string = String.fromCharCode(...buffer.subarray(offset, offset + 30));
         const presetNote: string = presetInfo.note.padEnd(32, '\0');
         for (let i=0; i < presetAuthor.length; i=i+1) {
-            offset += buffer.writeUInt8(presetNote.charCodeAt(i), offset);
+            view.setUint8(offset, presetNote.charCodeAt(i));
+            offset += 1;
         }
 
+        //should contain 00 00 00 00 
+        view.setUint32(offset, 0);
+        offset += 4;
         //should contain 00 00 00 00
-        offset += buffer.writeUInt32BE(0, offset);
-        //should contain 00 00 00 00
-        offset += buffer.writeUInt32BE(0, offset);
+        view.setUint32(offset, 0);
+        offset += 4;
         //should can be 08 00 10 00 or some other numbers IDK what this mean
-        offset += buffer.writeUInt32BE(0x08_00_10_00, offset);
+        view.setUint32(offset, 0x08_00_10_00);
+        offset += 4;
 
         // I think this byte is the preset position where it is currently stored
-        offset += buffer.writeUInt16BE(presetInfo.number, offset);
+        view.setUint16(offset, presetInfo.number);
+        offset += 2;
 
         // Separation byte - 00
-        offset += buffer.writeUInt8(0, offset);
+        view.setUint8(offset, 0);
+        offset += 1;
 
 
         // FX send and return position
-        offset += buffer.writeUInt8(presetInfo.fxloop.sendPosition, offset);
-        offset += buffer.writeUInt8(presetInfo.fxloop.sendPosition, offset);
+        view.setUint8(offset, presetInfo.fxloop.sendPosition);
+        offset += 1;
+        view.setUint8(offset, presetInfo.fxloop.returnPosition);
+        offset += 1;
 
         // Effect Chain
-        presetInfo.effectsChainOrder.filter(n => n >=0 ).forEach(ID => {
-            offset += buffer.writeUInt8(ID, offset);
+        presetInfo.effectsChainOrder.filter(n => n >= 0 ).forEach(ID => {
+            view.setUint8(offset, ID);
+            offset += 1;
         })
 
         // Separation byte - 00
-        offset += buffer.writeUInt8(0, offset);
+        view.setUint8(offset, 0);
+        offset += 1;
 
         console.log("Offset starting effect module information", offset);
 
@@ -184,78 +228,108 @@ export class PresetExporter{
         // EFFECT MODULE DETAILS 
         for (let i = 0; i < 11; i = i + 1) {
             // Each block is 72 bytes
-            offset += this.encodeEffectModule(buffer, offset, presetInfo.effects[i]);
+            this.encodeEffectModule(view, offset, presetInfo.effects[i]);
+            offset += 72;
         }
 
-        //console.log(offset);
+        console.log("OFFSET after effect module", offset);
 
         // EXP Settings
 
         // 3 types of EXP and each has 3 settings
         for (let i = 0; i < 3; i = i + 1) {
             // Each block is 16 bytes
-            offset += this.encodeExpSettings(buffer, offset, presetInfo.exp1A[i]);
+            this.encodeExpSettings(view, offset, presetInfo.exp1A[i]);
+            offset += 16;
         }
         for (let i = 0; i < 3; i = i + 1) {
             // Each block is 16 bytes
-            offset += this.encodeExpSettings(buffer, offset, presetInfo.exp1B[i]);
+            this.encodeExpSettings(view, offset, presetInfo.exp1B[i]);
+            offset += 16;
         }
         for (let i = 0; i < 3; i = i + 1) {
             // Each block is 16 bytes
-            offset += this.encodeExpSettings(buffer, offset, presetInfo.exp2[i]);
+            this.encodeExpSettings(view, offset, presetInfo.exp2[i]);
+            offset += 16;
         }
+        console.log("OFFSET after EXP", offset);
 
 
         // Knob settings
         // Each block is 8 bytes
-        offset += this.encodeKnobSettings(buffer, offset, presetInfo.knob1);
-        offset += this.encodeKnobSettings(buffer, offset, presetInfo.knob2);
-        offset += this.encodeKnobSettings(buffer, offset, presetInfo.knob3);
+        this.encodeKnobSettings(view, offset, presetInfo.knob1);
+        offset += 8;
+        this.encodeKnobSettings(view, offset, presetInfo.knob2);
+        offset += 8;
+        this.encodeKnobSettings(view, offset, presetInfo.knob3);
+        offset += 8;
 
+        console.log("OFFSET after Knob", offset);
 
         // CTRL settings
         // Each block is 12 bytes
-        offset += this.encodeCtrlSettings(buffer, offset, presetInfo.ctrl1);
-        offset += this.encodeCtrlSettings(buffer, offset, presetInfo.ctrl2);
-        offset += this.encodeCtrlSettings(buffer, offset, presetInfo.ctrl3);
-        offset += this.encodeCtrlSettings(buffer, offset, presetInfo.ctrl4);
+        this.encodeCtrlSettings(view, offset, presetInfo.ctrl1);
+        offset += 12;
+        this.encodeCtrlSettings(view, offset, presetInfo.ctrl2);
+        offset += 12;
+        this.encodeCtrlSettings(view, offset, presetInfo.ctrl3);
+        offset += 12;
+        this.encodeCtrlSettings(view, offset, presetInfo.ctrl4);
+        offset += 12;
+        this.encodeCtrlSettings(view, offset, presetInfo.ctrl5);
+        offset += 12;
+        this.encodeCtrlSettings(view, offset, presetInfo.ctrl6);
+        offset += 12;
+        this.encodeCtrlSettings(view, offset, presetInfo.ctrl7);
+        offset += 12;
+        this.encodeCtrlSettings(view, offset, presetInfo.ctrl8);
+        offset += 12;
 
-        offset += this.encodeCtrlSettings(buffer, offset, presetInfo.ctrl5);
-        offset += this.encodeCtrlSettings(buffer, offset, presetInfo.ctrl6);
-        offset += this.encodeCtrlSettings(buffer, offset, presetInfo.ctrl7);
-        offset += this.encodeCtrlSettings(buffer, offset, presetInfo.ctrl8);
+        console.log("OFFSET after CTRL", offset);
 
         // END BYTES
-        
-        offset += buffer.writeUInt32BE(0xc0_04_00_00, offset);
-        offset += buffer.writeUInt32BE(0x00_00_48_10, offset);
+        // 0xc0_04_00_00
+        view.setUint32(offset, 0xc0_04_00_00);
+        offset += 4;
+        // 0x00_00_48_10
+        view.setUint32(offset, 0x00_00_48_10);
+        offset += 4;
+
+        console.log("OFFSET after DATA", offset);
 
         return offset;
     }
 
-    encodeEffectModule(buffer: Buffer, offset: number, effectInfo: IEffectInfo): number {
+    encodeEffectModule(view: DataView, offset: number, effectInfo: IEffectInfo): number {
         // offset should increase by 72 bytes
+        console.log("Effect module offset", offset);
 
         // Should be equal to 0x14_00_44_00
-        offset += buffer.writeUInt32BE(0x14_00_44_00, offset);
+        view.setUint32(offset, 0x14_00_44_00);
+        offset += 4;
 
         // Chain ID
-        offset += buffer.writeUInt8(effectInfo.chainID, offset);
+        view.setUint8(offset, effectInfo.chainID);
+        offset += 1;
         // State
-        offset += buffer.writeUInt8(effectInfo.state ? 1 : 0, offset);
+        view.setUint8(offset, effectInfo.state ? 1 : 0);
+        offset += 1;
         // should contain 0f 00 - constant sequence
-        offset += buffer.writeUInt16BE(0x0f_00, offset);
+        view.setUint16(offset, 0x0f_00);
+        offset += 2;
 
         //console.log(buffer.subarray(offset, offset+4));
         // Effect Module ID
-        offset += buffer.writeUint32BE(effectInfo.ID, offset);
+        view.setUint32(offset, effectInfo.ID);
+        offset += 4;
 
         // Parameters encoded
         for (let i = 0; i < 15; i = i + 1) {
             const paramEncoded = this.encoder.encodeParamValueFloat(effectInfo.paramValues[i]);
             // Write each byte
             paramEncoded.forEach(b => {
-                offset += buffer.writeUint8(b, offset);
+                view.setUint8(offset, b);
+                offset += 1;
             })
         }
 
@@ -263,62 +337,82 @@ export class PresetExporter{
         return offset;
     }
 
-    encodeExpSettings(buffer: Buffer, offset: number, expSettings: IExpSettings): number{
+    encodeExpSettings(view: DataView, offset: number, expSettings: IExpSettings): number{
+        console.log("EXP offset", offset);
 
         // Should be equal to 0x0c_00_0c_00
-        offset += buffer.writeUInt32BE(0x0c_00_0c_00, offset);
+        view.setUint32(offset, 0x0c_00_0c_00);
+        offset += 4;
 
         // ID and Param number combine as nibbles in 1 byte
         const id_paramnumber = ((expSettings.id << 4) & 0xF0) | expSettings.paramNumber;
-        offset += buffer.writeUInt8(id_paramnumber, offset);
+        view.setUint8(offset, id_paramnumber);
+        offset += 1;
 
         // module id and module param id
-        offset += buffer.writeUInt8(expSettings.module, offset);
-        offset += buffer.writeUInt8(expSettings.moduleParamID, offset);
+        view.setUint8(offset, expSettings.module);
+        offset += 1;
+        view.setUint8(offset, expSettings.moduleParamID);
+        offset += 1;
 
         // Separation byte - 00
-        offset += buffer.writeUInt8(0, offset);
+        view.setUint8(offset, 0);
+        offset += 1;
 
         // Param max and min
-        offset += buffer.writeUInt8(expSettings.moduleParamNumberMax, offset);
-        offset += buffer.writeUInt8(expSettings.moduleParamNumberMin, offset);
+        view.setUint8(offset, expSettings.moduleParamNumberMax);
+        offset += 1;
+        view.setUint8(offset, expSettings.moduleParamNumberMin);
+        offset += 1;
 
 
         return offset;
     }
 
-    encodeKnobSettings(buffer: Buffer, offset: number, knobSettings: IKnobSettings): number {
+    encodeKnobSettings(view: DataView, offset: number, knobSettings: IKnobSettings): number {
+        console.log("Knob offset", offset);
 
         // Should be equal to 0x10_00_04_00
-        offset += buffer.writeUInt32BE(0x0c_00_0c_00, offset);
+        view.setUint32(offset, 0x10_00_04_00);
+        offset += 4;
 
         // Knob number
-        offset += buffer.writeUInt8(knobSettings.number, offset);
+        view.setUint8(offset, knobSettings.number);
+        offset += 1;
 
         // Knob module ID
-        offset += buffer.writeUInt8(knobSettings.module, offset);
+        view.setUint8(offset, knobSettings.module);
+        offset += 1;
 
         // Knob module param ID
-        offset += buffer.writeUInt8(knobSettings.paramID, offset);
+        view.setUint8(offset, knobSettings.paramID);
+        offset += 1;
 
         // Separation byte - 00
-        offset += buffer.writeUInt8(0, offset);
+        view.setUint8(offset, 0);
+        offset += 1;
 
         return offset
     }
 
-    encodeCtrlSettings(buffer: Buffer, offset: number, ctrlSettings: ICtrlSettings): number {
+    encodeCtrlSettings(view: DataView, offset: number, ctrlSettings: ICtrlSettings): number {
+        console.log("CTRL offset", offset);
+
         // Should be equal to 0x0f_00_08_00
-        offset += buffer.writeUInt32BE(0x0f_00_08_00, offset);
+        view.setUint32(offset, 0x0f_00_08_00);
+        offset += 4;
 
         // Ctrl number id
-        offset += buffer.writeUInt8(ctrlSettings.number, offset);
+        view.setUint8(offset, ctrlSettings.number);
+        offset += 1;
 
         // Ctrl mode
-        offset += buffer.writeUInt8(ctrlSettings.mode, offset);
+        view.setUint8(offset, ctrlSettings.mode);
+        offset += 1;
 
         //should contain 00 00
-        offset += buffer.writeUInt16BE(0x00_00, offset);
+        view.setUint16(offset, 0);
+        offset += 2;
 
 
         // Pedal assignment as bit flags
@@ -328,11 +422,13 @@ export class PresetExporter{
             pedalBitFlags |= mask;
         }
         // Store in little endian
-        offset += buffer.writeUInt16LE(pedalBitFlags, offset);
+        view.setUint16(offset, pedalBitFlags, true);
+        offset += 2;
 
 
         //should contain 00 00
-        offset += buffer.writeUInt16BE(0x00_00, offset);
+        view.setUint16(offset, 0);
+        offset += 2;
 
         return offset;
     }

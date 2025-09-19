@@ -54,6 +54,7 @@ class Store {
         makeObservable(this,{
             gp200: observable,
             gpMidiEncoder: observable,
+            presetImporter: observable,
 
             showPatchSettings: observable,
 
