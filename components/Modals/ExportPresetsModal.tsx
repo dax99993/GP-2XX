@@ -4,6 +4,7 @@ import { Heading } from "../ui/heading";
 import { store } from "@/models/store";
 import { FlashList } from "@shopify/flash-list";
 import { CheckIcon } from "lucide-react-native";
+import { Platform } from "react-native";
 import { Button, ButtonGroup, ButtonText } from "../ui/button";
 import { Checkbox, CheckboxIcon, CheckboxIndicator, CheckboxLabel } from "../ui/checkbox";
 import { VStack } from "../ui/vstack";
@@ -61,6 +62,22 @@ function ExportPresetsModal() {
         store.modals.closeModal(MODAL_ID);
     }
 
+    const onShare = () => {
+        console.log("Export presets", store.presetExporter.selectedPresets);
+
+        // Get preset info 
+        const presets = store.gp200.presets.filter((p, i) => store.presetExporter.SelectedPresetsHas(i));
+        presets.forEach(p => {
+            console.log("Sharing", p.name);
+        })
+
+        // Share presets
+        store.presetExporter.SharePresetFiles(presets);
+
+        // CloseModal
+        onClose();
+    }
+
     const onExport = () => {
         console.log("Export presets", store.presetExporter.selectedPresets);
 
@@ -71,7 +88,10 @@ function ExportPresetsModal() {
         })
 
         // Share presets
-        store.presetExporter.SharePresetFiles(presets);
+        store.presetExporter.ExportPresetFiles(presets);
+
+        // Reset selected Presets
+        // store.presetExporter.selectedPresets = [];
 
         // CloseModal
         onClose();
@@ -102,10 +122,20 @@ function ExportPresetsModal() {
                     <Button
                         variant='solid'
                         isDisabled={store.presetExporter.selectedPresets.length == 0}
+                        onPress={onShare}
+                    >
+                        <ButtonText>Share</ButtonText>
+                    </Button>
+                    {
+                    Platform.OS == "android" &&
+                    <Button
+                        variant='solid'
+                        isDisabled={store.presetExporter.selectedPresets.length == 0}
                         onPress={onExport}
                     >
-                        <ButtonText>Export presets</ButtonText>
+                        <ButtonText>Export</ButtonText>
                     </Button>
+                    }
                 </ButtonGroup>
             }
         />
