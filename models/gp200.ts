@@ -56,6 +56,7 @@ export class GP200Model {
             changePreset: action,
             addPreset: action,
             LoadPresetTo: action,
+            saveCurrentPreset: action,
 
             presetBankCode: computed,
             //changeEffect: action,
@@ -149,9 +150,10 @@ export class GP200Model {
         console.log("Current preset",this.currentPreset);
     }
 
-    savePreset(presetNumber: number, presetName: string) {
+    saveCurrentPreset(presetNumber: number, presetName: string) {
         if (!this.currentPreset) { return }
 
+        console.log("Save current preset", this.currentPresetNumber, "to location", presetNumber, "with name", presetName);
         this.currentPreset.name = presetName;
         this.currentPreset.number = presetNumber;
 

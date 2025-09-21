@@ -149,11 +149,9 @@ export class DecoderUtils {
     decodePresetName(msg: number[]) {
         // each characters is represented in ascii, split in to nibles
         const bytes = this.nibbleArrayToByteArray(msg);
-        // remove empty characters
-        const filtered_bytes = bytes.filter(b => b !== 0);
-        const chars = filtered_bytes.map(b => String.fromCharCode(b));
 
-        return chars.join("");
+        // map bytes to string
+        return bytes.map(b => String.fromCharCode(b)).join("");
     }
 
     decodeEffectInfo(msg: number[]): IEffectInfo {

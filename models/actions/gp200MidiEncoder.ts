@@ -125,30 +125,33 @@ export class GP200MidiEncoder implements IActions{
         if (this.gp200.currentPreset === undefined) { return; }
         
         // byte 0x15 and 0x16 Preset ID to save current preset: id is split in hex digits
-        // ** bytes 0x1b and 0x1c must be 0x00 and 0x02 repectively IDK what they do
+        // ** bytes 0x19 and 0x1c changing constantly IDK what they do maybe some timestamp
         // bytes 0x1d to 0x3c Preset Name: ASCII encoded split in hex digits
-        let BaseSysEx = BaseSysExMsg.PresetAction.savePreset;
+        let BaseSysEx = BaseSysExMsg.PresetAction.saveCurrentPreset;
         const [highByte, lowByte] = this.encoder.byteToNibbles(presetNumberToSave);
         BaseSysEx[0x15] = highByte;
         BaseSysEx[0x16] = lowByte;
 
-        // sanity check presetName should be at most 16 ASCII characters
-        // Enforce only ASCII characters
-        presetName.replace(/[^\x00-\x7F]/g, "");
-        const safePresetName = presetName.slice(0, 16).padEnd(16, " ");
+        // Sanity check presetName should be at most 16 ASCII characters
+        // Enforce only printable ASCII characters
+        presetName = presetName.replace(/[^\x20-\x7E]/g, "");
+        // Remove whitespaces at the end
+        presetName = presetName.trimEnd();
+        // Fill with \0 to update whole display in GP200
+        const NullFilledPresetName = presetName.slice(0, 16).padEnd(16, "\0");
 
         // Maximum of 16 characters
-        const encodedName = this.encoder.encodePresetName(safePresetName);
+        const encodedName = this.encoder.encodePresetName(NullFilledPresetName);
 
-        for(let i = 0; i < encodedName.length; i=i+1) {
-            BaseSysEx[0x1d + i] = encodedName[i];
-        }
+        // Write encoded name to message
+        encodedName.forEach((c, i) => {
+            BaseSysEx[0x1d + i] = c
+        })
 
         console.log(BaseSysEx);
 
-        //Update Model
-        this.gp200.savePreset(presetNumberToSave, safePresetName);
-
+        //Update Model (use name without the filling \0 characters)
+        this.gp200.saveCurrentPreset(presetNumberToSave, presetName);
 
         // Send message
         this.midi.sendMessage(BaseSysEx);
