@@ -343,7 +343,7 @@ export class GP200MidiDecoder implements IDeviceActions {
         this.presetInfoMessages = [];
 
         // decode preset data
-        return this.presetImporter.decodePresetData(Buffer.from(presetData), 0);
+        return this.presetImporter.decoder.decodePresetData(Buffer.from(presetData), 0);
     }
 
     // GetPresetInfo(): IPresetInfo {

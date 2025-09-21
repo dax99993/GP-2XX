@@ -20,7 +20,9 @@ const PresetsList = observer(() => {
     const LOAD_PRESET_DATA = store.presetImporter.presets.map(p => {
         return {name: p.name, number: p.number}
     })
-    console.log("LOADED PRESETS:", LOAD_PRESET_DATA.length, LOAD_PRESET_DATA);
+    console.log("IMPORTED PRESETS:", LOAD_PRESET_DATA.length, LOAD_PRESET_DATA);
+    console.log("First imported preset General", store.presetImporter.presets[0]);
+    console.log("First imported preset details", store.presetImporter.presets[0].effects);
 
     const isDisabled = (positionNumber: number) => {
         return store.presetImporter.selectedPresets.length == LOAD_PRESET_DATA.length &&
@@ -79,17 +81,21 @@ function LoadPresetsModal() {
         for (let i = 0; i < store.presetImporter.selectedPresets.length; i=i+1) {
             // Load preset to GP200 memory
             const saveLocation = store.presetImporter.selectedPresets[i];
-            console.log("Loading preset", store.presetImporter.presets[i].name, "to location", saveLocation);
-            //store.gpMidiEncoder.SaveCurrentPreset(presetNumber, presetName);
+            const presetInfo = store.presetImporter.presets[i];
+            console.log("Loading preset", presetInfo.name, "to location", saveLocation);
+
+            // Send midi message to update preset info
+            store.gpMidiEncoder.LoadPresetToMemory(presetInfo, saveLocation);
         }
 
+        // Reset selected presets
+        
         // CloseModal
         onClose();
     }
 
 
     // MODAL FOOTER variables and functions
-    // const isImportDisable = store.presetImporter.currentlySelectedPresets.length != LOAD_PRESET_DATA.length;
     const isImportDisable = store.presetImporter.selectedPresets.length != store.presetImporter.presets.length;
 
     return (
@@ -117,10 +123,7 @@ function LoadPresetsModal() {
                     <Button
                         variant='solid'
                         isDisabled={isImportDisable}
-                        onPress={() => {
-                            console.log("Load to presets to memory!")
-                            onSave();
-                        }}
+                        onPress={onSave}
                     >
                         <ButtonText>Import presets</ButtonText>
                     </Button>

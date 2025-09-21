@@ -1,6 +1,7 @@
 import { DefaultEffectsInfo } from "@/constants/DefaultEffects";
-import { BaseSysExMsg } from "@/constants/SysExMsg";
+import { BaseSysExMsg, LoadPresetToMemorySysEx } from "@/constants/SysExMsg";
 import { EncoderUtils } from "@/utils/encodeUtils";
+import { PresetEncoder } from "@/utils/presetEncoder";
 import { action, makeObservable, observable } from "mobx";
 import { EffectType } from "../effect/effect";
 import { GP200Model } from "../gp200";
@@ -8,6 +9,7 @@ import { MidiDevice } from "../midiDevice";
 import { ExpModule } from "../preset/IExpSettings";
 import { FxLoopMode } from "../preset/IFxLoopSettings";
 import { KnobModule } from "../preset/IKnobSettings";
+import { IPresetInfo, presetNumberToBankCode } from "../preset/IPresetInfo";
 import { IActions } from "./IActions";
 
 
@@ -16,12 +18,14 @@ export class GP200MidiEncoder implements IActions{
     gp200: GP200Model;
     midi: MidiDevice;
     encoder: EncoderUtils;
+    presetEncoder: PresetEncoder;
 
 
     constructor(gp200: GP200Model, midi: MidiDevice) {
         this.midi = midi;
         this.gp200 = gp200;
         this.encoder = new EncoderUtils;
+        this.presetEncoder = new PresetEncoder;
 
 
         makeObservable(this, {
@@ -528,6 +532,60 @@ export class GP200MidiEncoder implements IActions{
 
         // Send to physical device
         this.midi.sendMessage(baseSysEx);
+    }
+
+    LoadPresetToMemory(presetInfo: IPresetInfo, loadPosition: number) {
+        // Change preset info number and bank code to match new memory position
+        presetInfo.number = loadPosition;
+        presetInfo.bankCode = presetNumberToBankCode(loadPosition);
+
+        // Encode presetInfo to bytes
+        const presetData = this.presetEncoder.encodePresetData(presetInfo);
+
+        // Convert bytes to nibbles
+        const presetDataNibbles = this.encoder.byteArrayToNibbleArray(presetData);
+        
+        // Split into 7 messages
+        let message1 = LoadPresetToMemorySysEx.message1;
+        const [highByte, lowByte] = this.encoder.byteToNibbles(loadPosition);
+        message1[25] = highByte;
+        message1[26] = lowByte;
+        message1[37] = highByte;
+        message1[38] = lowByte;
+        message1[41] = highByte;
+        message1[42] = lowByte;
+        // IDK if this bytes are always 0x05 and 0x08 or they change
+        // message1[49] = ??;
+        // message1[50] = ??;
+
+        const splitOffset = [0,
+            326,
+            326 + 1*366,
+            326 + 2*366,
+            326 + 3*366,
+            326 + 4*366,
+            326 + 5*366,
+            326 + 5*366 + 172,
+        ]
+        const msg1 = [...message1, ...presetDataNibbles.slice(splitOffset[0], splitOffset[1]), 0xf7];
+        const msg2 = [...LoadPresetToMemorySysEx.message2, ...presetDataNibbles.slice(splitOffset[1], splitOffset[2]), 0xf7];
+        const msg3 = [...LoadPresetToMemorySysEx.message3, ...presetDataNibbles.slice(splitOffset[2], splitOffset[3]), 0xf7];
+        const msg4 = [...LoadPresetToMemorySysEx.message4, ...presetDataNibbles.slice(splitOffset[3], splitOffset[4]), 0xf7];
+        const msg5 = [...LoadPresetToMemorySysEx.message5, ...presetDataNibbles.slice(splitOffset[4], splitOffset[5]), 0xf7];
+        const msg6 = [...LoadPresetToMemorySysEx.message6, ...presetDataNibbles.slice(splitOffset[5], splitOffset[6]), 0xf7];
+        const msg7 = [...LoadPresetToMemorySysEx.message7, ...presetDataNibbles.slice(splitOffset[6], splitOffset[7]), 0xf7];
+
+        // Update Model 
+        this.gp200.LoadPresetTo(presetInfo, loadPosition);
+
+        // Send messages
+        this.midi.sendMessage(msg1);
+        this.midi.sendMessage(msg2);
+        this.midi.sendMessage(msg3);
+        this.midi.sendMessage(msg4);
+        this.midi.sendMessage(msg5);
+        this.midi.sendMessage(msg6);
+        this.midi.sendMessage(msg7);
     }
 
     AskStoredPresetInfo(presetNumber: number) {

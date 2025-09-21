@@ -101,4 +101,5 @@ export class EncoderUtils {
         // split in nibbles
         return this.byteArrayToNibbleArray(ascii);
     }
+
 }

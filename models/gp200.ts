@@ -55,6 +55,7 @@ export class GP200Model {
             // Change preset actions
             changePreset: action,
             addPreset: action,
+            LoadPresetTo: action,
 
             presetBankCode: computed,
             //changeEffect: action,
@@ -91,6 +92,13 @@ export class GP200Model {
 
     addPreset(preset: IPresetInfo) {
       this.presets[preset.number] = preset;
+    }
+
+    LoadPresetTo(presetInfo :IPresetInfo, location: number) {
+        this.presets[location] = presetInfo;
+        if (location == this.currentPresetNumber) {
+            this.currentPreset = new PresetModel(presetInfo);
+        }
     }
 
     get isSynced(): boolean {

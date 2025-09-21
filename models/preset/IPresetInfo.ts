@@ -54,3 +54,30 @@ export interface IPresetInfo {
     // Effects
     effects: IEffectInfo[];
 }
+
+export function presetNumberToBankCode(presetNumber: number): string {
+      const number = presetNumber;
+
+      if (number === undefined) {
+          return "";
+      }
+
+      const bankNumber = Math.floor(number / 4) + 1;
+      let bankLetter: string = "";
+      switch (number % 4) {
+        case 0:
+          bankLetter = 'A';
+          break;
+        case 1:
+          bankLetter = 'B';
+          break;
+        case 2:
+          bankLetter = 'C';
+          break;
+        case 3:
+          bankLetter = 'D';
+          break;
+      }
+
+      return bankNumber.toString().padStart(2, '0') + '-' + bankLetter;
+}

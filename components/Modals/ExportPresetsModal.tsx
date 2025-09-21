@@ -36,9 +36,9 @@ const PresetsList = observer(() => {
                         value={item.item.number.toString()}
                         onChange={(v: boolean) => {
                             if (v == false) {
-                                store.presetExporter.RemoveFromSelectPresets(item.item.number);
+                                store.presetExporter.RemoveFromSelectedPresets(item.item.number);
                             } else {
-                                store.presetExporter.AddToSelectPresets(item.item.number);
+                                store.presetExporter.AddToSelectedPresets(item.item.number);
                             }
                             console.log(item.item.name, "State change to", v, store.presetImporter.selectedPresets);
                         }}
@@ -62,17 +62,20 @@ function ExportPresetsModal() {
         store.modals.closeModal(MODAL_ID);
     }
 
-    const onShare = () => {
+    const onShare = async () => {
         console.log("Export presets", store.presetExporter.selectedPresets);
 
         // Get preset info 
-        const presets = store.gp200.presets.filter((p, i) => store.presetExporter.SelectedPresetsHas(i));
-        presets.forEach(p => {
+        const presets = store.gp200.presets.filter((_, i) => store.presetExporter.SelectedPresetsHas(i));
+
+        presets.forEach(async p => {
             console.log("Sharing", p.name);
         })
 
         // Share presets
-        store.presetExporter.SharePresetFiles(presets);
+        await store.presetExporter.SharePresetFiles(presets);
+
+        store.presetExporter.ResetSelectedPresets();
 
         // CloseModal
         onClose();
@@ -82,16 +85,13 @@ function ExportPresetsModal() {
         console.log("Export presets", store.presetExporter.selectedPresets);
 
         // Get preset info 
-        const presets = store.gp200.presets.filter((p, i) => store.presetExporter.SelectedPresetsHas(i));
-        presets.forEach(p => {
-            console.log("Exporting", p.name);
-        })
+        const presets = store.gp200.presets.filter((_, i) => store.presetExporter.SelectedPresetsHas(i));
 
-        // Share presets
+        // Export presets to folder
         store.presetExporter.ExportPresetFiles(presets);
 
         // Reset selected Presets
-        // store.presetExporter.selectedPresets = [];
+        store.presetExporter.ResetSelectedPresets();
 
         // CloseModal
         onClose();
@@ -113,6 +113,7 @@ function ExportPresetsModal() {
                 <ButtonGroup flexDirection="row">
                     <Button
                         variant='solid'
+                        size="sm"
                         action="secondary"
                         isDisabled={false}
                         onPress={onClose}
@@ -121,7 +122,8 @@ function ExportPresetsModal() {
                     </Button>
                     <Button
                         variant='solid'
-                        isDisabled={store.presetExporter.selectedPresets.length == 0}
+                        size="sm"
+                        isDisabled={store.presetExporter.selectedPresets.length !== 1}
                         onPress={onShare}
                     >
                         <ButtonText>Share</ButtonText>
@@ -129,6 +131,7 @@ function ExportPresetsModal() {
                     {
                     Platform.OS == "android" &&
                     <Button
+                        size="sm"
                         variant='solid'
                         isDisabled={store.presetExporter.selectedPresets.length == 0}
                         onPress={onExport}

@@ -22,6 +22,7 @@ function MyModal({id, headerStyle, headerElements, bodyElements, footerElements}
         <Modal
             size="lg"
             isOpen={isOpen}
+            closeOnOverlayClick={true}
         >
             <ModalBackdrop/>
             <ModalContent
