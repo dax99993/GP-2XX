@@ -16,59 +16,78 @@ export class GP200Model {
     currentPreset: PresetModel | undefined;
     currentEffect: EffectModel | undefined;
     
-    syncedPresets: number;
+    // Syncing flags
     syncing: boolean;
     syncingErrorOccur: boolean;
+    isSynced: boolean;
+
+    syncedPresets: number;
+
+    syncingStoredPresets: boolean;
+    syncingCurrentPreset: boolean;
 
 
     constructor() {
-      // Add all syncing events
-        // eventHandler.addEventListener('syncPreset', (presetNumber: number) => this.SyncPreset(presetNumber))
+      // initialize internal values
+      this.presets = []
 
-        // initialize internal values
-        this.presets = []
+      this.currentPresetNumber = undefined;
+      this.currentPreset = undefined;
+      this.currentEffect = undefined;
 
-        this.currentPresetNumber = undefined;
-        this.currentPreset = undefined;
-        this.currentEffect = undefined;
+      this.syncing = false;
+      this.syncingErrorOccur = false;
+      this.isSynced = false;
 
-        this.syncedPresets = 0;
-        this.syncing = false;
-        this.syncingErrorOccur = false;
+      this.syncedPresets = 0;
 
+      this.syncingStoredPresets = false;
+      this.syncingCurrentPreset = false;
 
-        makeObservable(this, {
-            presets: observable,
+      makeObservable(this, {
+        // OBSERVABLES
+        presets: observable,
 
-            currentPresetNumber: observable,
-            currentPreset: observable,
-            currentEffect: observable,
+        currentPresetNumber: observable,
+        currentPreset: observable,
+        currentEffect: observable,
 
-            // test
-            syncedPresets: observable,
-            syncing: observable,
-            syncingErrorOccur: observable,
-            
-            SetToStartSyncing: action,
-            SyncingPresetDone: action,
+        // Syncing states
+        syncing: observable,
+        syncingErrorOccur: observable,
+        isSynced: observable,
 
-            // Change preset actions
-            changePreset: action,
-            addPreset: action,
-            LoadPresetTo: action,
-            saveCurrentPreset: action,
+        syncedPresets: observable,
 
-            presetBankCode: computed,
-            //changeEffect: action,
-            changeEffectByID: action,
-            
-            // Change effect actions
-            changeSelectedEffect: action,
-        });
+        syncingStoredPresets: observable,
+        syncingCurrentPreset: observable,
+
+        // COMPUTED
+        presetBankCode: computed,
+
+        // ACTIONS
+        SetToStartSyncing: action,
+
+        StoredPresetSynced: action,
+        CurrentPresetSynced: action,
+
+        // Change preset actions
+        changePreset: action,
+        addPreset: action,
+        LoadPresetTo: action,
+        saveCurrentPreset: action,
+
+        //changeEffect: action,
+        changeEffectByID: action,
+
+        // Change effect actions
+        changeSelectedEffect: action,
+
+      });
 
     }
 
-    // USER METHODS
+    // SYNCING METHODS
     SetToStartSyncing() {
       this.presets = []
       this.syncedPresets = 0
@@ -76,36 +95,57 @@ export class GP200Model {
       this.syncingErrorOccur = false;
     }
 
-    SyncingPresetDone() {
-      this.syncedPresets = this.presets.length;
+    SyncingDone() {
       this.syncing = false;
+    }
 
+    StoredPresetSynced() {
       // Notify
       console.log("----------------------------------------------------------------");
-      console.log("Preset Synced", this.syncedPresets - 1);
+      console.log("Preset Synced", this.presets.length - 1);
       console.log("----------------------------------------------------------------");
 
-      // eventHandler.emitEvent(SyncEvents.PresetSynced, this.syncedPresets);
-      console.log("Sync event emitted!");
-      eventHandler.emitEvent(SyncEvents.PresetSynced, this.syncedPresets);
-      // eventHandler.emitEvent(SyncEvents.PresetSynced, {presetNumber: this.syncedPresets});
+      // this.syncedPresets = this.presets.length;
+
+      // Set flag
+      if (this.AreStoredPresetsSynced) {
+        this.syncingStoredPresets = false;
+      }
+
+      console.log("Next Stored Preset Sync to emit!");
+      // eventHandler.emitEvent(SyncEvents.StoredPresetSynced, this.syncedPresets);
+      eventHandler.emitEvent(SyncEvents.StoredPresetSynced, this.presets.length);
+    }
+
+    CurrentPresetSynced() {
+      // Set flag
+      this.syncingCurrentPreset = false;
+      eventHandler.emitEvent(SyncEvents.CurrentPresetSynced);
     }
 
     addPreset(preset: IPresetInfo) {
       this.presets[preset.number] = preset;
     }
 
-    LoadPresetTo(presetInfo :IPresetInfo, location: number) {
-        this.presets[location] = presetInfo;
-        if (location == this.currentPresetNumber) {
-            this.currentPreset = new PresetModel(presetInfo);
-        }
+    addCurrentPreset(preset: IPresetInfo) {
+      this.currentPresetNumber = preset.number;
+      this.currentPreset = new PresetModel(preset);
+
+      // select to pre by default
+      this.changeSelectedEffect(0);
     }
 
-    get isSynced(): boolean {
+    // get isSynced(): boolean {
+    //   // Add all other synced
+    //   // return this.StorePresetsSynced;
+    //   return false;
+    // }
+
+    get AreStoredPresetsSynced(): boolean {
       // return this.syncedPresets == 256;
-      // return this.syncedPresets == 50;
-      return this.syncedPresets == 16;
+      // return this.presets.length == 256;
+      return this.presets.length == 50;
+      // return this.presets.length == 16;
     }
 
     get presetBankCode(): string {
@@ -148,6 +188,13 @@ export class GP200Model {
         this.changeSelectedEffect(0);
 
         console.log("Current preset",this.currentPreset);
+    }
+
+    LoadPresetTo(presetInfo :IPresetInfo, location: number) {
+        this.presets[location] = presetInfo;
+        if (location == this.currentPresetNumber) {
+            this.currentPreset = new PresetModel(presetInfo);
+        }
     }
 
     saveCurrentPreset(presetNumber: number, presetName: string) {

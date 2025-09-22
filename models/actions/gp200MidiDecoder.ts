@@ -10,7 +10,6 @@ import { ExpModule } from "../preset/IExpSettings";
 import { IPresetInfo } from "../preset/IPresetInfo";
 import { IDeviceActions } from "./IActions";
 
-import { eventHandler } from "@/utils/eventHandler";
 import { PresetImporter } from "@/utils/presetImporter";
 import { Buffer } from "buffer";
 
@@ -43,10 +42,6 @@ export class GP200MidiDecoder implements IDeviceActions {
         this.presetInfoMessages = [];
         this.message_received_counter = 0;
 
-        // Maybe add event listener to midi device
-
-        eventHandler.addEventListener('onPresetInfoReceived', () => this.SyncPresetInfo)
-        eventHandler.addEventListener('syncPreset', (presetNumber: number) => this.SyncPresetInfo)
 
         makeObservable(this, {
             gp200: observable,
@@ -62,16 +57,22 @@ export class GP200MidiDecoder implements IDeviceActions {
     SyncPresetInfo() {
         // Extract Preset Information
         const presetInfo = this.GetPresetInfo();
-        // Convert Info to model
-        console.log(`PRESET MODEL (${presetInfo.number})`);
+        console.log(`PRESET NUMBER (${presetInfo.number})`);
 
-        // Update model
-        this.gp200.addPreset(presetInfo);
+        // Check if syncing stored presets or syncing current preset
+        if (this.gp200.syncingStoredPresets) {
+            // Update model
+            this.gp200.addPreset(presetInfo);
 
-        // Notify synced preset
-        this.gp200.SyncingPresetDone();
-        // eventHandler.emitEvent(SyncEvents.PresetSynced, this.syncedPresets);
+            // Notify synced stored preset
+            this.gp200.StoredPresetSynced();
+        } else if (this.gp200.syncingCurrentPreset) {
+            // Update model
+            this.gp200.addCurrentPreset(presetInfo);
 
+            // Notify synced current preset
+            this.gp200.CurrentPresetSynced();
+        }
     }
 
 
@@ -206,18 +207,9 @@ export class GP200MidiDecoder implements IDeviceActions {
         const paramMinEncoded = [...message.slice(0x25, 0x2c + 1)];
 
         // Get parameter type for correct decoding format
-        let paramType = "float";
-        // if (expModule == ExpModule.OFF) {
-        //     paramType = "int";
-        // } else {
-        //     this.gp200.currentPreset.effects[expModule].parameters.forEach(p => {
-        //         if (p.id === moduleParamID) {
-        //             paramType = p.numeric_type[0];
-        //         }
-        //     });
-        // }
-        const paramMax = this.decoder.decodeParamValue(paramMaxEncoded, paramType);
-        const paramMin = this.decoder.decodeParamValue(paramMinEncoded, paramType);
+        const isParamDecimal = expModule == ExpModule.MOD || expModule == ExpModule.DLY;
+        const paramMax = this.decoder.decodeParamValue(paramMaxEncoded, isParamDecimal);
+        const paramMin = this.decoder.decodeParamValue(paramMinEncoded, isParamDecimal);
 
         // //Update Model
         this.gp200.currentPreset.changeExpSettings(expID, expParamID, expModule, moduleParamID, paramMin, paramMax);
@@ -302,9 +294,9 @@ export class GP200MidiDecoder implements IDeviceActions {
         const encoded : number[] = Array.from(message.slice(0x25, 0x2c + 1));
         
         // Get type of encoded values
-        const paramType = effectChainID === EffectType.MOD ? "float" : "float";
+        const isParamDecimal = effectChainID === EffectType.MOD || effectChainID == EffectType.DLY;
 
-        const decodedValue = this.decoder.decodeParamValue(encoded, paramType);
+        const decodedValue = this.decoder.decodeParamValue(encoded, isParamDecimal);
 
         //console.log(`Change parameter ${paramType} :`, effectChainID, paramId, decodedValue);
 

@@ -1,14 +1,15 @@
 import EventEmitter, { EmitterSubscription } from "react-native/Libraries/vendor/emitter/EventEmitter";
 
+
 export enum SyncEvents {
     UserIRNameSynced = "UserIRNameSynced",
     DSTNAMNameSynced = "DSTNAMNameSynced",
     AMPNAMNameSynced = "AMPNAMNameSynced",
     UserStyleNameSynced = "UserStyleNameSynced",
     // sync Switches mode and actions
-    PresetSynced = "presetSynced",
-    TempPresetSynced = "TempPresetSynced",
-    SyncComplete = "syncComplete",
+    StoredPresetSynced = "StoredPresetSynced",
+    CurrentPresetSynced = "CurrentPresetSynced",
+    SyncComplete = "SyncComplete",
 }
 
 

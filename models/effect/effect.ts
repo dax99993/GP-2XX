@@ -156,10 +156,25 @@ export class EffectModel {
         // TODO: Update the parameter values and state
         e.changeState(effectInfo.state);
 
+        // Get Format for parameters
+        const isParamDecimal = effectInfo.chainID === EffectType.MOD || effectInfo.chainID == EffectType.DLY;
+
         for(let i = 0; i < e.parameters.length; i=i+1) {
             console.log("Effect param", e.parameters[i]);
             const ID = e.parameters[i].ID;
-            e.setParameterValue(ID, effectInfo.paramValues[ID]);
+
+            // Format parameter values
+            let formatedParamValue = 0; 
+            if (isParamDecimal) {
+                // round value to one decimal
+                formatedParamValue = Math.round(effectInfo.paramValues[ID] * 10) / 10;
+            } else {
+                // remove decimals
+                formatedParamValue = Math.round(effectInfo.paramValues[ID]);
+            }
+
+            // e.setParameterValue(ID, effectInfo.paramValues[ID]);
+            e.setParameterValue(ID, formatedParamValue);
             console.log(`Setting parameter ${ID} to value ${effectInfo.paramValues[ID]}`);
         }
 

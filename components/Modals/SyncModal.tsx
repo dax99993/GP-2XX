@@ -12,8 +12,12 @@ import MyModal from "./Modal";
 
 function SyncModal() {
     const headerTitle = "Syncing GP-200";
-    const syncingBodyText = "Loading Preset " + store.gp200.syncedPresets;
-    const progressValue = store.gp200.syncedPresets / 256 * 100;
+    let syncingBodyText = "";
+    if (store.gp200.syncingStoredPresets || store.gp200.syncingCurrentPreset) {
+        // syncingBodyText = "Loading Preset " + store.gp200.syncedPresets;
+        syncingBodyText = "Loading Preset";
+    }
+    const progressValue = store.gp200.presets.length / 256 * 100;
 
     return (
         <MyModal

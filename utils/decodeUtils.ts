@@ -118,9 +118,9 @@ export class DecoderUtils {
         return numberValue;
     }
 
-    decodeParamValue(encoded: number[], type: string): number {
+    decodeParamValue(encoded: number[], isDecimal: boolean): number {
         let decodedValue = this.decodeParamValueFloat(encoded);
-        if (type === "float") {
+        if (isDecimal) {
             // round value to one decimal
             decodedValue = Math.round(decodedValue * 10) / 10;
         } else {

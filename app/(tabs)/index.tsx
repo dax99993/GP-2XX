@@ -24,12 +24,11 @@ function HomeScreen() {
     const {orientation} = useOrientation();
 
     useEffect(() => {
+        console.log("use Effect detected change in isSynced!");
         if (store.gp200.isSynced) {
-            //router.replace('/ui/pjeset');
             router.replace('/ui/edit/edit_effect');
-            //store.modals.closeModal('syncModal');
         }
-    }, [store.gp200.syncedPresets])
+    }, [store.gp200.isSynced])
 
 
     return (
