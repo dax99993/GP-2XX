@@ -23,11 +23,12 @@ function MyModal({id, headerStyle, headerElements, bodyElements, footerElements}
             size="lg"
             isOpen={isOpen}
             closeOnOverlayClick={true}
+            // style={{maxHeight: '75%', justifyContent: 'center', alignItems: 'center'}}
         >
             <ModalBackdrop/>
             <ModalContent
             // style={{maxHeight: height* 1.0}}
-            style={{maxHeight: '70%'}}
+            style={{maxHeight: '75%'}}
             >
                 {
                     headerElements && 

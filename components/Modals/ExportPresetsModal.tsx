@@ -23,7 +23,7 @@ const PresetsList = observer(() => {
     }
 
     return (
-        <VStack style={{ flex: 0, justifyContent: 'center', minHeight: 100, maxHeight: 24.5 * 16 }}>
+        <VStack style={{ flex: 0, justifyContent: 'center', minHeight: 200 }}>
             <FlashList
                 initialScrollIndex={store.gp200.currentPresetNumber ?? 0}
                 data={CURRENT_PRESETS_DATA}

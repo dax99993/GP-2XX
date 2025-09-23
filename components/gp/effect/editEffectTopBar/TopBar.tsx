@@ -50,21 +50,18 @@ function RightElements() {
   const onClickImport = async () => {
       const status = await store.presetImporter.LoadFiles();
       if (status) {
+        // Should change this function to return error when file is not a valid .prst
+        // add a try catch block to handle erroneous files
         const presetsInfo = store.presetImporter.decodeFiles();
 
-        // Get memory positions to load presets
-        // Open Modal with selection
-        console.log("Open modal");
-        store.modals.openModal("importPresetsModal");
-
-        // Load to GP200 memory
-        presetsInfo.forEach(p => {
-          console.log("\nPreset INFO: ", p.name);
-        })
-
-        // Update selected preset position to load
-        const selectedPresets = Array.from({ length: presetsInfo.length }, (_, i) =>  store.gp200.currentPresetNumber ?? 0+ i)
+        // Update default selected preset to import
+        console.log("Presets info lenght", presetsInfo.length);
+        const selectedPresets = Array.from({ length: presetsInfo.length }, (_, i) => (store.gp200.currentPresetNumber ?? 0) + i);
+        console.log("Default import selected presets", selectedPresets);
         store.presetImporter.SetSelectedPresets(selectedPresets);
+
+        // Get memory positions to load presets
+        store.modals.openModal("importPresetsModal");
       }
   }
 

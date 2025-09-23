@@ -1,6 +1,6 @@
 import DisconnectModal from "@/components/Modals/DisconnectModal";
 import ExportPresetsModal from "@/components/Modals/ExportPresetsModal";
-import LoadPresetModal from "@/components/Modals/LoadPresetModal";
+import ImportPresetModal from "@/components/Modals/ImportPresetModal";
 import SaveModal from "@/components/Modals/SaveModal";
 import SyncModal from "@/components/Modals/SyncModal";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
@@ -31,7 +31,7 @@ export default function RootLayout() {
         <SyncModal/>
         <DisconnectModal/>
         <SaveModal/>
-        <LoadPresetModal/>
+        <ImportPresetModal/>
         <ExportPresetsModal/>
       <ThemeProvider value={DarkTheme}>
         <Stack>

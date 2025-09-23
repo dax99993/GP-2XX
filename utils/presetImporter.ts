@@ -46,36 +46,40 @@ export class PresetImporter {
         this.selectedPresets= this.selectedPresets.filter(n => n != position).sort((a, b) => a - b)
     }
 
+    get AllPresetsSelected(): boolean {
+        return this.selectedPresets.length == this.presets.length;
+    }
+
 
     async LoadFiles(): Promise<Boolean> {
         // Reset storage
         this.binaryFiles = [];
-        this.selectedPresets = [];
+        // this.selectedPresets = [];
 
         const documents = await DocumentPicker.getDocumentAsync({
             multiple: true,
             type: "application/octet-stream"
         });
 
-        if (!documents.canceled) {
-            //console.log(documents.assets);
-            for (let i = 0; i < documents.assets.length; i = i + 1) {
-                const asset = documents.assets[i];
-                console.log("Asset", i, asset);
-                // Read file
-                const s = await readAsStringAsync(asset.uri, { encoding: 'base64' });
-                console.log("base64 =", s);
-                // Convert to uint8array
-                const buffer = Buffer.from(s, 'base64');
-                console.log("Buffer", buffer);
-
-                this.binaryFiles.push(buffer);
-            }
-
-            return true;
+        if (documents.canceled) {
+            return false;
         }
 
-        return false;
+        //console.log(documents.assets);
+        for (let i = 0; i < documents.assets.length; i = i + 1) {
+            const asset = documents.assets[i];
+            console.log("Asset", i, asset);
+            // Read file
+            const s = await readAsStringAsync(asset.uri, { encoding: 'base64' });
+            console.log("base64 =", s);
+            // Convert to uint8array
+            const buffer = Buffer.from(s, 'base64');
+            console.log("Buffer", buffer);
+
+            this.binaryFiles.push(buffer);
+        }
+
+        return true;
     }
 
     decodeFiles(): IPresetInfo[] {
