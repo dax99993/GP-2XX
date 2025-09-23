@@ -97,19 +97,20 @@ export class EffectModel {
         // const p = this.parameters.find(p => p.ID === parameterID);
         const params = this.parameters.filter(p => p.ID === parameterID);
 
-        // Get the correct param
+        // Get the correct param (type for param with bind)
         let p: IParameter;
         if (params.length == 0) {
             throw new Error(`There is no parameter in effect ${this.name} with ID ${parameterID}`);
         } else if (params.length == 1) {
             p = params[0];
         } else if (params.length == 2) {
-            // Get the currently use param (combox or knob)
+            // Verify there's one Combox
             const combox_index = params.findIndex(p => p.type === ParamType.Combox);
             if (combox_index === -1) {
-                throw new Error(`There should be one Combox parameter if there are 2 parameters in effect ${this.name} with ID ${parameterID}`);
+                throw new Error(`There should be one Combox parameter if there are 2 parameters in effect ${this.name} with same ID ${parameterID}`);
             }
 
+            // Get the currently use param (combox or knob)
             if (this.activeBindParams.includes(parameterID)) {
                 p = params[combox_index]
             } else {
@@ -120,7 +121,7 @@ export class EffectModel {
         }
 
 
-        // check bind parameters and activate them
+        // Check bind parameters and activate them
         if (p instanceof Switch) {
             const bind_index = p.bind;
 
@@ -130,12 +131,14 @@ export class EffectModel {
                 if (!this.activeBindParams.includes(bind_index)) {
                     this.activeBindParams.push(bind_index);
                 }
+
                 // Reset param
                 const q = this.parameters.find(p => p.ID === bind_index && p.type === ParamType.Combox)
-                q?.reset;
+                q?.reset();
             } else if (bind_index != null && value == 0) {
-                // remove bind from active bind
+                // Remove bind from active bind
                 this.activeBindParams = this.activeBindParams.filter(bind => bind !== bind_index);
+
                 // Reset param
                 const q = this.parameters.find(p => p.ID === bind_index && p.type === ParamType.Knob)
                 q?.reset();
