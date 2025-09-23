@@ -1,10 +1,10 @@
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { useScrolling } from "@/contexts/scroll-context";
+import { useStore } from "@/hooks/useStore";
 import { Combox } from "@/models/parameter/Combox";
 import { ParamType } from "@/models/parameter/IParameter";
 import { Switch as SwitchParam } from "@/models/parameter/Switch";
-import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 import { ScrollView, StyleSheet } from "react-native";
 import NumericParameter from "../parameter/NumericParameter";
@@ -14,6 +14,7 @@ import EffectSelector from "./EffectSelector";
 import EffectState from "./EffectState";
 
 function EffectEdit() {
+    const store = useStore();
     const { isScrollingEnabled } = useScrolling();
 
     return (

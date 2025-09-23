@@ -6,7 +6,6 @@ import { VStack } from "@/components/ui/vstack";
 import { ChangeEffectsInfo } from "@/constants/ChangeEffects";
 import { IChangeEffect } from "@/models/effect/changeEffect/IChangeEffects";
 import { EffectType } from "@/models/effect/effect";
-import { store } from "@/models/store";
 import { useRouter } from "expo-router";
 import { UploadIcon } from "lucide-react-native";
 import { observer } from "mobx-react-lite";
@@ -14,13 +13,14 @@ import React, { useMemo, useRef, useState } from "react";
 import { TouchableOpacity } from "react-native";
 
 import SearchBar from "@/components/SearchBar";
+import { useStore } from "@/hooks/useStore";
 import { FlashList } from "@shopify/flash-list";
 
 
 
 function ListEffect() {
+    const store = useStore();
     // if (store.gp200.currentEffect == undefined) {return null}
-
     const effectType = store.gp200.currentEffect ? store.gp200.currentEffect.type : EffectType.PRE; 
 
     const DATA = useMemo(() => {
@@ -98,6 +98,7 @@ type ListEffectItemProps = {
 }
 
 function ListEffectItem(props: ListEffectItemProps) {
+    const store = useStore();
     const router = useRouter();
     const [showFullDescription, setShowFullDescription] = useState(1);
 

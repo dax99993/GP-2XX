@@ -1,6 +1,6 @@
 import PickerSelector from "@/components/pickerSelector";
+import { useStore } from "@/hooks/useStore";
 import { KnobModule } from "@/models/preset/IKnobSettings";
-import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 import React from "react";
 
@@ -14,6 +14,8 @@ interface KnobSettingsProps {
 }
 
 function GetParamLabels(module: KnobModule): [string, string][] {
+    const store = useStore();
+
     switch (module) {
         case KnobModule.BPM:
         case KnobModule.PATCHVOL:
@@ -37,6 +39,7 @@ function GetParamLabels(module: KnobModule): [string, string][] {
 }
 
 function KnobSettings({knobID}: KnobSettingsProps) {
+    const store = useStore();
     if (store.gp200.currentPreset == undefined) {return null};
 
     // Get param names of modules

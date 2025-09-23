@@ -10,7 +10,7 @@ import ModalStore from "./modalStore";
 
 
 
-class Store {
+export class Store {
     gp200: GP200Model;
     midi: MidiDevice;
     gpMidiEncoder: GP200MidiEncoder;
@@ -92,7 +92,7 @@ class Store {
 
     SyncError() {
         runInAction(() => {
-            store.gp200.syncingErrorOccur = true;
+            this.gp200.syncingErrorOccur = true;
         })
     }
 
@@ -102,8 +102,8 @@ class Store {
 
         // Unset syncing flag
         runInAction(() => {
-            store.gp200.syncing = false;
-            store.gp200.isSynced = true;
+            this.gp200.syncing = false;
+            this.gp200.isSynced = true;
         })
 
         // Close Syncing modal
@@ -116,7 +116,7 @@ class Store {
         // Start syncing presets (preset 0)
         console.log("START SYNC PROCESS");
         runInAction(() => {
-            store.gp200.syncingStoredPresets = true;
+            this.gp200.syncingStoredPresets = true;
         })
         this.gpMidiEncoder.AskStoredPresetInfo(0);
     }
@@ -131,13 +131,13 @@ class Store {
             console.log("Sync stored presets finished");
             eventHandler.removeEventListener(SyncEvents.StoredPresetSynced);
             runInAction(() => {
-                store.gp200.syncingStoredPresets = false;
+                this.gp200.syncingStoredPresets = false;
             })
 
             // START NEXT SYNC STEP
             console.log("Start getting current preset");
             runInAction(() => {
-                store.gp200.syncingCurrentPreset = true;
+                this.gp200.syncingCurrentPreset = true;
             })
             this.gpMidiEncoder.AskCurrentPresetInfo();
         }
@@ -147,7 +147,7 @@ class Store {
         eventHandler.removeEventListener(SyncEvents.CurrentPresetSynced);
         console.log("Synced Current Preset event received!");
         runInAction(() => {
-            store.gp200.syncingCurrentPreset = false;
+            this.gp200.syncingCurrentPreset = false;
         })
 
         // This is the last event so sync is complete
@@ -201,4 +201,4 @@ class Store {
 
 }
 
-export const store = new Store();
+// export const store = new Store();

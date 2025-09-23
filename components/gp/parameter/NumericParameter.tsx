@@ -1,7 +1,7 @@
-import { store } from "@/models/store";
 //import Slider from "@react-native-community/slider";
 import NumericSlider from "@/components/NumericSlider";
 import { useScrolling } from "@/contexts/scroll-context";
+import { useStore } from "@/hooks/useStore";
 import { IParameter } from "@/models/parameter/IParameter";
 import { observer } from "mobx-react-lite";
 
@@ -10,6 +10,7 @@ type NumericParameterProps = {
 }
 
 function NumericParameter({param}: NumericParameterProps) {
+    const store = useStore();
 
     const { enableScrolling, disableScrolling} = useScrolling();
 

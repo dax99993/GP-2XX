@@ -1,6 +1,6 @@
 import { Center } from "@/components/ui/center";
 import { HStack } from "@/components/ui/hstack";
-import { store } from "@/models/store";
+import { useStore } from "@/hooks/useStore";
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
 import { TouchableOpacity } from "react-native";
@@ -13,6 +13,8 @@ interface CtrlSettingsProps {
 }
 
 function CtrlSettings({ctrlID}: CtrlSettingsProps) {
+    const store = useStore();
+
     if (store.gp200.currentPreset == undefined) {return null};
 
     const effects = store.gp200.currentPreset.effects;

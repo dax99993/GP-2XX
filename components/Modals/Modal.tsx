@@ -1,4 +1,4 @@
-import { store } from "@/models/store";
+import { useStore } from "@/hooks/useStore";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { StyleProp, ViewStyle } from "react-native";
@@ -14,6 +14,8 @@ export interface ModalProps {
 }
 
 function MyModal({id, headerStyle, headerElements, bodyElements, footerElements} : ModalProps) {
+    const store = useStore();
+
     const isOpen = store.modals.modals[id];
 
     //if(!isOpen) return null;

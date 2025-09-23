@@ -4,7 +4,6 @@ import { Platform, StatusBar, StyleSheet } from "react-native";
 
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
-import { store } from '@/models/store';
 import { observer } from 'mobx-react-lite';
 
 import { Heading } from '@/components/ui/heading';
@@ -18,8 +17,10 @@ import { SmartphoneIcon } from 'lucide-react-native';
 import GPIcon from "@/assets/images/svgs/GPIcon4.svg";
 import UsbCable from "@/assets/images/svgs/usbcable.svg";
 import useOrientation from '@/hooks/useOrientation';
+import { useStore } from '@/hooks/useStore';
 
 function HomeScreen() {
+    const store = useStore();
     const router = useRouter();
     const {orientation} = useOrientation();
 

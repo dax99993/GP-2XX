@@ -5,7 +5,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import EffectChainUnit from "@/components/gp/effect/editEffectChain/EffectChainUnit";
 import { Center } from "@/components/ui/center";
 import { EffectType } from "@/models/effect/effect";
-import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 import Sortable, { SortableGridRenderItem } from 'react-native-sortables';
 import { SortableGridDragEndParams } from "react-native-sortables/dist/typescript/types";
@@ -15,6 +14,7 @@ import ChainIcon from "@/assets/images/svgs/Chain2.svg";
 import InArrow from "@/assets/images/svgs/InArrow.svg";
 import OutArrow from "@/assets/images/svgs/OutArrow.svg";
 import useOrientation from "@/hooks/useOrientation";
+import { useStore } from "@/hooks/useStore";
 
 function GetInArrowPosition(pos: number) {
   let top : DimensionValue = '0%';
@@ -63,6 +63,7 @@ function GetOutArrowPosition(pos: number) {
 }
 
 function EffectChain() {
+  const store = useStore();
   //if (store.gp200.currentPreset == undefined) {return null};
 
   // Styles

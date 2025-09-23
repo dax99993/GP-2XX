@@ -3,7 +3,7 @@ import { Box } from "@/components/ui/box";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { store } from "@/models/store";
+import { useStore } from "@/hooks/useStore";
 import { FlashList } from "@shopify/flash-list";
 import { useRouter } from "expo-router";
 import { observer } from "mobx-react-lite";
@@ -17,6 +17,8 @@ interface IChangePreset {
 }
 
 function SelectPresetList() {
+    const store = useStore();
+    const router = useRouter();
     //if (store.gp200.currentEffect == undefined) {return null}
 
     const DATA : IChangePreset[] = store.gp200.presets.map(prst => {
@@ -52,8 +54,12 @@ function SelectPresetList() {
                     <SelectPresetListItem
                         name={item.item.name}
                         code={item.item.code}
-                        number={item.item.number} 
                         selected={item.item.number == store.gp200.currentPresetNumber}
+                        onPress={() => {
+                            // Go back to edit screen
+                            router.back();
+                            store.gpMidiEncoder.ChangePreset(item.item.number);
+                        }}
                     />
                 }
             />
@@ -66,31 +72,17 @@ function SelectPresetList() {
 // List item
 type ListItemProps = {
     name: string;
-    number: number;
     code: string;
-    selected: boolean
+    selected: boolean;
+    onPress: () => void;
 }
 
-const SelectPresetListItem = observer((props: ListItemProps) => {
-
-    const router = useRouter();
-
-    const onPress = () => {
-        // Go back to edit screen
-        router.back();
-        store.gpMidiEncoder.ChangePreset(props.number);
-    };
-
-    const onLongPress = () => {
-        console.log("Long pressed!");
-    }
-
-
+const SelectPresetListItem = (props: ListItemProps) => {
     return (
         <Box className={`${props.selected ? "bg-info-300" : "bg-secondary-300"} mx-1 mb-1`} >
             <TouchableOpacity
-                onPress={onPress}
-                onLongPress={onLongPress}
+                onPress={props.onPress}
+                // onLongPress={onLongPress}
             >
                 <HStack className="px-2 py-2" style={{justifyContent: 'space-between', alignItems: 'center', }}>
                     <VStack >
@@ -102,7 +94,7 @@ const SelectPresetListItem = observer((props: ListItemProps) => {
             </TouchableOpacity>
         </Box>
     );
-});
+}
 
 
 export default observer(SelectPresetList);

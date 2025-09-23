@@ -4,11 +4,12 @@ import PickerSelector from "@/components/pickerSelector";
 import { Center } from "@/components/ui/center";
 import { Heading } from "@/components/ui/heading";
 import { useScrolling } from "@/contexts/scroll-context";
-import { store } from "@/models/store";
+import { useStore } from "@/hooks/useStore";
 import { observer } from "mobx-react-lite";
 import FxLoopSlider from "./FxLoopSlider";
 
 function FxLoopSettings() {
+    const store = useStore();
     // if (store.gp200.currentPreset == undefined) {return null};
 
     const { enableScrolling, disableScrolling} = useScrolling();

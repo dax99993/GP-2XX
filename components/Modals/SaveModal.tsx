@@ -2,13 +2,15 @@ import { observer } from "mobx-react-lite";
 import { Heading } from "../ui/heading";
 import { HStack } from "../ui/hstack";
 
-import { store } from "@/models/store";
+import { useStore } from "@/hooks/useStore";
 import SavePresetForm from "../gp/preset/SavePresetForm";
 import MyModal from "./Modal";
 
 
 
 function SaveModal() {
+    const store = useStore();
+
     const headerTitle = "Save Preset";
 
     const onClose = () => {

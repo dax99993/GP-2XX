@@ -3,9 +3,10 @@ import PickerSelector from "@/components/pickerSelector";
 import { Divider } from "@/components/ui/divider";
 import { VStack } from "@/components/ui/vstack";
 import { useScrolling } from "@/contexts/scroll-context";
+import { useStore } from "@/hooks/useStore";
 import { IParameter } from "@/models/parameter/IParameter";
 import { ExpModule } from "@/models/preset/IExpSettings";
-import { store } from "@/models/store";
+import { Store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -15,7 +16,7 @@ const MODULE_LABELS: [string, string][] = Object.entries(ExpModule)
   
 
 // This can be shorten by using param as input and memoing
-function GetParamLabels(module: ExpModule): [string, string][] {
+function GetParamLabels(store: Store, module: ExpModule): [string, string][] {
     switch (module) {
         case ExpModule.OFF:
             return [["0", "OFF"]];
@@ -36,7 +37,7 @@ function GetParamLabels(module: ExpModule): [string, string][] {
     }
 }
 
-function GetParam(module: ExpModule, paramID: number): IParameter | undefined {
+function GetParam(store: Store, module: ExpModule, paramID: number): IParameter | undefined {
     if (store.gp200.currentPreset == undefined) {return undefined;}
 
     switch (module) {
@@ -51,7 +52,7 @@ function GetParam(module: ExpModule, paramID: number): IParameter | undefined {
     }
 }
 
-function GetParamRange(module: ExpModule, paramID: number): [number, number, number]{
+function GetParamRange(store: Store, module: ExpModule, paramID: number): [number, number, number]{
     const DefaultRange: [number, number, number] = [0, 100, 1];
 
     if (store.gp200.currentPreset == undefined) {return DefaultRange;}
@@ -74,8 +75,9 @@ interface ExpSettingsProps {
     expParamID: number;
 }
 
-
 function ExpSettings({expID, expParamID }: ExpSettingsProps) {
+    const store = useStore();
+
     if (store.gp200.currentPreset == undefined) {return null};
 
     const { enableScrolling, disableScrolling} = useScrolling();
@@ -93,15 +95,15 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
 
     // Parameter info used for setting info
     const PARAM_LABELS: [string, string][] = useMemo(()=>{
-        return GetParamLabels(expModule);
+        return GetParamLabels(store, expModule);
     }, [expModule]);
 
     const paramRange = useMemo(() => 
-        GetParamRange(expModule, expParam),
+        GetParamRange(store, expModule, expParam),
     [expModule, expParam]);
 
     const param = useMemo(() =>
-        GetParam(expModule, expParam),
+        GetParam(store, expModule, expParam),
     [expModule, expParam]);
 
 
@@ -149,7 +151,7 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
                         const paramID = module == ExpModule.CAB ? 1 : 0;
                         //console.log("Set EXP MODULE ", s, "paramID", paramID);
                         // Get range of current effect to set them
-                        const [min, max, _] = GetParamRange(module, paramID);
+                        const [min, max, _] = GetParamRange(store, module, paramID);
                         //console.log("Range",min, max, step);
                         store.gpMidiEncoder.ChangePresetExpSettings(expID, expParamID,
                             module, paramID, min, max);
@@ -163,7 +165,7 @@ function ExpSettings({expID, expParamID }: ExpSettingsProps) {
                     if (store.gp200.currentPreset){
                         const moduleParamID = parseInt(s);
                         //console.log("Set EXP MODULE ", expModule, moduleParamID);
-                        const [min, max, _]= GetParamRange(expModule, moduleParamID);
+                        const [min, max, _]= GetParamRange(store, expModule, moduleParamID);
                         //console.log("Ranges: ", min, max, step);
                         store.gpMidiEncoder.ChangePresetExpSettings(expID, expParamID,
                             expModule, moduleParamID, min, max);

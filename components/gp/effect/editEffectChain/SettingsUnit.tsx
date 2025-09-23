@@ -1,12 +1,14 @@
 import { Center } from "@/components/ui/center";
-import { store } from "@/models/store";
 //import { observer } from "mobx-react-lite";
 import { Text } from "@/components/ui/text";
+import { useStore } from "@/hooks/useStore";
 import { observer } from "mobx-react-lite";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
 
 function SettingsChainUnit({size}: {size: number}) {
+  const store = useStore();
+
   // if (!store.gp200.currentPreset) {
   //   console.log("NULL current Preset");
   //   return null;
@@ -17,7 +19,6 @@ function SettingsChainUnit({size}: {size: number}) {
     console.log("Show settings");
     store.changeShowPatchSettings(true);
   }
-
   const isSelected = store.showPatchSettings;
 
     return (

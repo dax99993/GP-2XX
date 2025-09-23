@@ -1,6 +1,6 @@
 import { Center } from "@/components/ui/center";
+import { useStore } from "@/hooks/useStore";
 import { EffectType } from "@/models/effect/effect";
-import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import EffectImage from "../EffectImage";
@@ -11,6 +11,7 @@ type EffectUnitProps = {
 }
 
 function EffectChainUnit(props: EffectUnitProps) {
+  const store = useStore();
   // if (!store.gp200.currentPreset) {
   //   console.log("NULL current Preset");
   //   return null

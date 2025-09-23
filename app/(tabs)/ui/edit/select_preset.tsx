@@ -5,7 +5,6 @@ import { Platform, StatusBar, StyleSheet } from 'react-native';
 
 
 function SelectPresetScreen() {
-
   return (
     <>
         <VStack style={styles.mainContainer} className='bg-secondary-0'>

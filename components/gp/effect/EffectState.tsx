@@ -1,12 +1,14 @@
 import { Center } from "@/components/ui/center";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
+import { useStore } from "@/hooks/useStore";
 import { EffectType } from "@/models/effect/effect";
-import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 
 
 function EffectState() {
+    const store = useStore();
+
     const type = store.gp200.currentEffect ? 
         EffectType[store.gp200.currentEffect.type] :
         "";

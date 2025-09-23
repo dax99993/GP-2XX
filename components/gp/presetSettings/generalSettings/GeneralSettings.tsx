@@ -4,12 +4,13 @@ import { Center } from "@/components/ui/center";
 import { Heading } from "@/components/ui/heading";
 import { VStack } from "@/components/ui/vstack";
 import { useScrolling } from "@/contexts/scroll-context";
-import { store } from "@/models/store";
+import { useStore } from "@/hooks/useStore";
 import { observer } from "mobx-react-lite";
 import React from "react";
 
 
 function GeneralSettings() {
+    const store = useStore();
     //if (store.gp200.currentPreset == undefined) {return null};
 
     const volume = store.gp200.currentPreset ? store.gp200.currentPreset.volume : 0;

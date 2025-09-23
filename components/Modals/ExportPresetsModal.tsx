@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { Heading } from "../ui/heading";
 
-import { store } from "@/models/store";
+import { useStore } from "@/hooks/useStore";
 import { FlashList } from "@shopify/flash-list";
 import { CheckIcon } from "lucide-react-native";
 import { Platform } from "react-native";
@@ -13,6 +13,8 @@ import MyModal from "./Modal";
 const MODAL_ID = "exportPresetsModal";
 
 const PresetsList = observer(() => {
+    const store = useStore();
+
     const CURRENT_PRESETS_DATA = store.gp200.presets.map(p => {
         return {name: p.name, number: p.number, bankCode: p.bankCode}
     })
@@ -55,6 +57,7 @@ const PresetsList = observer(() => {
 });
 
 function ExportPresetsModal() {
+    const store = useStore();
 
     const headerTitle = "Export Presets";
 

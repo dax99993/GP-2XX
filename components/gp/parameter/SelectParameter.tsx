@@ -1,6 +1,6 @@
 import PickerSelector from "@/components/pickerSelector";
+import { useStore } from "@/hooks/useStore";
 import { Combox } from "@/models/parameter/Combox";
-import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 
 type SelectParameterProps = {
@@ -8,6 +8,7 @@ type SelectParameterProps = {
 }
 
 function SelectParameter({param}: SelectParameterProps) {
+    const store = useStore();
 
     const onChange = (v:string, n: number) => {
        store.gpMidiEncoder.ChangeEffectParamValue(param.ID, "float", n);

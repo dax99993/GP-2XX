@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { Heading } from "../ui/heading";
 
-import { store } from "@/models/store";
+import { useStore } from "@/hooks/useStore";
 import { FlashList } from "@shopify/flash-list";
 import { CheckIcon } from "lucide-react-native";
 import { Button, ButtonGroup, ButtonText } from "../ui/button";
@@ -71,6 +71,7 @@ export const IMPORT_PRESET_MODAL_ID = "importPresetsModal";
 // });
 
 function ImportPresetsModal() {
+    const store = useStore();
 
     // MODAL RELATED Variables and Functions
     const headerTitle = "Import Presets";

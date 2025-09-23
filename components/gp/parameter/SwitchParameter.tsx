@@ -3,8 +3,8 @@ import { HStack } from "@/components/ui/hstack";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 import { useScrolling } from "@/contexts/scroll-context";
+import { useStore } from "@/hooks/useStore";
 import { Switch as SwitchParam } from "@/models/parameter/Switch";
-import { store } from "@/models/store";
 import { observer } from "mobx-react-lite";
 import { StyleSheet } from "react-native";
 
@@ -13,6 +13,7 @@ type SwitchParameterProps = {
 }
 
 function SwitchParameter({param}: SwitchParameterProps) {
+    const store = useStore();
 
     const { enableScrolling, disableScrolling} = useScrolling();
 

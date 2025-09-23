@@ -5,12 +5,14 @@ import { Progress, ProgressFilledTrack } from "../ui/progress";
 import { Spinner } from "../ui/spinner";
 import { Text } from "../ui/text";
 
-import { store } from "@/models/store";
+import { useStore } from "@/hooks/useStore";
 import { VStack } from "../ui/vstack";
 import MyModal from "./Modal";
 
 
 function SyncModal() {
+    const store = useStore();
+
     const headerTitle = "Syncing GP-200";
     let syncingBodyText = "";
     if (store.gp200.syncingStoredPresets || store.gp200.syncingCurrentPreset) {
