@@ -79,7 +79,7 @@ function Buttons() {
                 <ButtonText>About</ButtonText>
                 <ButtonIcon as={InfoIcon}/>
             </Button> */}
-            <Button size="md"
+            {/* <Button size="md"
                 variant="solid"
                 action="primary"
                 onPress={() => { 
@@ -88,7 +88,7 @@ function Buttons() {
                  }}
             >
                 <ButtonText>Test Screen</ButtonText>
-            </Button>
+            </Button> */}
             <Button size="md"
                 variant="solid"
                 action="primary"

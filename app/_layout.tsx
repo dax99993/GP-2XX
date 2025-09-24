@@ -1,8 +1,4 @@
-import DisconnectModal from "@/components/Modals/DisconnectModal";
-import ExportPresetsModal from "@/components/Modals/ExportPresetsModal";
-import ImportPresetModal from "@/components/Modals/ImportPresetModal";
-import SaveModal from "@/components/Modals/SaveModal";
-import SyncModal from "@/components/Modals/SyncModal";
+import { ModalManager } from "@/components/Modals/Modal";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
 import { StoreContext } from "@/hooks/useStore";
@@ -36,11 +32,7 @@ export default function RootLayout() {
   return (
     <GluestackUIProvider mode={"dark"}>
       <StoreContext.Provider value={{store}}>
-        <SyncModal />
-        <DisconnectModal />
-        <SaveModal />
-        <ImportPresetModal />
-        <ExportPresetsModal />
+        <ModalManager/>
         <ThemeProvider value={DarkTheme}>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

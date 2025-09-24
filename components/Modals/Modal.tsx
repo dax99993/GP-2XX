@@ -1,58 +1,35 @@
 import { useStore } from "@/hooks/useStore";
 import { observer } from "mobx-react-lite";
-import { ReactNode } from "react";
-import { StyleProp, ViewStyle } from "react-native";
-import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader } from "../ui/modal";
+import { DISCONNECT_MODAL_ID, DisconnectModal } from "./DisconnectModal";
+import { EXPORT_PRESETS_MODAL_ID, ExportPresetsModal } from "./ExportPresetsModal";
+import { IMPORT_PRESET_MODAL_ID, ImportPresetsModal } from "./ImportPresetModal";
+import { SAVE_PRESET_MODAL_ID, SavePresetModal } from "./SaveModal";
+import { SYNC_MODAL_ID, SyncModal } from "./SyncModal";
 
 
-export interface ModalProps {
-    id: string;
-    headerStyle?: StyleProp<ViewStyle>,
-    headerElements?: ReactNode,
-    bodyElements?: ReactNode,
-    footerElements?: ReactNode,
-}
-
-function MyModal({id, headerStyle, headerElements, bodyElements, footerElements} : ModalProps) {
+export const ModalManager = observer(() => {
     const store = useStore();
 
-    const isOpen = store.modals.modals[id];
-
-    //if(!isOpen) return null;
+    const renderActiveModal = () => {
+        switch (store.modals.activeModal) {
+            case DISCONNECT_MODAL_ID:
+                return <DisconnectModal/>;
+            case SYNC_MODAL_ID:
+                return <SyncModal/>
+            case SAVE_PRESET_MODAL_ID:
+                return <SavePresetModal/>
+            case EXPORT_PRESETS_MODAL_ID:
+                return <ExportPresetsModal/>;
+            case IMPORT_PRESET_MODAL_ID:
+                return <ImportPresetsModal/>;
+            default:
+                return null;
+        }
+    }
 
     return (
-        <Modal
-            size="lg"
-            isOpen={isOpen}
-            closeOnOverlayClick={true}
-            // style={{maxHeight: '75%', justifyContent: 'center', alignItems: 'center'}}
-        >
-            <ModalBackdrop/>
-            <ModalContent
-            // style={{maxHeight: '50%'}}
-            >
-                {
-                    headerElements && 
-                    <ModalHeader style={[headerStyle]}>
-                        {headerElements}
-                    </ModalHeader>
-                }
-                {
-                    bodyElements &&
-                    <ModalBody>
-                        {bodyElements}
-                    </ModalBody>
-                }
-                {
-                    footerElements &&
-                    <ModalFooter>
-                        {footerElements}
-                    </ModalFooter>
-                }
-            </ModalContent>
-        </Modal>
+        <>
+        {store.modals.activeModal && renderActiveModal()}
+        </>
     );
-}
-
-
-export default observer(MyModal);
+});

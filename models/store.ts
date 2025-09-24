@@ -1,3 +1,5 @@
+import { DISCONNECT_MODAL_ID } from "@/components/Modals/DisconnectModal";
+import { SYNC_MODAL_ID } from "@/components/Modals/SyncModal";
 import { eventHandler, SyncEvents } from "@/utils/eventHandler";
 import { PresetExporter } from "@/utils/presetExporter";
 import { PresetImporter } from "@/utils/presetImporter";
@@ -31,11 +33,12 @@ export class Store {
         this.syncTimer = null;
 
         const midiDisconnectCb = () => {
-            this.modals.openModal("disconnectModal");
+            // this.modals.openModal("disconnectModal");
+            this.modals.openModal(DISCONNECT_MODAL_ID);
         }
         const midiConnectCb = () => {
             //this.modals.closeModal("disconnectModal");
-            this.modals.openModal("syncModal");
+            this.modals.openModal(SYNC_MODAL_ID);
             // Start sync
             this.SyncGP();
         }
@@ -135,7 +138,8 @@ export class Store {
         })
 
         // Close Syncing modal
-        this.modals.closeModal("syncModal");
+        // this.modals.closeModal("syncModal");
+        this.modals.closeModal();
     }
 
     StartSync() {

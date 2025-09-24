@@ -8,10 +8,10 @@ import { useEffect, useRef } from "react";
 import { Platform } from "react-native";
 import { Button, ButtonGroup, ButtonIcon, ButtonText } from "../ui/button";
 import { Checkbox, CheckboxIcon, CheckboxIndicator, CheckboxLabel } from "../ui/checkbox";
+import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader } from "../ui/modal";
 import { VStack } from "../ui/vstack";
-import MyModal from "./Modal";
 
-const MODAL_ID = "exportPresetsModal";
+export const EXPORT_PRESETS_MODAL_ID = "exportPresetsModal";
 
 interface PresetListItem {
     name: string,
@@ -80,13 +80,11 @@ const PresetsList = (props: PresetsListProps) => {
     );
 };
 
-function ExportPresetsModal() {
+export const ExportPresetsModal = observer(() => {
     const store = useStore();
 
-    const headerTitle = "Export Presets";
-
     const onClose = () => {
-        store.modals.closeModal(MODAL_ID);
+        store.modals.closeModal();
     }
 
     const onShare = async () => {
@@ -130,23 +128,28 @@ function ExportPresetsModal() {
     })
 
     return (
-        <MyModal
-            id={MODAL_ID}
-            headerStyle={{justifyContent: 'center'}}
-            headerElements={
-                <Heading>
-                    {headerTitle}
-                </Heading>
-            }
-            bodyElements={
-                <PresetsList
-                    data={DATA}
-                    // currentIndex={store.gp200.currentPresetNumber ?? 0}
-                    scrollToIndex={store.gp200.currentPresetNumber ?? 0}
-                    isChecked={(n: number) => {
-                        return store.presetExporter.SelectedPresetsHas(n);
-                    }}
-                    onChange={(v: boolean, n: number) => {
+        <Modal
+            size="lg"
+            isOpen={true}
+            closeOnOverlayClick={true}
+        >
+            <ModalBackdrop/>
+            <ModalContent
+            >
+                <ModalHeader>
+                    <Heading>
+                        Export Presets
+                    </Heading>
+                </ModalHeader>
+                <ModalBody>
+                    <PresetsList
+                        data={DATA}
+                        // currentIndex={store.gp200.currentPresetNumber ?? 0}
+                        scrollToIndex={store.gp200.currentPresetNumber ?? 0}
+                        isChecked={(n: number) => {
+                            return store.presetExporter.SelectedPresetsHas(n);
+                        }}
+                        onChange={(v: boolean, n: number) => {
                             if (v == false) {
                                 store.presetExporter.RemoveFromSelectedPresets(n);
                             } else {
@@ -154,45 +157,44 @@ function ExportPresetsModal() {
                             }
                             // console.log(name, "State change to", v, props.presetExporter.selectedPresets);
                             console.log("Selected presets", store.presetExporter.selectedPresets);
-                    }}
-                />
-            }
-            footerElements={
-                <ButtonGroup flexDirection="row">
-                    <Button
-                        variant='solid'
-                        size="sm"
-                        action="secondary"
-                        isDisabled={false}
-                        onPress={onClose}
-                    >
-                        <ButtonText>Cancel</ButtonText>
-                    </Button>
-                    <Button
-                        variant='solid'
-                        size="sm"
-                        isDisabled={store.presetExporter.selectedPresets.length !== 1}
-                        onPress={onShare}
-                    >
-                        <ButtonIcon as={Share2Icon}/>
-                        <ButtonText>Share</ButtonText>
-                    </Button>
-                    {
-                    Platform.OS == "android" &&
-                    <Button
-                        size="sm"
-                        variant='solid'
-                        isDisabled={store.presetExporter.selectedPresets.length == 0}
-                        onPress={onExport}
-                    >
-                        <ButtonIcon as={FileOutputIcon}/>
-                        <ButtonText>Export</ButtonText>
-                    </Button>
-                    }
-                </ButtonGroup>
-            }
-        />
+                        }}
+                    />
+                </ModalBody>
+                <ModalFooter>
+                    <ButtonGroup flexDirection="row">
+                        <Button
+                            variant='solid'
+                            size="sm"
+                            action="secondary"
+                            isDisabled={false}
+                            onPress={onClose}
+                        >
+                            <ButtonText>Cancel</ButtonText>
+                        </Button>
+                        <Button
+                            variant='solid'
+                            size="sm"
+                            isDisabled={store.presetExporter.selectedPresets.length !== 1}
+                            onPress={onShare}
+                        >
+                            <ButtonIcon as={Share2Icon}/>
+                            <ButtonText>Share</ButtonText>
+                        </Button>
+                        {
+                        Platform.OS == "android" &&
+                        <Button
+                            size="sm"
+                            variant='solid'
+                            isDisabled={store.presetExporter.selectedPresets.length == 0}
+                            onPress={onExport}
+                        >
+                            <ButtonIcon as={FileOutputIcon}/>
+                            <ButtonText>Export</ButtonText>
+                        </Button>
+                        }
+                    </ButtonGroup>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
     );
-}
-
-export default observer(ExportPresetsModal);
+});

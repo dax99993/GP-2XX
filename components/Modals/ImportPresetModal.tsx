@@ -7,8 +7,8 @@ import { CheckIcon, FileInputIcon } from "lucide-react-native";
 import { useEffect, useRef } from "react";
 import { Button, ButtonGroup, ButtonIcon, ButtonText } from "../ui/button";
 import { Checkbox, CheckboxIcon, CheckboxIndicator, CheckboxLabel } from "../ui/checkbox";
+import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader } from "../ui/modal";
 import { VStack } from "../ui/vstack";
-import MyModal from "./Modal";
 
 export const IMPORT_PRESET_MODAL_ID = "importPresetsModal";
 
@@ -94,14 +94,14 @@ const PresetsList = (props: PresetsListProps) => {
     );
 };
 
-function ImportPresetsModal() {
+export const ImportPresetsModal = observer(() => {
     const store = useStore();
 
     // MODAL RELATED Variables and Functions
     const headerTitle = "Import Presets";
 
     const onClose = () => {
-        store.modals.closeModal(IMPORT_PRESET_MODAL_ID);
+        store.modals.closeModal();
     }
 
     const onSave = () => {
@@ -132,56 +132,60 @@ function ImportPresetsModal() {
     const isImportDisable = !store.presetImporter.AllPresetsSelected;
 
     return (
-        <MyModal
-            id={IMPORT_PRESET_MODAL_ID}
-            headerStyle={{justifyContent: 'center'}}
-            headerElements={
-                <Heading>
-                    {headerTitle}
-                </Heading>
-            }
-            bodyElements={
-                <PresetsList
-                    data={DATA}
-                    scrollToIndex={store.gp200.currentPresetNumber ?? 0}
-                    isChecked={(index: number) =>
-                        store.presetImporter.SelectedPresetsHas(index)
-                    }
-                    isDisabled={ (index : number) => 
-                        store.presetImporter.AllPresetsSelected &&
-                        !store.presetImporter.SelectedPresetsHas(index)
-                    }
-                    onChange={(v: boolean, index: number) => {
-                            if (v == false) {
-                                store.presetImporter.RemoveFromSelectPresets(index);
-                            } else {
-                                store.presetImporter.AddToSelectPresets(index);
-                            }
-                    }}
-                />
-            }
-            footerElements={
-                <ButtonGroup flexDirection="row">
-                    <Button
-                        variant='outline'
-                        action="secondary"
-                        isDisabled={false}
-                        onPress={onClose}
-                    >
-                        <ButtonText>Cancel</ButtonText>
-                    </Button>
-                    <Button
-                        variant='solid'
-                        isDisabled={isImportDisable}
-                        onPress={onSave}
-                    >
-                        <ButtonIcon as={FileInputIcon}/>
-                        <ButtonText>Import</ButtonText>
-                    </Button>
-                </ButtonGroup>
-            }
-        />
+        <Modal
+            size="lg"
+            isOpen={true}
+            closeOnOverlayClick={true}
+        >
+            <ModalBackdrop/>
+            <ModalContent
+            >
+                <ModalHeader>
+                    <Heading>
+                        {headerTitle}
+                    </Heading>
+                </ModalHeader>
+                <ModalBody>
+                    <PresetsList
+                        data={DATA}
+                        scrollToIndex={store.gp200.currentPresetNumber ?? 0}
+                        isChecked={(index: number) =>
+                            store.presetImporter.SelectedPresetsHas(index)
+                        }
+                        isDisabled={ (index : number) => 
+                            store.presetImporter.AllPresetsSelected &&
+                            !store.presetImporter.SelectedPresetsHas(index)
+                        }
+                        onChange={(v: boolean, index: number) => {
+                                if (v == false) {
+                                    store.presetImporter.RemoveFromSelectPresets(index);
+                                } else {
+                                    store.presetImporter.AddToSelectPresets(index);
+                                }
+                        }}
+                    />
+                </ModalBody>
+                <ModalFooter>
+                    <ButtonGroup flexDirection="row">
+                        <Button
+                            variant='outline'
+                            action="secondary"
+                            isDisabled={false}
+                            onPress={onClose}
+                        >
+                            <ButtonText>Cancel</ButtonText>
+                        </Button>
+                        <Button
+                            variant='solid'
+                            isDisabled={isImportDisable}
+                            onPress={onSave}
+                        >
+                            <ButtonIcon as={FileInputIcon}/>
+                            <ButtonText>Import</ButtonText>
+                        </Button>
+                    </ButtonGroup>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
     );
-}
-
-export default observer(ImportPresetsModal);
+});

@@ -6,11 +6,12 @@ import { Spinner } from "../ui/spinner";
 import { Text } from "../ui/text";
 
 import { useStore } from "@/hooks/useStore";
+import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader } from "../ui/modal";
 import { VStack } from "../ui/vstack";
-import MyModal from "./Modal";
 
+export const SYNC_MODAL_ID = "syncModal";
 
-function SyncModal() {
+export const SyncModal = observer(() => {
     const store = useStore();
 
     const headerTitle = "Syncing GP-200";
@@ -21,36 +22,41 @@ function SyncModal() {
     const progressValue = store.gp200.presets.length / 256 * 100;
 
     return (
-        <MyModal
-            id="syncModal"
-            headerElements={
-                <Heading>
-                    {headerTitle}
-                </Heading>
-            }
-            bodyElements={
-                <HStack space="sm">
-                    {store.gp200.syncingErrorOccur && 
-                    <VStack>
-                        <Text size="md">An error occur while syncing.</Text>
-                        <Text size="md">Please reconnect device.</Text>
-                    </VStack>
-                    }
-                    {!store.gp200.syncingErrorOccur &&
-                    <>
-                        <Spinner />
-                        <Text size="md">{syncingBodyText}</Text>
-                    </>
-                    }
-                </HStack>
-            }
-            footerElements={
-                <Progress value={progressValue} size="md" orientation="horizontal">
-                    <ProgressFilledTrack />
-                </Progress>
-            }
-        />
+        <Modal
+            size="lg"
+            isOpen={true}
+            closeOnOverlayClick={true}
+        >
+            <ModalBackdrop/>
+            <ModalContent
+            >
+                <ModalHeader>
+                    <Heading>
+                        {headerTitle}
+                    </Heading>
+                </ModalHeader>
+                <ModalBody>
+                    <HStack space="sm">
+                        {store.gp200.syncingErrorOccur &&
+                            <VStack>
+                                <Text size="md">An error occur while syncing.</Text>
+                                <Text size="md">Please reconnect device.</Text>
+                            </VStack>
+                        }
+                        {!store.gp200.syncingErrorOccur &&
+                            <>
+                                <Spinner />
+                                <Text size="md">{syncingBodyText}</Text>
+                            </>
+                        }
+                    </HStack>
+                </ModalBody>
+                <ModalFooter>
+                    <Progress value={progressValue} size="md" orientation="horizontal">
+                        <ProgressFilledTrack />
+                    </Progress>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
     );
-}
-
-export default observer(SyncModal);
+});
