@@ -29,8 +29,7 @@ function MyModal({id, headerStyle, headerElements, bodyElements, footerElements}
         >
             <ModalBackdrop/>
             <ModalContent
-            // style={{maxHeight: height* 1.0}}
-            style={{maxHeight: '75%'}}
+            // style={{maxHeight: '50%'}}
             >
                 {
                     headerElements && 

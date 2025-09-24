@@ -2,39 +2,55 @@
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 
 
-import TopBar from '@/components/topBar/TopBar';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import useOrientation from '@/hooks/useOrientation';
 import { Orientation } from 'expo-screen-orientation';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 
+
+import TopBar from '@/components/topBar/TopBar';
 import { Button, ButtonText } from '@/components/ui/button';
+import { HStack } from '@/components/ui/hstack';
+import { FlashList } from '@shopify/flash-list';
 
-import { store } from '@/models/store';
 
+const List = (props: {data: number[], scrollTo: number, onPress: (n: number)=>void}) => {
+  useEffect(()=>{
+    // const timer = setTimeout( ()=> {
+    //   console.log("Timer scroll")
+    //   listRef.current?.scrollToIndex({ index: props.scrollTo, viewPosition: 0 })
+    // }, 1000);
+
+    // return () => clearTimeout(timer);
+
+      listRef.current?.scrollToIndex({ index: props.scrollTo, viewPosition: 0 })
+  },[])
+
+  const listRef = useRef<FlashList<any>>(null);
+ return (
+        <FlashList
+        ref={listRef}
+        data={props.data}
+        // initialScrollIndex={40}
+        estimatedItemSize={21}
+        renderItem={(item) => (
+          <HStack style={{width: 70}}>
+            <Button>
+              <ButtonText onPress={() => props.onPress(item.item)}>{item.item}</ButtonText>
+            </Button>
+          </HStack>
+        )}        
+        />
+ );
+}
 
 export default function TestScreen() {
   const {orientation, isLandscape} = useOrientation();
   console.log(Orientation[orientation]);
 
-  const onClick = async () => {
-      const status = await store.presetImporter.LoadFiles();
-      if (status) {
-        const presetsInfo = store.presetImporter.decodeFiles();
-
-        // Get memory positions to load presets
-        // Open Modal with selection
-        console.log("Open modal");
-        store.modals.openModal("loadPresetsModal");
-
-        // Load to GP200 memory
-        presetsInfo.forEach(p => {
-          console.log("\nPreset INFO: ", p);
-        })
-      }
-  }
+  const DATA = Array.from({ length: 50 }, (_, i) => i + 1);
 
   return (
     <VStack space='xs' style={styles.maincontainer}>
@@ -49,15 +65,12 @@ export default function TestScreen() {
           <Text>Right</Text>
         </TopBar.rightItems>
       </TopBar>
+      <Button>
+        <ButtonText>Scroll</ButtonText>
+      </Button>
       {/* <View style={isLandscape ? styles.landscapeContainer : styles.portraitContainer} > */}
-      <View style={{flex:0 , backgroundColor: 'red'}} >
-        <Button onPress={onClick}>
-          <ButtonText>Load file</ButtonText>
-        </Button>
-        {/* <Button onPress={() => store.modals.openModal("savePresetModal")}> */}
-        <Button onPress={() => store.modals.openModal("loadPresetsModal")}>
-          <ButtonText>Open load presets modal</ButtonText>
-        </Button>
+      <View style={{flex:0 , backgroundColor: 'red', minWidth: 100, maxHeight: 250, justifyContent: 'center'}} >
+        <List data={DATA} scrollTo={25} onPress={(n: number)=>{console.log("Pressed", n)}}/>
       </View>
     </VStack>
   );

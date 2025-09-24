@@ -3,72 +3,96 @@ import { Heading } from "../ui/heading";
 
 import { useStore } from "@/hooks/useStore";
 import { FlashList } from "@shopify/flash-list";
-import { CheckIcon } from "lucide-react-native";
-import { Button, ButtonGroup, ButtonText } from "../ui/button";
+import { CheckIcon, FileInputIcon } from "lucide-react-native";
+import { useEffect, useRef } from "react";
+import { Button, ButtonGroup, ButtonIcon, ButtonText } from "../ui/button";
 import { Checkbox, CheckboxIcon, CheckboxIndicator, CheckboxLabel } from "../ui/checkbox";
 import { VStack } from "../ui/vstack";
 import MyModal from "./Modal";
 
 export const IMPORT_PRESET_MODAL_ID = "importPresetsModal";
 
-// const PresetsList = observer(() => {
-//     const CURRENT_PRESETS_DATA = store.gp200.presets.map(p => {
-//         return {name: p.name, number: p.number, bankCode: p.bankCode}
-//     })
-//     console.log("Current presets:", CURRENT_PRESETS_DATA.length, CURRENT_PRESETS_DATA);
+interface PresetListItem {
+    name: string,
+    bankCode: string,
+    number: number,
+}
 
-//     const IMPORT_PRESET_DATA = store.presetImporter.presets.map(p => {
-//         return {name: p.name, number: p.number}
-//     })
-//     console.log("IMPORTED PRESETS:", IMPORT_PRESET_DATA.length);
+interface PresetsListProps {
+    data: PresetListItem[],
+    // presetImporter: PresetImporter,
+    scrollToIndex: number,
+    isChecked: (index: number) => boolean,
+    isDisabled: (index: number) => boolean,
+    onChange: (v: boolean, index: number) => void,
+    // initialSelected: number[],
+    // maxSelected: number,
+}
 
-//     // const isDisabled = (positionNumber: number) => {
-//     //     const s = store.presetImporter.AllPresetsSelected && !store.presetImporter.SelectedPresetsHas(positionNumber);
-//     //     console.log("isDisabled", positionNumber, s);
-//     //     return s;
-//     //     // return store.presetImporter.AllPresetsSelected;
-//     // }
+const PresetsList = (props: PresetsListProps) => {
 
-//     // const isChecked = (positionNumber: number) => {
-//     // }
+    // const [selected, setSelected] = useState(props.initialSelected);
+    const listRef = useRef<FlashList<any>>(null);
 
-//     return (
-//         <VStack style={{ flex: 1, justifyContent: 'center' }}>
-//             <FlashList
-//                 initialScrollIndex={store.gp200.currentPresetNumber ?? 0}
-//                 data={CURRENT_PRESETS_DATA}
-//                 // drawDistance={200}
-//                 estimatedItemSize={24.5}
-//                 renderItem={(item) =>
-//                     <Checkbox
-//                         size="lg"
-//                         isDisabled={
-//                             // store.presetImporter.AllPresetsSelected && store.presetImporter.SelectedPresetsHas(item.item.number)
-//                             !store.presetImporter.SelectedPresetsHas(item.item.number)
-//                         }
-//                         defaultIsChecked={
-//                             store.presetImporter.SelectedPresetsHas(item.item.number)
-//                         }
-//                         value={item.item.number.toString()}
-//                         onChange={(v: boolean) => {
-//                             if (v == false) {
-//                                 store.presetImporter.RemoveFromSelectPresets(item.item.number);
-//                             } else {
-//                                 store.presetImporter.AddToSelectPresets(item.item.number);
-//                             }
-//                             console.log(item.item.name, "State change to", v, store.presetImporter.selectedPresets);
-//                         }}
-//                     >
-//                         <CheckboxIndicator>
-//                             <CheckboxIcon as={CheckIcon} />
-//                         </CheckboxIndicator>
-//                         <CheckboxLabel>{item.item.bankCode + ' ' + item.item.name}</CheckboxLabel>
-//                     </Checkbox>
-//                 }
-//             />
-//         </VStack>
-//     );
-// });
+    useEffect(() => {
+        console.log("Change initial Scroll", props.scrollToIndex);
+
+        const timer = setTimeout(() => {
+            listRef.current?.scrollToIndex({
+                index: props.scrollToIndex,
+                animated: true,
+                viewOffset: 0,
+                viewPosition: 0.29,
+            })
+            console.log("Timer executed!");
+        }, 0);
+
+
+        return () => {
+            console.log("Timer clear");
+            clearTimeout(timer);
+        };
+    },[])
+
+    // const isDisabled = (positionNumber: number) => {
+        // return props.presetImporter.AllPresetsSelected &&
+        //     !props.presetImporter.SelectedPresetsHas(positionNumber);
+    // }
+
+    // const isChecked = (positionNumber: number) => {
+    //     return props.presetImporter.SelectedPresetsHas(positionNumber)
+    // }
+
+    return (
+        <VStack style={{minHeight: 200, maxHeight: 250}}>
+            <FlashList
+                ref={listRef}
+                // extraData={props.currentIndex}
+                // initialScrollIndex={props.scrollTo}
+                data={props.data}
+                // drawDistance={200}
+                estimatedItemSize={24.5}
+                keyExtractor={(item) => item.number.toString()}
+                renderItem={(item) =>
+                    <Checkbox
+                        size="lg"
+                        isDisabled={ props.isDisabled(item.item.number) }
+                        defaultIsChecked={ props.isChecked(item.item.number) }
+                        value={item.item.number.toString()}
+                        onChange={(v: boolean) => {
+                            props.onChange(v, item.item.number);
+                        }}
+                    >
+                        <CheckboxIndicator>
+                            <CheckboxIcon as={CheckIcon} />
+                        </CheckboxIndicator>
+                        <CheckboxLabel>{item.item.bankCode + ' ' + item.item.name}</CheckboxLabel>
+                    </Checkbox>
+                }
+            />
+        </VStack>
+    );
+};
 
 function ImportPresetsModal() {
     const store = useStore();
@@ -100,17 +124,9 @@ function ImportPresetsModal() {
     }
 
     // MODAL BODY
-    const CURRENT_PRESETS_DATA = store.gp200.presets.map(p => {
+    const DATA: PresetListItem[] = store.gp200.presets.map(p => {
         return {name: p.name, number: p.number, bankCode: p.bankCode}
     })
-
-    // const isDisabled = (positionNumber: number) => {
-    //     return store.presetImporter.AllPresetsSelected && !store.presetImporter.SelectedPresetsHas(positionNumber);
-    // }
-
-    // const isChecked = (positionNumber: number) => {
-    //     return store.presetImporter.SelectedPresetsHas(positionNumber);
-    // }
 
     // MODAL FOOTER variables and functions
     const isImportDisable = !store.presetImporter.AllPresetsSelected;
@@ -125,40 +141,24 @@ function ImportPresetsModal() {
                 </Heading>
             }
             bodyElements={
-                <VStack style={{ flex: 0, justifyContent: 'center', minHeight: 300 }}>
-                    <FlashList
-                        initialScrollIndex={store.gp200.currentPresetNumber ?? 0}
-                        data={CURRENT_PRESETS_DATA}
-                        // data={store.gp200.presets}
-                        // drawDistance={200}
-                        estimatedItemSize={24.5}
-                        renderItem={(item) =>
-                            <Checkbox
-                                size="lg"
-                                isDisabled={
-                                    store.presetImporter.AllPresetsSelected && !store.presetImporter.SelectedPresetsHas(item.item.number)
-                                }
-                                defaultIsChecked={
-                                    store.presetImporter.SelectedPresetsHas(item.item.number)
-                                }
-                                value={item.item.number.toString()}
-                                onChange={(v: boolean) => {
-                                    if (v == false) {
-                                        store.presetImporter.RemoveFromSelectPresets(item.item.number);
-                                    } else {
-                                        store.presetImporter.AddToSelectPresets(item.item.number);
-                                    }
-                                    console.log(item.item.name, "State change to", v, store.presetImporter.selectedPresets);
-                                }}
-                            >
-                                <CheckboxIndicator>
-                                    <CheckboxIcon as={CheckIcon} />
-                                </CheckboxIndicator>
-                                <CheckboxLabel>{item.item.bankCode + ' ' + item.item.name}</CheckboxLabel>
-                            </Checkbox>
-                        }
-                    />
-                </VStack>
+                <PresetsList
+                    data={DATA}
+                    scrollToIndex={store.gp200.currentPresetNumber ?? 0}
+                    isChecked={(index: number) =>
+                        store.presetImporter.SelectedPresetsHas(index)
+                    }
+                    isDisabled={ (index : number) => 
+                        store.presetImporter.AllPresetsSelected &&
+                        !store.presetImporter.SelectedPresetsHas(index)
+                    }
+                    onChange={(v: boolean, index: number) => {
+                            if (v == false) {
+                                store.presetImporter.RemoveFromSelectPresets(index);
+                            } else {
+                                store.presetImporter.AddToSelectPresets(index);
+                            }
+                    }}
+                />
             }
             footerElements={
                 <ButtonGroup flexDirection="row">
@@ -175,7 +175,8 @@ function ImportPresetsModal() {
                         isDisabled={isImportDisable}
                         onPress={onSave}
                     >
-                        <ButtonText>Import presets</ButtonText>
+                        <ButtonIcon as={FileInputIcon}/>
+                        <ButtonText>Import</ButtonText>
                     </Button>
                 </ButtonGroup>
             }

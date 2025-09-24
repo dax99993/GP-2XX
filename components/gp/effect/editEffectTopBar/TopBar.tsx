@@ -68,6 +68,12 @@ function RightElements() {
 
   const onClickExport = async () => {
 
+        // Update default selected preset to import
+        if (store.gp200.currentPresetNumber != undefined) {
+          store.presetExporter.SetSelectedPresets([store.gp200.currentPresetNumber]);
+        }
+
+        // Open Modal
         console.log("Open modal");
         store.modals.openModal("exportPresetsModal");
   }
