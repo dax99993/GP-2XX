@@ -16,8 +16,7 @@ function SyncModal() {
     const headerTitle = "Syncing GP-200";
     let syncingBodyText = "";
     if (store.gp200.syncingStoredPresets || store.gp200.syncingCurrentPreset) {
-        // syncingBodyText = "Loading Preset " + store.gp200.syncedPresets;
-        syncingBodyText = "Loading Preset";
+        syncingBodyText = "Loading Presets";
     }
     const progressValue = store.gp200.presets.length / 256 * 100;
 

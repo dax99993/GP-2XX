@@ -46,7 +46,7 @@ function SelectPresetList() {
             <SearchBar placeholder="Search preset" onChange={onSearchChange} />
             <FlashList
                 data={filteredData}
-                drawDistance={1500}
+                drawDistance={3500}
                 initialScrollIndex={store.gp200.currentPresetNumber}
                 estimatedItemSize={60}
                 keyExtractor={item => item.number.toString()}

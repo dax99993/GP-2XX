@@ -9,7 +9,6 @@ import { MidiDevice } from "./midiDevice";
 import ModalStore from "./modalStore";
 
 
-
 export class Store {
     gp200: GP200Model;
     midi: MidiDevice;
@@ -21,12 +20,15 @@ export class Store {
     modals: ModalStore;
 
     showPatchSettings: boolean;
+    syncTimer: ReturnType<typeof setTimeout> | null = null; // Type for setTimeout return value
 
     constructor() {
         this.gp200 = new GP200Model();
         this.modals = new ModalStore();
         this.presetImporter = new PresetImporter();
         this.presetExporter = new PresetExporter();
+
+        this.syncTimer = null;
 
         const midiDisconnectCb = () => {
             this.modals.openModal("disconnectModal");
@@ -69,6 +71,26 @@ export class Store {
     }
 
     SyncGP() {
+        // Set a timeout for syncing
+        this.syncTimer = setTimeout(() => {
+            console.log("Sync Timeout Executed!")
+            if (!this.gp200.isSynced) {
+                // Stop syncing
+                // remove syncing events
+                eventHandler.removeEventListener(SyncEvents.StoredPresetSynced);
+                eventHandler.removeEventListener(SyncEvents.CurrentPresetSynced);
+                eventHandler.removeEventListener(SyncEvents.SyncComplete);
+
+                // Set Flag to show sync error modal
+                runInAction(() => {
+                    this.gp200.syncing = false;
+                    this.gp200.syncingStoredPresets = false;
+                    this.gp200.syncingCurrentPreset = false;
+                    this.gp200.syncingErrorOccur = true;
+                })
+            }
+        }, 90 * 1000);
+
         // ADD ALL THE SYNC EVENT LISTENERS
         eventHandler.addEventListener(SyncEvents.StoredPresetSynced, (args: number[]) => this.StoredPresetsSynced.bind(this)(args[0]));
         eventHandler.addEventListener(SyncEvents.CurrentPresetSynced, this.CurrentPresetSynced.bind(this));
@@ -99,6 +121,12 @@ export class Store {
     SyncComplete() {
         eventHandler.removeEventListener(SyncEvents.SyncComplete);
         console.log("Sync Complete event received");
+
+        // Clear SyncTimeout
+        if (this.syncTimer != null) {
+            console.log("Sync Timeout Timer Cleared!");
+            clearTimeout(this.syncTimer);
+        }
 
         // Unset syncing flag
         runInAction(() => {

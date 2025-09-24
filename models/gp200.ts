@@ -142,9 +142,8 @@ export class GP200Model {
     // }
 
     get AreStoredPresetsSynced(): boolean {
-      // return this.syncedPresets == 256;
-      // return this.presets.length == 256;
-      return this.presets.length == 50;
+      return this.presets.length == 256;
+      // return this.presets.length == 50;
       // return this.presets.length == 16;
     }
 
