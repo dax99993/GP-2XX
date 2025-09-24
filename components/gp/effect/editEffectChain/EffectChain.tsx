@@ -20,7 +20,7 @@ function GetInArrowPosition(pos: number) {
   let top : DimensionValue = '0%';
   let left: DimensionValue = '0%';
 
-  const topPositions: DimensionValue[] = ['10%', '49%', '88%'];
+  const topPositions: DimensionValue[] = ['11%', '47%', '83%'];
   const leftPositions: DimensionValue[] = ['4%', '27%', '54%', '77.5%'];
 
   const topPos = Math.floor(pos / 4);
@@ -43,7 +43,7 @@ function GetOutArrowPosition(pos: number) {
   let top : DimensionValue = '0%';
   let left: DimensionValue = '0%';
 
-  const topPositions: DimensionValue[] = ['26.5%', '65%', '104%'];
+  const topPositions: DimensionValue[] = ['26.5%', '63%', '100%'];
   const leftPositions: DimensionValue[] = ['4%', '27%', '54%', '77.5%'];
 
   const topPos = Math.floor(pos / 4);
@@ -66,7 +66,24 @@ function EffectChain() {
   const store = useStore();
   //if (store.gp200.currentPreset == undefined) {return null};
 
-  // Styles
+
+  // VARIABLES
+  const sendPosition = store.gp200.currentPreset ? store.gp200.currentPreset.fxLoop.sendPosition : 0; 
+  const returnPosition = store.gp200.currentPreset ? store.gp200.currentPreset.fxLoop.returnPosition: 11; 
+
+  const DATA = 
+    store.gp200.currentPreset ? 
+      store.gp200.currentPreset.effectsChainOrder
+      : Object.values(EffectType).filter(e => typeof e === 'number');
+  
+  // Add index of Fixed settings
+  if (!DATA.includes(-1)) {
+    DATA.push(-1);
+  }
+  console.log("Current chain order", DATA);
+
+
+  // STYLES
   const {orientation, isLandscape, isTablet} = useOrientation();
   console.log("Orientation", orientation, "is Landscape", isLandscape, "is Tablet", isTablet);
 
@@ -87,7 +104,7 @@ function EffectChain() {
       justifyContent: 'flex-start',
       //justifyContent: 'center',
       alignItems: 'center',
-      //backgroundColor: 'lightgreen',
+      // backgroundColor: 'lightgreen',
     },
     sortableContainer: {
       //justifyContent: 'flex-start',
@@ -97,10 +114,11 @@ function EffectChain() {
       alignItems: 'center',
       paddingHorizontal: chainColGap,
       paddingVertical: chainColGap,
-      //backgroundColor: "#6600ff8f",
+      // backgroundColor: "#6600ff8f",
     },
     chainBackground: {
       position: 'absolute',
+      top: '10%',
       //width: chainWidth,
     },
     arrowBackground: {
@@ -109,6 +127,7 @@ function EffectChain() {
     }
   })
 
+  // CALLBACKS
   const renderItem = useCallback<SortableGridRenderItem<number>>(
     ({ item }) => {
       const isFixed = item == -1;
@@ -125,8 +144,9 @@ function EffectChain() {
     []
   );
 
+
   const onDragEnd = useCallback((params: SortableGridDragEndParams<number>) => {
-    'worklet';
+    // 'worklet';
     const ids = params.indexToKey.map(i => Number(i));
     // remove the -1 for fixed item 
     const chainOrder = ids.filter(i => i !== -1);
@@ -134,25 +154,12 @@ function EffectChain() {
     store.gpMidiEncoder.ChangePresetChainOrder(ids);
   }, []);
 
-  // Default values
-  const sendPosition = store.gp200.currentPreset ? store.gp200.currentPreset.fxLoop.sendPosition : 0; 
-  const returnPosition = store.gp200.currentPreset ? store.gp200.currentPreset.fxLoop.returnPosition: 11; 
-
-  const DATA = 
-    store.gp200.currentPreset ? 
-      store.gp200.currentPreset.effectsChainOrder
-      : Object.values(EffectType).filter(e => typeof e === 'number');
-  
-  // Add index of Fixed settings
-  if (!DATA.includes(-1)) {
-    DATA.push(-1);
-  }
-  console.log("Current chain order", DATA);
 
     return (
       <GestureHandlerRootView style={styles.baseContainer}>
         <Center className="" style={styles.sortableContainer}>
-          <ChainIcon scaleX={1.2} scaleY={0.80}
+          <ChainIcon 
+            scaleY={0.75} scaleX={1.25} 
             height={'100%'} width={'100%'}
             style={styles.chainBackground}
           />
