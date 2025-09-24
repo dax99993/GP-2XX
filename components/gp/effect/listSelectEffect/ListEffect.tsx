@@ -14,12 +14,18 @@ import { TouchableOpacity } from "react-native";
 
 import SearchBar from "@/components/SearchBar";
 import { useStore } from "@/hooks/useStore";
+import { createHandleToast } from "@/utils/toast";
 import { FlashList } from "@shopify/flash-list";
 
 
 
 function ListEffect() {
     const store = useStore();
+    const handleToast = createHandleToast({
+        title: "Dear user",
+        description: "This features has not been implemented yet!.",
+        duration: 3000
+    });
     // if (store.gp200.currentEffect == undefined) {return null}
     const effectType = store.gp200.currentEffect ? store.gp200.currentEffect.type : EffectType.PRE; 
 
@@ -73,6 +79,9 @@ function ListEffect() {
                         description={item.item.description}
                         isLoadable={canHandleIR(item.item.ID) || canHandleNAM(item.item.ID)}
                         onLoadFile={() => {
+                            // Show toast Not implemented yet
+                            handleToast();
+
                             if (canHandleIR(item.item.ID)) {
                                 return console.log("Upload IR on", item.item.name, item.item.ID);
                             } else if (canHandleNAM(item.item.ID)) {

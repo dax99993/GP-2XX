@@ -6,6 +6,7 @@ import { Menu, MenuItem, MenuItemLabel, MenuSeparator } from "@/components/ui/me
 import { Text } from "@/components/ui/text";
 import useOrientation from "@/hooks/useOrientation";
 import { useStore } from "@/hooks/useStore";
+import { createHandleToast } from "@/utils/toast";
 import { useRouter } from "expo-router";
 import { ArrowDownToLineIcon, ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon, EllipsisVerticalIcon, FolderInputIcon, FolderOutputIcon, HomeIcon, SaveIcon } from "lucide-react-native";
 import { observer } from "mobx-react-lite";
@@ -46,6 +47,13 @@ function GoHomeButton() {
 
 function RightElements() {
   const store = useStore();
+  const handleToast = createHandleToast({
+    // "LoadIRToast",
+    title: "Dear user",
+    description: "This features has not been implemented yet!.",
+    duration: 3000
+  });
+
   const {isLandscape, isTablet} = useOrientation();
 
   const onClickImport = async () => {
@@ -67,7 +75,6 @@ function RightElements() {
   }
 
   const onClickExport = async () => {
-
         // Update default selected preset to import
         if (store.gp200.currentPresetNumber != undefined) {
           store.presetExporter.SetSelectedPresets([store.gp200.currentPresetNumber]);
@@ -180,6 +187,7 @@ function RightElements() {
             textValue="Load IR"
             onPress={() => {
               console.log("Load IR");
+              handleToast();
             }}
           >
             <Icon as={ArrowDownToLineIcon} size="sm" className="mr-2" />
