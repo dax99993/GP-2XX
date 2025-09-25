@@ -8,16 +8,15 @@ import { AlertCircleIcon } from "lucide-react-native";
 import { useState } from "react";
 import { Button, ButtonText } from "../ui/button";
 import { FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText } from "../ui/form-control";
+import { CloseIcon, Icon } from "../ui/icon";
 import { Input, InputField } from "../ui/input";
-import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader } from "../ui/modal";
+import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader } from "../ui/modal";
 import { VStack } from "../ui/vstack";
 
 export const SAVE_PRESET_MODAL_ID = "savePresetModal";
 
 export const SavePresetModal = observer(() => {
     const store = useStore();
-
-    const headerTitle = "Save Preset";
 
     const onClose = () => {
         store.modals.closeModal();
@@ -43,15 +42,19 @@ export const SavePresetModal = observer(() => {
         <Modal
             size="lg"
             isOpen={true}
+            onClose={onClose}
             closeOnOverlayClick={true}
         >
             <ModalBackdrop/>
             <ModalContent
             >
                 <ModalHeader>
-                <Heading>
-                    {headerTitle}
-                </Heading>
+                    <Heading>
+                        Save Preset
+                    </Heading>
+                    <ModalCloseButton>
+                        <Icon as={CloseIcon} />
+                    </ModalCloseButton>
                 </ModalHeader>
                 <ModalBody>
                     <SavePresetForm

@@ -4,54 +4,17 @@ import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 
 import { Buffer } from 'buffer';
-import { action, makeObservable, observable } from 'mobx';
 import { PresetEncoder } from './presetEncoder';
 
 
 export class PresetExporter{
-    selectedPresets: number[];
-
     encoder: PresetEncoder;
 
     constructor() {
-        this.selectedPresets = [];
-
         this.encoder = new PresetEncoder();
-
-        makeObservable(this, {
-            selectedPresets: observable,
-
-            SetSelectedPresets: action,
-            SelectedPresetsHas: action,
-            AddToSelectedPresets: action,
-            RemoveFromSelectedPresets: action,
-            ResetSelectedPresets: action,
-        });
-    }
-
-    SetSelectedPresets(positions: number[]) {
-        this.selectedPresets = positions;
-    }
-
-    SelectedPresetsHas(position: number): boolean {
-        return this.selectedPresets.includes(position);
-    }
-
-    AddToSelectedPresets(position: number) {
-        this.selectedPresets = [...this.selectedPresets, position].sort((a, b) => a - b)
-    }
-
-    RemoveFromSelectedPresets(position: number) {
-        this.selectedPresets= this.selectedPresets.filter(n => n != position).sort((a, b) => a - b)
-    }
-
-    ResetSelectedPresets() {
-        this.selectedPresets = [];
     }
 
     async ExportPresetFiles(presets: IPresetInfo[]): Promise<Boolean> {
-        // // Reset storage
-        // this.binaryFiles = [];
         const permission = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
 
         if (!permission.granted) {

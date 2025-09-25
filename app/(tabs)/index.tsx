@@ -83,7 +83,6 @@ function Buttons() {
                 variant="solid"
                 action="primary"
                 onPress={() => { 
-                    //router.replace('/ui/testscreen/screen1') 
                     router.replace('/ui/testscreen/screen1');
                  }}
             >

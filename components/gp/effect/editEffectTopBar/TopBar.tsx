@@ -63,13 +63,12 @@ function RightElements() {
       if (status) {
         // Should change this function to return error when file is not a valid .prst
         // add a try catch block to handle erroneous files
-        const presetsInfo = store.presetImporter.decodeFiles();
-
-        // Update default selected preset to import
-        console.log("Presets info lenght", presetsInfo.length);
-        const selectedPresets = Array.from({ length: presetsInfo.length }, (_, i) => (store.gp200.currentPresetNumber ?? 0) + i);
-        console.log("Default import selected presets", selectedPresets);
-        store.presetImporter.SetSelectedPresets(selectedPresets);
+        try {
+          store.presetImporter.decodeFiles();
+        } catch (error: unknown) {
+          console.log("Error while decoding PRST files", error);
+          return;
+        }
 
         // Get memory positions to load presets
         store.modals.openModal(IMPORT_PRESET_MODAL_ID);
@@ -77,14 +76,11 @@ function RightElements() {
   }
 
   const onClickExport = async () => {
-        // Update default selected preset to import
-        if (store.gp200.currentPresetNumber != undefined) {
-          store.presetExporter.SetSelectedPresets([store.gp200.currentPresetNumber]);
-        }
+      console.log("Export Button clicked!");
 
-        // Open Modal
-        console.log("Open modal");
-        store.modals.openModal(EXPORT_PRESETS_MODAL_ID);
+      // Open Modal
+      console.log("Open modal");
+      store.modals.openModal(EXPORT_PRESETS_MODAL_ID);
   }
 
   return (

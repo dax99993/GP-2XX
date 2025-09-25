@@ -14,9 +14,9 @@ export class PresetDecoder {
     }
 
     decodePRSTFile(buffer: Buffer): IPresetInfo {
-        // if (buffer.length != 1224) {
-        //     throw new Error("PRST files should be 1224 bytes");
-        // }
+        if (buffer.length != 1224) {
+            throw new Error("PRST files should be 1224 bytes");
+        }
 
         console.log("Start Decoding PRST Buffer");
 

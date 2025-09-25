@@ -6,45 +6,14 @@ import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import useOrientation from '@/hooks/useOrientation';
 import { Orientation } from 'expo-screen-orientation';
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 
 
 
 import TopBar from '@/components/topBar/TopBar';
 import { Button, ButtonText } from '@/components/ui/button';
-import { HStack } from '@/components/ui/hstack';
-import { FlashList } from '@shopify/flash-list';
 
 
-const List = (props: {data: number[], scrollTo: number, onPress: (n: number)=>void}) => {
-  useEffect(()=>{
-    // const timer = setTimeout( ()=> {
-    //   console.log("Timer scroll")
-    //   listRef.current?.scrollToIndex({ index: props.scrollTo, viewPosition: 0 })
-    // }, 1000);
-
-    // return () => clearTimeout(timer);
-
-      listRef.current?.scrollToIndex({ index: props.scrollTo, viewPosition: 0 })
-  },[])
-
-  const listRef = useRef<FlashList<any>>(null);
- return (
-        <FlashList
-        ref={listRef}
-        data={props.data}
-        // initialScrollIndex={40}
-        estimatedItemSize={21}
-        renderItem={(item) => (
-          <HStack style={{width: 70}}>
-            <Button>
-              <ButtonText onPress={() => props.onPress(item.item)}>{item.item}</ButtonText>
-            </Button>
-          </HStack>
-        )}        
-        />
- );
-}
 
 export default function TestScreen() {
   const {orientation, isLandscape} = useOrientation();
@@ -70,7 +39,6 @@ export default function TestScreen() {
       </Button>
       {/* <View style={isLandscape ? styles.landscapeContainer : styles.portraitContainer} > */}
       <View style={{flex:0 , backgroundColor: 'red', minWidth: 100, maxHeight: 250, justifyContent: 'center'}} >
-        <List data={DATA} scrollTo={25} onPress={(n: number)=>{console.log("Pressed", n)}}/>
       </View>
     </VStack>
   );

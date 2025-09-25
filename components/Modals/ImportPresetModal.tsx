@@ -4,13 +4,125 @@ import { Heading } from "../ui/heading";
 import { useStore } from "@/hooks/useStore";
 import { FlashList } from "@shopify/flash-list";
 import { CheckIcon, FileInputIcon } from "lucide-react-native";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, ButtonGroup, ButtonIcon, ButtonText } from "../ui/button";
-import { Checkbox, CheckboxIcon, CheckboxIndicator, CheckboxLabel } from "../ui/checkbox";
-import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader } from "../ui/modal";
+// import { Checkbox, CheckboxIcon, CheckboxIndicator, CheckboxLabel } from "../ui/checkbox";
+import { TouchableOpacity } from "react-native";
+import { CloseIcon, Icon } from "../ui/icon";
+import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader } from "../ui/modal";
+import { Text } from "../ui/text";
 import { VStack } from "../ui/vstack";
 
 export const IMPORT_PRESET_MODAL_ID = "importPresetsModal";
+
+export const ImportPresetsModal = observer(() => {
+    const store = useStore();
+    const MaxSelection = store.presetImporter.presets.length;
+    const [selected, setSelected] = useState<number[]>(
+        Array.from({ length: MaxSelection }, (_, i) => (store.gp200.currentPresetNumber ?? 0) + i)
+        // [],
+    );
+
+    // MODAL RELATED Variables and Functions
+    const onClose = () => {
+        store.modals.closeModal();
+    }
+
+    const onSave = () => {
+        console.log("Importing presets to positions", selected);
+
+        selected.forEach((saveLocation, index) => {
+            // Load preset to GP200 memory
+            const presetInfo = store.presetImporter.presets[index];
+            console.log("Loading preset", presetInfo.name, "to location", saveLocation);
+
+            // Send midi message to update preset info
+            store.gpMidiEncoder.LoadPresetToMemory(presetInfo, saveLocation);
+        });
+
+        // Reset selected presets
+        setSelected([]);
+        
+        // CloseModal
+        onClose();
+    }
+
+    // MODAL BODY
+    const DATA: PresetListItem[] = store.gp200.presets.map(p => {
+        return {name: p.name, number: p.number, bankCode: p.bankCode}
+    })
+
+    const isChecked = useCallback( (n: number) => {
+        return selected.includes(n);
+    }, [selected])
+
+    const isDisabled = useCallback( (n: number) => {
+        return selected.length == MaxSelection &&
+            !selected.includes(n)
+    }, [selected])
+
+    const onChange = useCallback((v: boolean, n: number) => {
+        if (v == false) {
+            setSelected((prev) => prev.filter(p => p !== n));
+        } else {
+            if (!selected.includes(n)) {
+                setSelected((prev) => [...prev, n]);
+            }
+        }
+    }, [selected]);
+
+    return (
+        <Modal
+            size="lg"
+            isOpen={true}
+            onClose={onClose}
+            closeOnOverlayClick={true}
+        >
+            <ModalBackdrop/>
+            <ModalContent
+            >
+                <ModalHeader>
+                    <Heading>
+                        Import Presets
+                    </Heading>
+                    <ModalCloseButton>
+                        <Icon as={CloseIcon} />
+                    </ModalCloseButton>
+                </ModalHeader>
+                <ModalBody>
+                    <PresetsList
+                        data={DATA}
+                        extraData={selected.length}
+                        scrollToIndex={store.gp200.currentPresetNumber ?? 0}
+                        isChecked={isChecked}
+                        isDisabled={isDisabled}
+                        onChange={onChange}
+                    />
+                </ModalBody>
+                <ModalFooter>
+                    <ButtonGroup flexDirection="row">
+                        <Button
+                            variant='outline'
+                            action="secondary"
+                            isDisabled={false}
+                            onPress={onClose}
+                        >
+                            <ButtonText>Cancel</ButtonText>
+                        </Button>
+                        <Button
+                            variant='solid'
+                            isDisabled={selected.length != MaxSelection}
+                            onPress={onSave}
+                        >
+                            <ButtonIcon as={FileInputIcon}/>
+                            <ButtonText>Import</ButtonText>
+                        </Button>
+                    </ButtonGroup>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
+    );
+});
 
 interface PresetListItem {
     name: string,
@@ -20,18 +132,14 @@ interface PresetListItem {
 
 interface PresetsListProps {
     data: PresetListItem[],
-    // presetImporter: PresetImporter,
+    extraData: number,
     scrollToIndex: number,
     isChecked: (index: number) => boolean,
     isDisabled: (index: number) => boolean,
     onChange: (v: boolean, index: number) => void,
-    // initialSelected: number[],
-    // maxSelected: number,
 }
 
 const PresetsList = (props: PresetsListProps) => {
-
-    // const [selected, setSelected] = useState(props.initialSelected);
     const listRef = useRef<FlashList<any>>(null);
 
     useEffect(() => {
@@ -54,138 +162,40 @@ const PresetsList = (props: PresetsListProps) => {
         };
     },[])
 
-    // const isDisabled = (positionNumber: number) => {
-        // return props.presetImporter.AllPresetsSelected &&
-        //     !props.presetImporter.SelectedPresetsHas(positionNumber);
-    // }
-
-    // const isChecked = (positionNumber: number) => {
-    //     return props.presetImporter.SelectedPresetsHas(positionNumber)
-    // }
 
     return (
         <VStack style={{minHeight: 200, maxHeight: 250}}>
             <FlashList
                 ref={listRef}
-                // extraData={props.currentIndex}
+                extraData={props.extraData}
                 // initialScrollIndex={props.scrollTo}
                 data={props.data}
                 // drawDistance={200}
                 estimatedItemSize={24.5}
                 keyExtractor={(item) => item.number.toString()}
-                renderItem={(item) =>
-                    <Checkbox
-                        size="lg"
-                        isDisabled={ props.isDisabled(item.item.number) }
-                        defaultIsChecked={ props.isChecked(item.item.number) }
-                        value={item.item.number.toString()}
-                        onChange={(v: boolean) => {
-                            props.onChange(v, item.item.number);
+                renderItem={(item) => {
+                    const isChecked = props.isChecked(item.item.number);
+                    return <TouchableOpacity 
+                        style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            backgroundColor: isChecked ? 'blue': 'transparent'
+                        }}
+                        disabled={props.isDisabled(item.item.number)}
+                        onPress={() => {
+                            props.onChange(!isChecked, item.item.number);
                         }}
                     >
-                        <CheckboxIndicator>
-                            <CheckboxIcon as={CheckIcon} />
-                        </CheckboxIndicator>
-                        <CheckboxLabel>{item.item.bankCode + ' ' + item.item.name}</CheckboxLabel>
-                    </Checkbox>
-                }
+                        <Text bold={isChecked} size="lg" >
+                            {item.item.bankCode + ' ' + item.item.name}
+                        </Text>
+                        { isChecked &&
+                            <Icon as={CheckIcon}/>
+                        }
+                    </TouchableOpacity>
+                }}
             />
         </VStack>
     );
 };
-
-export const ImportPresetsModal = observer(() => {
-    const store = useStore();
-
-    // MODAL RELATED Variables and Functions
-    const headerTitle = "Import Presets";
-
-    const onClose = () => {
-        store.modals.closeModal();
-    }
-
-    const onSave = () => {
-        console.log("Importing presets to positions", store.presetImporter.selectedPresets);
-
-        for (let i = 0; i < store.presetImporter.selectedPresets.length; i=i+1) {
-            // Load preset to GP200 memory
-            const saveLocation = store.presetImporter.selectedPresets[i];
-            const presetInfo = store.presetImporter.presets[i];
-            console.log("Loading preset", presetInfo.name, "to location", saveLocation);
-
-            // Send midi message to update preset info
-            store.gpMidiEncoder.LoadPresetToMemory(presetInfo, saveLocation);
-        }
-
-        // Reset selected presets
-        
-        // CloseModal
-        onClose();
-    }
-
-    // MODAL BODY
-    const DATA: PresetListItem[] = store.gp200.presets.map(p => {
-        return {name: p.name, number: p.number, bankCode: p.bankCode}
-    })
-
-    // MODAL FOOTER variables and functions
-    const isImportDisable = !store.presetImporter.AllPresetsSelected;
-
-    return (
-        <Modal
-            size="lg"
-            isOpen={true}
-            closeOnOverlayClick={true}
-        >
-            <ModalBackdrop/>
-            <ModalContent
-            >
-                <ModalHeader>
-                    <Heading>
-                        {headerTitle}
-                    </Heading>
-                </ModalHeader>
-                <ModalBody>
-                    <PresetsList
-                        data={DATA}
-                        scrollToIndex={store.gp200.currentPresetNumber ?? 0}
-                        isChecked={(index: number) =>
-                            store.presetImporter.SelectedPresetsHas(index)
-                        }
-                        isDisabled={ (index : number) => 
-                            store.presetImporter.AllPresetsSelected &&
-                            !store.presetImporter.SelectedPresetsHas(index)
-                        }
-                        onChange={(v: boolean, index: number) => {
-                                if (v == false) {
-                                    store.presetImporter.RemoveFromSelectPresets(index);
-                                } else {
-                                    store.presetImporter.AddToSelectPresets(index);
-                                }
-                        }}
-                    />
-                </ModalBody>
-                <ModalFooter>
-                    <ButtonGroup flexDirection="row">
-                        <Button
-                            variant='outline'
-                            action="secondary"
-                            isDisabled={false}
-                            onPress={onClose}
-                        >
-                            <ButtonText>Cancel</ButtonText>
-                        </Button>
-                        <Button
-                            variant='solid'
-                            isDisabled={isImportDisable}
-                            onPress={onSave}
-                        >
-                            <ButtonIcon as={FileInputIcon}/>
-                            <ButtonText>Import</ButtonText>
-                        </Button>
-                    </ButtonGroup>
-                </ModalFooter>
-            </ModalContent>
-        </Modal>
-    );
-});

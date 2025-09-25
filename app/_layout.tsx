@@ -3,6 +3,7 @@ import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
 import { StoreContext } from "@/hooks/useStore";
 import { Store } from "@/models/store";
+import { OverlayProvider } from "@gluestack-ui/overlay";
 import { DarkTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -31,6 +32,7 @@ export default function RootLayout() {
 
   return (
     <GluestackUIProvider mode={"dark"}>
+      <OverlayProvider>
       <StoreContext.Provider value={{store}}>
         <ModalManager/>
         <ThemeProvider value={DarkTheme}>
@@ -41,6 +43,7 @@ export default function RootLayout() {
           <StatusBar style="auto" />
         </ThemeProvider>
       </StoreContext.Provider>
+      </OverlayProvider>
     </GluestackUIProvider>
   );
 }
