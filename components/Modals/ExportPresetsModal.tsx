@@ -182,7 +182,7 @@ const PresetsList = (props: PresetsListProps) => {
                 viewPosition: 0.29,
             })
             console.log("Timer executed!");
-        }, 0);
+        }, 100);
 
 
         return () => {
