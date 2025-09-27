@@ -457,10 +457,6 @@ export class GP200MidiEncoder implements IActions{
 
         // This is always invoked when the current effect is the one we want to change
         const pedalID = this.gp200.currentEffect.type;
-        // Map int to 8 bytes hex digits little endian
-        const effectIDNibbles = this.encoder.encodeEffectIDToNibbles(effectID)
-        // Construct midi message
-        const SysExMsg = this._contructChangeEffectMessage(pedalID, effectIDNibbles);
 
         // Update model
         //this.gp200.changeEffectByID(effectID, pedalID);
@@ -474,10 +470,14 @@ export class GP200MidiEncoder implements IActions{
             const cabCodeID = defaultEffectInfo.cabCode;
             const t: EffectType = EffectType.CAB;
             console.log("Associated cabCode", cabCodeID);
-            const SysExMsg = this._contructChangeEffectMessage(t, this.encoder.encodeEffectIDToNibbles(cabCodeID));
-            this.midi.sendMessage(SysExMsg);
+            const CabSysExMsg = this._contructChangeEffectMessage(t, this.encoder.encodeEffectIDToNibbles(cabCodeID));
+            this.midi.sendMessage(CabSysExMsg);
         }
 
+        // Map int to 8 bytes hex digits little endian
+        const effectIDNibbles = this.encoder.encodeEffectIDToNibbles(effectID)
+        // Construct midi message
+        const SysExMsg = this._contructChangeEffectMessage(pedalID, effectIDNibbles);
         // Send physical device
         this.midi.sendMessage(SysExMsg);
     }
