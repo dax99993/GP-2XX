@@ -5141,7 +5141,7 @@
       ]
     },
     {
-      "name": "SnapTone",
+      "name": "SnapTone 1",
       "index": 37,
       "ID": 251658245,
       "module": "DST",
@@ -5220,7 +5220,7 @@
       ]
     },
     {
-      "name": "SnapTone",
+      "name": "SnapTone 2",
       "index": 38,
       "ID": 251658246,
       "module": "DST",
@@ -5299,7 +5299,7 @@
       ]
     },
     {
-      "name": "SnapTone",
+      "name": "SnapTone 3",
       "index": 39,
       "ID": 251658247,
       "module": "DST",
@@ -5378,7 +5378,7 @@
       ]
     },
     {
-      "name": "SnapTone",
+      "name": "SnapTone 4",
       "index": 40,
       "ID": 251658248,
       "module": "DST",
@@ -5457,7 +5457,7 @@
       ]
     },
     {
-      "name": "SnapTone",
+      "name": "SnapTone 5",
       "index": 41,
       "ID": 251658249,
       "module": "DST",
@@ -11791,7 +11791,7 @@
       ]
     },
     {
-      "name": "SnapTone",
+      "name": "SnapTone 1",
       "index": 71,
       "ID": 251658240,
       "module": "AMP",
@@ -11870,7 +11870,7 @@
       ]
     },
     {
-      "name": "SnapTone",
+      "name": "SnapTone 2",
       "index": 72,
       "ID": 251658241,
       "module": "AMP",
@@ -11949,7 +11949,7 @@
       ]
     },
     {
-      "name": "SnapTone",
+      "name": "SnapTone 3",
       "index": 73,
       "ID": 251658242,
       "module": "AMP",
@@ -12028,7 +12028,7 @@
       ]
     },
     {
-      "name": "SnapTone",
+      "name": "SnapTone 4",
       "index": 74,
       "ID": 251658243,
       "module": "AMP",
@@ -12107,7 +12107,7 @@
       ]
     },
     {
-      "name": "SnapTone",
+      "name": "SnapTone 5",
       "index": 75,
       "ID": 251658244,
       "module": "AMP",
@@ -15878,7 +15878,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 1",
       "index": 70,
       "ID": 168820736,
       "module": "CAB",
@@ -15929,7 +15929,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 2",
       "index": 71,
       "ID": 168820737,
       "module": "CAB",
@@ -15980,7 +15980,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 3",
       "index": 72,
       "ID": 168820738,
       "module": "CAB",
@@ -16031,7 +16031,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 4",
       "index": 73,
       "ID": 168820739,
       "module": "CAB",
@@ -16082,7 +16082,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 5",
       "index": 74,
       "ID": 168820740,
       "module": "CAB",
@@ -16133,7 +16133,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 6",
       "index": 75,
       "ID": 168820741,
       "module": "CAB",
@@ -16184,7 +16184,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 7",
       "index": 76,
       "ID": 168820742,
       "module": "CAB",
@@ -16235,7 +16235,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 8",
       "index": 77,
       "ID": 168820743,
       "module": "CAB",
@@ -16286,7 +16286,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 9",
       "index": 78,
       "ID": 168820744,
       "module": "CAB",
@@ -16337,7 +16337,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 10",
       "index": 79,
       "ID": 168820745,
       "module": "CAB",
@@ -16388,7 +16388,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 11",
       "index": 80,
       "ID": 168820746,
       "module": "CAB",
@@ -16439,7 +16439,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 12",
       "index": 81,
       "ID": 168820747,
       "module": "CAB",
@@ -16490,7 +16490,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 13",
       "index": 82,
       "ID": 168820748,
       "module": "CAB",
@@ -16541,7 +16541,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 14",
       "index": 83,
       "ID": 168820749,
       "module": "CAB",
@@ -16592,7 +16592,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 15",
       "index": 84,
       "ID": 168820750,
       "module": "CAB",
@@ -16643,7 +16643,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 16",
       "index": 85,
       "ID": 168820751,
       "module": "CAB",
@@ -16694,7 +16694,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 17",
       "index": 86,
       "ID": 168820752,
       "module": "CAB",
@@ -16745,7 +16745,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 18",
       "index": 87,
       "ID": 168820753,
       "module": "CAB",
@@ -16796,7 +16796,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 19",
       "index": 88,
       "ID": 168820754,
       "module": "CAB",
@@ -16847,7 +16847,7 @@
       ]
     },
     {
-      "name": "User IR",
+      "name": "User IR 20",
       "index": 89,
       "ID": 168820755,
       "module": "CAB",

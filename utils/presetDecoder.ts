@@ -5,6 +5,9 @@ import { IKnobSettings } from "@/models/preset/IKnobSettings";
 import { IEffectInfo, IPresetInfo, presetNumberToBankCode } from "@/models/preset/IPresetInfo";
 import { DecoderUtils } from "./decodeUtils";
 
+const PRESET_LONG_FORMAT_LENGHT = 1224;
+const PRESET_SHORT_FORMAT_LENGHT = 1176;
+
 
 export class PresetDecoder {
     decoder: DecoderUtils;
@@ -14,8 +17,8 @@ export class PresetDecoder {
     }
 
     decodePRSTFile(buffer: Buffer): IPresetInfo {
-        if (buffer.length != 1224) {
-            throw new Error("PRST files should be 1224 bytes");
+        if (!(buffer.length == PRESET_LONG_FORMAT_LENGHT || buffer.length == PRESET_SHORT_FORMAT_LENGHT)) {
+            throw new Error(`PRST files should be ${PRESET_SHORT_FORMAT_LENGHT} or ${PRESET_LONG_FORMAT_LENGHT} bytes`);
         }
 
         console.log("Start Decoding PRST Buffer");
@@ -203,12 +206,35 @@ export class PresetDecoder {
 
         // CTRL settings
         const ctrlSettings: ICtrlSettings[] = [];
-        for (let i = 0; i < 8; i = i + 1) {
-            // Each block is 12 bytes
-            const ctrlSetting = this.decodeCtrlSettings(buffer, offset);
-            offset += 12
-            // console.log(ctrlSetting);
-            ctrlSettings[i] = ctrlSetting;
+        if (buffer.length == PRESET_LONG_FORMAT_LENGHT) {
+            for (let i = 0; i < 8; i = i + 1) {
+                // Each block is 12 bytes
+                const ctrlSetting = this.decodeCtrlSettings(buffer, offset);
+                offset += 12
+                // console.log(ctrlSetting);
+                ctrlSettings[i] = ctrlSetting;
+            }
+        } else if (buffer.length == PRESET_SHORT_FORMAT_LENGHT) {
+            for (let i = 0; i < 4; i = i + 1) {
+                // Each block is 12 bytes
+                const ctrlSetting = this.decodeCtrlSettings(buffer, offset);
+                offset += 12
+                // console.log(ctrlSetting);
+                ctrlSettings[i] = ctrlSetting;
+            }
+            // Set other ctrl settings manually
+            ctrlSettings[4] = {
+                number: 4, mode: 0, pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0] 
+            };
+            ctrlSettings[5] = {
+                number: 5, mode: 0, pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0] 
+            };
+            ctrlSettings[6] = {
+                number: 6, mode: 0, pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0] 
+            };
+            ctrlSettings[7] = {
+                number: 7, mode: 0, pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0] 
+            };
         }
 
         // Create FXLoop
@@ -426,24 +452,5 @@ export class PresetDecoder {
             pedalsAssign: pedalsAssign
         }
     }
-
-    // uint8BytesToFloat32(bytes: number[]): number {
-    //     // 'float32Bytes' should be a Uint8Array containing the 4 bytes of Float32 representation
-    //     const float32Bytes = new Uint8Array(bytes);
-    //     //console.log("Decoded float bytes", float32Bytes);
-
-    //     // 1. Create an ArrayBuffer
-    //     const buffer = new ArrayBuffer(4);
-
-    //     // 2. Create a Uint8Array view to populate the buffer
-    //     const byteView = new Uint8Array(buffer);
-    //     byteView.set(float32Bytes); // Copy the bytes into the buffer
-
-    //     // 3. Create a DataView
-    //     const dataView = new DataView(buffer);
-
-    //     // 4. Use getFloat32() to read the number (assuming little-endian)
-    //     return dataView.getFloat32(0, true); // 0 is the offset
-    // }
 
 }

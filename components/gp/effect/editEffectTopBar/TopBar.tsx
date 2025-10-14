@@ -49,10 +49,17 @@ function GoHomeButton() {
 
 function RightElements() {
   const store = useStore();
-  const handleToast = createHandleToast({
+  const handleUnimplementedToast = createHandleToast({
     // "LoadIRToast",
     title: "Dear user",
     description: "This features has not been implemented yet!.",
+    duration: 3000
+  });
+
+  const handleErrorImportingPresetToast = createHandleToast({
+    // "LoadIRToast",
+    title: "Importing preset",
+    description: "An error occur while reading preset!.",
     duration: 3000
   });
 
@@ -67,6 +74,7 @@ function RightElements() {
           store.presetImporter.decodeFiles();
         } catch (error: unknown) {
           console.log("Error while decoding PRST files", error);
+          handleErrorImportingPresetToast();
           return;
         }
 
@@ -185,7 +193,7 @@ function RightElements() {
             textValue="Load IR"
             onPress={() => {
               console.log("Load IR");
-              handleToast();
+              handleUnimplementedToast();
             }}
           >
             <Icon as={ArrowDownToLineIcon} size="sm" className="mr-2" />
