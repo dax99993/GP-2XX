@@ -147,16 +147,36 @@ export class GP200Model {
       // return this.presets.length == 16;
     }
 
-    get presetBankCode(): string {
+    get currentPresetBankNumber(): number | undefined {
       const number = this.currentPresetNumber;
 
-      if (number === undefined) {
+      if (number == undefined) {
+        return undefined;
+      } else {
+        return Math.floor(number / 4);
+      }
+    }
+
+    get currentPresetBankSlotNumber(): number | undefined {
+      const number = this.currentPresetNumber;
+
+      if (number == undefined) {
+        return undefined;
+      } else {
+        return number % 4;
+      }
+    }
+
+    get presetBankCode(): string {
+      const bankNumber = this.currentPresetBankNumber;
+      const bankSlotNumber = this.currentPresetBankSlotNumber;
+
+      if (bankNumber === undefined || bankSlotNumber === undefined) {
           return "";
       }
 
-      const bankNumber = Math.floor(number / 4) + 1;
       let bankLetter: string = "";
-      switch (number % 4) {
+      switch (bankSlotNumber) {
         case 0:
           bankLetter = 'A';
           break;
@@ -171,7 +191,7 @@ export class GP200Model {
           break;
       }
 
-      return bankNumber.toString().padStart(2, '0') + '-' + bankLetter;
+      return (bankNumber + 1).toString().padStart(2, '0') + '-' + bankLetter;
     }
 
     // -- PRESET ACTIONS --
