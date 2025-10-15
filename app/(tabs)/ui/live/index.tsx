@@ -5,13 +5,14 @@ import { Box } from '@/components/ui/box';
 import { Center } from '@/components/ui/center';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
+import { Spinner } from '@/components/ui/spinner';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import useOrientation from '@/hooks/useOrientation';
 import { useStore } from '@/hooks/useStore';
 import { FlashList } from '@shopify/flash-list';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 
 interface customButtonProps {
@@ -57,12 +58,12 @@ const BankItem = ({bank, selected, presetNames, onPress}: {bank: number, selecte
           <Heading size='2xl'>{bankStr}</Heading>
         </HStack>
           <VStack style={{flex:1, justifyContent: 'space-between', }}>
-            <Text size="md">{`${bankStr}-A ${presetNames[0]}`}</Text>
-            <Text size="md">{`${bankStr}-B ${presetNames[1]}`}</Text>
+            <Text size="md" lineBreakMode='tail' numberOfLines={1}>{`${bankStr}-A ${presetNames[0]}`}</Text>
+            <Text size="md" lineBreakMode='tail' numberOfLines={1}>{`${bankStr}-B ${presetNames[1]}`}</Text>
           </VStack>
           <VStack style={{flex: 1, justifyContent: 'space-between', }}>
-            <Text size="md">{`${bankStr}-C ${presetNames[2]}`}</Text>
-            <Text size="md">{`${bankStr}-D ${presetNames[3]}`}</Text>
+            <Text size="md" lineBreakMode='tail' numberOfLines={1}>{`${bankStr}-C ${presetNames[2]}`}</Text>
+            <Text size="md" lineBreakMode='tail' numberOfLines={1}>{`${bankStr}-D ${presetNames[3]}`}</Text>
           </VStack>
         </HStack>
     </TouchableOpacity>
@@ -73,12 +74,33 @@ const BankItem = ({bank, selected, presetNames, onPress}: {bank: number, selecte
 const BankSelector = ({currentBankNumber, presetNames, onPress}: {currentBankNumber: number, presetNames: string[], onPress: (bankNumber: number)=>void}) => {
   const DATA: number[] = useMemo(() => Array.from({ length: 64 }, (_, i) => i), []); 
   const refList = useRef<FlashList<any>>(null);
+  const [loading, setLoading] = useState(true);
 
+
+  useEffect(() => {
+    console.log("Initial bank list load");
+
+    const timeout = setTimeout(() => {
+      console.log("Initial scroll to item", currentBankNumber);
+
+      setLoading(false);
+
+      refList.current?.scrollToIndex({
+        animated: true,
+        index: currentBankNumber,
+        viewPosition: 0.5,
+      });
+
+    }, 750);
+
+    // return clearTimeout(timeout);
+  }, [])
 
   useEffect(() => {
     console.log("Changed bank", currentBankNumber);
 
     refList.current?.scrollToIndex({
+      animated: true,
       index: currentBankNumber,
       viewPosition: 0.5
     });
@@ -86,12 +108,16 @@ const BankSelector = ({currentBankNumber, presetNames, onPress}: {currentBankNum
   },[currentBankNumber]);
 
   return (
+    <>
+    {loading && <Spinner/>}
+    {!loading &&
       <FlashList
         ref={refList}
         data={DATA}
         extraData={currentBankNumber}
+        initialScrollIndex={currentBankNumber}
         drawDistance={1000}
-        estimatedItemSize={70}
+        estimatedItemSize={56}
         renderItem={(item) => (
           <BankItem 
             bank={item.index + 1}
@@ -103,6 +129,8 @@ const BankSelector = ({currentBankNumber, presetNames, onPress}: {currentBankNum
           />)
         }
       />
+    }
+    </>
   );
 }
 
