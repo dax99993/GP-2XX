@@ -1,10 +1,12 @@
 import ListEffect from '@/components/gp/effect/listSelectEffect/ListEffect';
 import ListEffectTopBar from '@/components/gp/effect/listSelectEffect/ListEffectTopBar';
 import { VStack } from '@/components/ui/vstack';
+import { useKeepAwake } from 'expo-keep-awake';
 import { Platform, StatusBar, StyleSheet } from 'react-native';
 
 
 function SelectEffectScreen() {
+  useKeepAwake();
 
   return (
     <>

@@ -9,11 +9,14 @@ import { VStack } from '@/components/ui/vstack';
 import { ScrollingProvider } from '@/contexts/scroll-context';
 import useOrientation from '@/hooks/useOrientation';
 import { useStore } from '@/hooks/useStore';
+import { useKeepAwake } from 'expo-keep-awake';
 import { Orientation } from 'expo-screen-orientation';
 import { observer } from 'mobx-react-lite';
 
 
 function EditScreen() {
+  useKeepAwake();
+
   const store = useStore();
   const {orientation, isLandscape, isTablet} = useOrientation();
   console.log(Orientation[orientation]);

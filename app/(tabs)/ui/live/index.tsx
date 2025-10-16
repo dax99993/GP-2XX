@@ -11,6 +11,7 @@ import { VStack } from '@/components/ui/vstack';
 import useOrientation from '@/hooks/useOrientation';
 import { useStore } from '@/hooks/useStore';
 import { FlashList } from '@shopify/flash-list';
+import { useKeepAwake } from 'expo-keep-awake';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -135,6 +136,9 @@ const BankSelector = ({currentBankNumber, presetNames, onPress}: {currentBankNum
 }
 
 function LiveScreen() {
+  // Keep screen awke all the time
+  useKeepAwake();
+
   const store = useStore();
   const orientation = useOrientation();
 

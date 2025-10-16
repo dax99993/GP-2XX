@@ -1,10 +1,13 @@
 import SelectPresetList from '@/components/gp/preset/SelectPresetList';
 import SelectPresetTopBar from '@/components/gp/preset/SelectPresetTopBar';
 import { VStack } from '@/components/ui/vstack';
+import { useKeepAwake } from 'expo-keep-awake';
 import { Platform, StatusBar, StyleSheet } from 'react-native';
 
 
 function SelectPresetScreen() {
+  useKeepAwake();
+
   return (
     <>
         <VStack style={styles.mainContainer} className='bg-secondary-0'>
