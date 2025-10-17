@@ -13,6 +13,10 @@ import { IPresetInfo } from "../preset/IPresetInfo";
 import { IActions } from "./IActions";
 
 
+function mod(n: number, m: number) {
+  return ((n % m) + m) % m;
+}
+
 export class GP200MidiEncoder implements IActions{
 
     gp200: GP200Model;
@@ -80,15 +84,10 @@ export class GP200MidiEncoder implements IActions{
 
         let num = this.gp200.currentPresetNumber + 1;
         if (this.isJR) {
-            num = num % 255;
+            num = mod(num, 255);
         } else {
-            num = num % 256;
+            num = mod(num, 256);
         }
-        // if (num > 255) {
-        //     num = 0;
-        // } else if (num < 0) {
-        //     num = 255;
-        // }
 
 
         this.ChangePreset(num);
@@ -100,15 +99,10 @@ export class GP200MidiEncoder implements IActions{
 
         let num = this.gp200.currentPresetNumber - 1;
         if (this.isJR) {
-            num = num % 255;
+            num = mod(num, 255);
         } else {
-            num = num % 256;
+            num = mod(num, 256);
         }
-        // if (num > 255) {
-        //     num = 0;
-        // } else if (num < 0) {
-        //     num = 255;
-        // }
 
         this.ChangePreset(num);
     }
@@ -119,10 +113,10 @@ export class GP200MidiEncoder implements IActions{
         let bankNum = this.gp200.currentPresetBankNumber + 1;
         let presetNum = 0;
         if (this.isJR) {
-            bankNum = bankNum % 85;
+            bankNum = mod(bankNum, 85);
             presetNum = bankNum * 3;
         } else {
-            bankNum = bankNum % 64;
+            bankNum = mod(bankNum, 64);
             presetNum = bankNum * 4;
         }
 
@@ -135,10 +129,10 @@ export class GP200MidiEncoder implements IActions{
         let bankNum = this.gp200.currentPresetBankNumber - 1;
         let presetNum = 0;
         if (this.isJR) {
-            bankNum = bankNum % 85;
+            bankNum = mod(bankNum, 85);
             presetNum = bankNum * 3;
         } else {
-            bankNum = bankNum % 64;
+            bankNum = mod(bankNum, 64);
             presetNum = bankNum * 4;
         }
 
