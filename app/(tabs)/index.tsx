@@ -19,8 +19,12 @@ import UsbCable from "@/assets/images/svgs/usbcable.svg";
 import { Divider } from '@/components/ui/divider';
 import useOrientation from '@/hooks/useOrientation';
 import { useStore } from '@/hooks/useStore';
+import { useKeepAwake } from 'expo-keep-awake';
 
 function HomeScreen() {
+    // Keep screen awke all the time
+    useKeepAwake();
+
     const store = useStore();
     const router = useRouter();
     const {orientation} = useOrientation();

@@ -64,7 +64,9 @@ const BankItem = ({bank, selected, presetNames, onPress}: {bank: number, selecte
           </VStack>
           <VStack style={{flex: 1, justifyContent: 'space-between', }}>
             <Text size="md" lineBreakMode='tail' numberOfLines={1}>{`${bankStr}-C ${presetNames[2]}`}</Text>
+            {presetNames.length == 4 &&
             <Text size="md" lineBreakMode='tail' numberOfLines={1}>{`${bankStr}-D ${presetNames[3]}`}</Text>
+            }
           </VStack>
         </HStack>
     </TouchableOpacity>
@@ -72,8 +74,8 @@ const BankItem = ({bank, selected, presetNames, onPress}: {bank: number, selecte
 }
 
 
-const BankSelector = ({currentBankNumber, presetNames, onPress}: {currentBankNumber: number, presetNames: string[], onPress: (bankNumber: number)=>void}) => {
-  const DATA: number[] = useMemo(() => Array.from({ length: 64 }, (_, i) => i), []); 
+const BankSelector = ({currentBankNumber, presetNames, onPress, presetsPerBank}: {currentBankNumber: number, presetNames: string[], onPress: (bankNumber: number)=>void, presetsPerBank: number}) => {
+  const DATA: number[] = useMemo(() => Array.from({ length: presetsPerBank == 3 ? 85 : 64 }, (_, i) => i), []); 
   const refList = useRef<FlashList<any>>(null);
   const [loading, setLoading] = useState(true);
 
@@ -123,7 +125,9 @@ const BankSelector = ({currentBankNumber, presetNames, onPress}: {currentBankNum
           <BankItem 
             bank={item.index + 1}
             selected={currentBankNumber === item.index}
-            presetNames={presetNames.slice(item.index * 4, item.index * 4 + 4)}
+            presetNames={
+              presetNames.slice(item.index * presetsPerBank, item.index * presetsPerBank + presetsPerBank)
+            }
             onPress={() => {
               onPress(item.index);
             }}
@@ -159,7 +163,12 @@ function LiveScreen() {
       return ;
     }
 
-    const presetChangeNum = bankPresetNum * 4 + (slot % 4);
+    let presetChangeNum = 0;
+    if (store.gp200.isJR) {
+      presetChangeNum = bankPresetNum * 3 + (slot % 3);
+    } else {
+      presetChangeNum = bankPresetNum * 4 + (slot % 4);
+    }
 
     console.log("Change preset to", presetChangeNum);
     store.gpMidiEncoder.ChangePreset(presetChangeNum);
@@ -226,6 +235,7 @@ function LiveScreen() {
                 changeToBankSlot(2);
               }}
             />
+            {!store.gp200.isJR &&
             <CustomButton
               text={"D"}
               selected={store.gp200.currentPresetBankSlotNumber === 3}
@@ -234,6 +244,7 @@ function LiveScreen() {
                 changeToBankSlot(3);
               }}
             />
+            }
           </HStack>
         </Box>
       </Box>
@@ -252,8 +263,15 @@ function LiveScreen() {
           presetNames={
             store.gp200.presets.map(p => p.name)
           }
+          presetsPerBank={
+            store.gp200.isJR ? 3 : 4
+          }
           onPress={(bankNumber: number) => {
+            if (store.gp200.isJR) {
+              store.gpMidiEncoder.ChangePreset(bankNumber * 3);
+            } else {
               store.gpMidiEncoder.ChangePreset(bankNumber * 4);
+            }
           }}
         />
       </Box>

@@ -12,12 +12,12 @@ export class MidiDevice {
     connectedPorts: number;
 
     // TEST
-    connectCallback: () => void;
+    connectCallback: (isJr: boolean) => void;
     disconnectCallback: () => void;
 
     midiListener: ((e: MIDIMessageEvent) => any) | undefined;
 
-    constructor(connectCallback: () => void, disconnectCallback: () => void) {
+    constructor(connectCallback: (isJr: boolean) => void, disconnectCallback: () => void) {
 
         this.connectCallback = connectCallback;
         this.disconnectCallback = disconnectCallback;
@@ -140,7 +140,7 @@ export class MidiDevice {
                 console.log("OUTPUT PORT ", this.outputPort);
                 this.portID = port.id;
                 // Execute Connect Callback
-                this.connectCallback();
+                this.connectCallback(port.name.toUpperCase().includes("JR"));
             }
 
         }

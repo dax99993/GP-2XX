@@ -2,7 +2,7 @@ import { ICtrlSettings } from "@/models/preset/ICtrlSettings";
 import { IExpSettings } from "@/models/preset/IExpSettings";
 import { IFxLoopSettings } from "@/models/preset/IFxLoopSettings";
 import { IKnobSettings } from "@/models/preset/IKnobSettings";
-import { IEffectInfo, IPresetInfo, presetNumberToBankCode } from "@/models/preset/IPresetInfo";
+import { IEffectInfo, IPresetInfo } from "@/models/preset/IPresetInfo";
 import { DecoderUtils } from "./decodeUtils";
 
 const PRESET_LONG_FORMAT_LENGHT = 1224;
@@ -249,7 +249,7 @@ export class PresetDecoder {
         return {
             name: presetName,
             number: presetNumber,
-            bankCode: presetNumberToBankCode(presetNumber),
+            // bankCode: presetNumberToBankCode(presetNumber),
 
             category: category,
             author: presetAuthor,

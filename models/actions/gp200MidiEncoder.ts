@@ -9,7 +9,7 @@ import { MidiDevice } from "../midiDevice";
 import { ExpModule } from "../preset/IExpSettings";
 import { FxLoopMode } from "../preset/IFxLoopSettings";
 import { KnobModule } from "../preset/IKnobSettings";
-import { IPresetInfo, presetNumberToBankCode } from "../preset/IPresetInfo";
+import { IPresetInfo } from "../preset/IPresetInfo";
 import { IActions } from "./IActions";
 
 
@@ -47,6 +47,10 @@ export class GP200MidiEncoder implements IActions{
 
     }
 
+    get isJR() {
+        return this.gp200.isJR;
+    }
+
     //  --------------------------------------------------------------------------------
     //      MIDI/MODEL ENCODE ACTIONS
     //  ---------------------------------------------------------------------------------
@@ -54,7 +58,8 @@ export class GP200MidiEncoder implements IActions{
     // PRESET ACTIONS
     ChangePreset(presetNumber: number) {
         // Checks num in range [0, 255]
-        const num = Math.min(Math.max(presetNumber, 0), 255);
+        // const num = Math.min(Math.max(presetNumber, 0), 255);
+        const num = Math.min(Math.max(presetNumber, 0), this.isJR ? 254: 255);
 
         // Construc message
         // bytes 0x19 and 0x1a encode the preset/patch number (Hex digits)
@@ -74,11 +79,17 @@ export class GP200MidiEncoder implements IActions{
         if (this.gp200.currentPresetNumber === undefined) { return; }
 
         let num = this.gp200.currentPresetNumber + 1;
-        if (num > 255) {
-            num = 0;
-        } else if (num < 0) {
-            num = 255;
+        if (this.isJR) {
+            num = num % 255;
+        } else {
+            num = num % 256;
         }
+        // if (num > 255) {
+        //     num = 0;
+        // } else if (num < 0) {
+        //     num = 255;
+        // }
+
 
         this.ChangePreset(num);
     }
@@ -88,41 +99,57 @@ export class GP200MidiEncoder implements IActions{
         if (this.gp200.currentPresetNumber === undefined) { return; }
 
         let num = this.gp200.currentPresetNumber - 1;
-        if (num > 255) {
-            num = 0;
-        } else if (num < 0) {
-            num = 255;
+        if (this.isJR) {
+            num = num % 255;
+        } else {
+            num = num % 256;
         }
+        // if (num > 255) {
+        //     num = 0;
+        // } else if (num < 0) {
+        //     num = 255;
+        // }
 
         this.ChangePreset(num);
     }
 
     NextBank() {
-        if (this.gp200.currentPresetNumber === undefined) { return; }
+        if (this.gp200.currentPresetBankNumber === undefined) { return; }
 
-        let bankNum = Math.floor(this.gp200.currentPresetNumber / 4) + 1;
-        if (bankNum > 63) {
-            bankNum = 0
+        let bankNum = this.gp200.currentPresetBankNumber + 1;
+        let presetNum = 0;
+        if (this.isJR) {
+            bankNum = bankNum % 85;
+            presetNum = bankNum * 3;
+        } else {
+            bankNum = bankNum % 64;
+            presetNum = bankNum * 4;
         }
-        const presetNum = bankNum * 4;
 
         this.ChangePreset(presetNum);
     }
 
     PrevBank() {
-        if (this.gp200.currentPresetNumber === undefined) { return; }
+        if (this.gp200.currentPresetBankNumber === undefined) { return; }
 
-        let bankNum = Math.floor(this.gp200.currentPresetNumber / 4) - 1;
-        if (bankNum < 0) {
-            bankNum = 63
+        let bankNum = this.gp200.currentPresetBankNumber - 1;
+        let presetNum = 0;
+        if (this.isJR) {
+            bankNum = bankNum % 85;
+            presetNum = bankNum * 3;
+        } else {
+            bankNum = bankNum % 64;
+            presetNum = bankNum * 4;
         }
-        const presetNum = bankNum * 4;
 
         this.ChangePreset(presetNum);
     }
 
     SaveCurrentPreset(presetNumberToSave: number, presetName: string) {
         if (this.gp200.currentPreset === undefined) { return; }
+
+        // Should i check the presetNumberToSave is in appropiate range for gp200 jr and other models?
+        presetNumberToSave = Math.min(Math.max(presetNumberToSave, 0), this.isJR ? 254 : 255);
         
         // byte 0x15 and 0x16 Preset ID to save current preset: id is split in hex digits
         // ** bytes 0x19 and 0x1c changing constantly IDK what they do maybe some timestamp
@@ -540,7 +567,7 @@ export class GP200MidiEncoder implements IActions{
     LoadPresetToMemory(presetInfo: IPresetInfo, loadPosition: number) {
         // Change preset info number and bank code to match new memory position
         presetInfo.number = loadPosition;
-        presetInfo.bankCode = presetNumberToBankCode(loadPosition);
+        // presetInfo.bankCode = presetNumberToBankCode(loadPosition);
 
         // Encode presetInfo to bytes
         const presetData = this.presetEncoder.encodePresetData(presetInfo);
@@ -617,6 +644,5 @@ export class GP200MidiEncoder implements IActions{
     AskCurrentPresetInfo() {
         this.midi.sendMessage(BaseSysExMsg.syncInfo.askCurrentPresetInfo);
     }
-
 }
 

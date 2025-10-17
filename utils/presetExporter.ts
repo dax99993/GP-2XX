@@ -29,7 +29,8 @@ export class PresetExporter{
             console.log("Encoded bytes", encodedBytes);
 
             // Get URI from cacheDirectory
-            const filename = presetInfo.bankCode + ' ' + presetInfo.name + '.prst';
+            // const filename = presetInfo.bankCode + ' ' + presetInfo.name + '.prst';
+            const filename = presetInfo.name + '.prst';
             const fileUri = await FileSystem.StorageAccessFramework.createFileAsync(
                     baseUri,
                     filename,
@@ -68,7 +69,8 @@ export class PresetExporter{
             //console.log("Encoded bytes", encodedBytes);
 
             // Get URI from cacheDirectory
-            const filename = presetInfo.bankCode + ' ' + presetInfo.name + '.prst'
+            // const filename = presetInfo.bankCode + ' ' + presetInfo.name + '.prst'
+            const filename = presetInfo.name + '.prst'
             const fileUri = FileSystem.cacheDirectory + filename;
             console.log('File uri:', fileUri);
 

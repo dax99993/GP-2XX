@@ -36,7 +36,10 @@ export class Store {
             // this.modals.openModal("disconnectModal");
             this.modals.openModal(DISCONNECT_MODAL_ID);
         }
-        const midiConnectCb = () => {
+        const midiConnectCb = (isJr: boolean) => {
+            // Get model type
+            this.gp200.isJR = isJr;
+
             //this.modals.closeModal("disconnectModal");
             this.modals.openModal(SYNC_MODAL_ID);
             // Start sync

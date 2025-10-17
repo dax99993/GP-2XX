@@ -51,6 +51,10 @@ export class GP200MidiDecoder implements IDeviceActions {
         });
     }
 
+    get isJR() {
+        return this.gp200.isJR;
+    }
+
     // DECODE - ACTIONS
 
 
@@ -467,7 +471,7 @@ export class GP200MidiDecoder implements IDeviceActions {
         }
     }
 
-    // Only used to sync presets
+    // Only used to sync presets in gp200 and gp200 lt (last 4 switches)
     decodeSysEx146length(message: Uint8Array) {
         // IDK WHY is only constant up to byte 12
         const presetInfoMsg7 = PresetFromMemorySysEx.message7;

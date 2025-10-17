@@ -8,6 +8,8 @@ import { IPresetInfo } from "./preset/IPresetInfo";
 
 export class GP200Model {
 
+    isJR: boolean;
+
     //presets: PresetModel[];
     presets: IPresetInfo[];
 
@@ -28,6 +30,8 @@ export class GP200Model {
 
 
     constructor() {
+      this.isJR = false;
+
       // initialize internal values
       this.presets = []
 
@@ -142,9 +146,11 @@ export class GP200Model {
     // }
 
     get AreStoredPresetsSynced(): boolean {
-      return this.presets.length == 256;
-      // return this.presets.length == 50;
-      // return this.presets.length == 16;
+      if (this.isJR) {
+        return this.presets.length == 255;
+      } else {
+        return this.presets.length == 256;
+      }
     }
 
     get currentPresetBankNumber(): number | undefined {
@@ -153,7 +159,11 @@ export class GP200Model {
       if (number == undefined) {
         return undefined;
       } else {
-        return Math.floor(number / 4);
+        if (this.isJR) {
+          return Math.floor(number / 3);
+        } else {
+          return Math.floor(number / 4);
+        }
       }
     }
 
@@ -163,7 +173,11 @@ export class GP200Model {
       if (number == undefined) {
         return undefined;
       } else {
-        return number % 4;
+        if (this.isJR) {
+          return number % 3;
+        } else {
+          return number % 4;
+        }
       }
     }
 
@@ -197,7 +211,8 @@ export class GP200Model {
     // -- PRESET ACTIONS --
     changePreset(preset_number: number) {
         // Clamp to valid range
-        const num = Math.min(Math.max(preset_number, 0), 255);
+        // const num = Math.min(Math.max(preset_number, 0), 255);
+        const num = Math.min(Math.max(preset_number, 0), this.isJR ? 254 : 255);
         this.currentPresetNumber = num;
 
         // clone the preset

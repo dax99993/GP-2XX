@@ -113,7 +113,7 @@ export class PresetModel {
             // General info
             name: this.name,
             number: this.number,
-            bankCode: this.bankCode,
+            // bankCode: this.bankCode,
 
             category: this.category,
             author: this.author,
@@ -158,32 +158,35 @@ export class PresetModel {
         return presetInfo;
     }
 
-    get bankCode(): string {
-      const number = this.number;
+    // bankCode(isJr: boolean =false): string {
+    //   const number = this.number;
 
-      if (number === undefined) {
-          return "";
-      }
+    //   if (number === undefined) {
+    //       return "";
+    //   }
 
-      const bankNumber = Math.floor(number / 4) + 1;
-      let bankLetter: string = "";
-      switch (number % 4) {
-        case 0:
-          bankLetter = 'A';
-          break;
-        case 1:
-          bankLetter = 'B';
-          break;
-        case 2:
-          bankLetter = 'C';
-          break;
-        case 3:
-          bankLetter = 'D';
-          break;
-      }
+    //   const presetsPerBank = isJr ? 3 : 4; 
 
-      return bankNumber.toString().padStart(2, '0') + '-' + bankLetter;
-    }
+    //   const bankNumber = Math.floor(number / presetsPerBank) + 1;
+
+    //   let bankLetter: string = "";
+    //   switch (number % presetsPerBank) {
+    //     case 0:
+    //       bankLetter = 'A';
+    //       break;
+    //     case 1:
+    //       bankLetter = 'B';
+    //       break;
+    //     case 2:
+    //       bankLetter = 'C';
+    //       break;
+    //     case 3:
+    //       bankLetter = 'D';
+    //       break;
+    //   }
+
+    //   return bankNumber.toString().padStart(2, '0') + '-' + bankLetter;
+    // }
 
     // savePreset(save_number, name)
 

@@ -18,7 +18,7 @@ function SelectPresetTopBar() {
         router.back();
     };
 
-    const bankCode = store.gp200.currentPreset ? store.gp200.currentPreset.bankCode: "YY-XX";
+    const bankCode = store.gp200.currentPreset ? store.gp200.presetBankCode : "YY-XX";
     const presetName = store.gp200.currentPreset? store.gp200.currentPreset.name : "Preset name";
 
     return (
