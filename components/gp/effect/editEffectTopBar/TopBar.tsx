@@ -213,7 +213,7 @@ const PresetInfo = observer(() => {
 
   const router = useRouter();
 
-  const bankCode = store.gp200.currentPreset ? store.gp200.presetBankCode : "YY-XX";
+  const bankCode = store.gp200.currentPreset ? store.gp200.currentPresetBankCode : "YY-XX";
   let presetName = store.gp200.currentPreset ? store.gp200.currentPreset.name : "z".repeat(16);
 
   const goChangePreset = () => {

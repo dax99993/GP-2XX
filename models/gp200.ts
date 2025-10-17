@@ -67,7 +67,7 @@ export class GP200Model {
         syncingCurrentPreset: observable,
 
         // COMPUTED
-        presetBankCode: computed,
+        currentPresetBankCode: computed,
 
         // ACTIONS
         SetToStartSyncing: action,
@@ -181,7 +181,7 @@ export class GP200Model {
       }
     }
 
-    get presetBankCode(): string {
+    get currentPresetBankCode(): string {
       const bankNumber = this.currentPresetBankNumber;
       const bankSlotNumber = this.currentPresetBankSlotNumber;
 

@@ -148,12 +148,12 @@ function LiveScreen() {
 
   const incrementBank = () => {
     store.gpMidiEncoder.NextBank();
-    console.log("Setting bank to", store.gp200.presetBankCode);
+    console.log("Setting bank to", store.gp200.currentPresetBankCode);
   }
 
   const decrementBank = () => {
     store.gpMidiEncoder.PrevBank();
-    console.log("Setting bank to", store.gp200.presetBankCode);
+    console.log("Setting bank to", store.gp200.currentPresetBankCode);
   }
 
   const changeToBankSlot = (slot: number) => {
@@ -182,7 +182,7 @@ function LiveScreen() {
         <BoundBox>
           <Center>
             <Heading size="2xl">
-              {`Preset: ${store.gp200.presetBankCode}`}
+              {`Preset: ${store.gp200.currentPresetBankCode}`}
             </Heading>
             <Heading size="2xl">
               {store.gp200.currentPreset?.name}

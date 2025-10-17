@@ -16,7 +16,6 @@ import { SmartphoneIcon } from 'lucide-react-native';
 
 import GPIcon from "@/assets/images/svgs/GPIcon4.svg";
 import UsbCable from "@/assets/images/svgs/usbcable.svg";
-import { Divider } from '@/components/ui/divider';
 import useOrientation from '@/hooks/useOrientation';
 import { useStore } from '@/hooks/useStore';
 import { useKeepAwake } from 'expo-keep-awake';
@@ -64,9 +63,9 @@ function HomeScreen() {
                     <UsbCable scaleX={1.0} scaleY={1.0} width={40} height={40} fill={'white'}/>
                     <SmartphoneIcon height={70} width={50} color={'white'}/>
                 </HStack>
-                <Divider className='my-5'/>
+                {/* <Divider className='my-5'/>
                 <Text size='2xl'>Currently compatible models:</Text>
-                <Text size='2xl'>GP-200 & GP-200 LT</Text>
+                <Text size='2xl'>GP-200 & GP-200 LT</Text> */}
             </Center>
         </VStack>
     );
