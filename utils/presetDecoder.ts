@@ -7,6 +7,9 @@ import { DecoderUtils } from "./decodeUtils";
 
 const PRESET_LONG_FORMAT_LENGHT = 1224;
 const PRESET_SHORT_FORMAT_LENGHT = 1176;
+const PRESET_HEADER_LENGTH = 52;
+// 1124 data in short form
+// 1172 data in long form
 
 
 export class PresetDecoder {
@@ -64,20 +67,29 @@ export class PresetDecoder {
         //should contain 02 00 58 00
         offset += 4;
         console.log("OFFSET after metada should be 52", offset);
+        console.log("BUFFER LEN", buffer.length, "OFFSET", offset);
+
+        if (offset == PRESET_HEADER_LENGTH) {
+            console.log("Correct Header lenght");
+        }
+
+        const isShortFormat = buffer.length == PRESET_SHORT_FORMAT_LENGHT;
+        if(isShortFormat) {
+            console.log("Preset file is short format");
+        }
+
+        // Actual DATA
+        const presetInfo = this.decodePresetData(buffer, offset, isShortFormat);
 
         // Check end of file
         // Must be 
             // 0xc0, 0x04, 0x00, 0x00,
             // 0x00, 0x00, 0x48, 0x10
 
-
-        // Actual DATA
-        const presetInfo = this.decodePresetData(buffer, offset);
-
         return presetInfo;
     }
 
-    decodePresetData(buffer: Buffer, offset: number): IPresetInfo {
+    decodePresetData(buffer: Buffer, offset: number, isShortFormat: boolean): IPresetInfo {
         // function decodePresetData(buffer: Buffer) {
         console.log("Decode Preset Data", buffer.length - offset);
 
@@ -170,6 +182,7 @@ export class PresetDecoder {
         console.log("Offset starting effect module information", offset);
 
         // EFFECT MODULE DETAILS 
+        console.log("Effect Modules");
         const effectsInfo: IEffectInfo[] = [];
         for (let i = 0; i < 11; i = i + 1) {
             // Each block is 72 bytes
@@ -206,15 +219,7 @@ export class PresetDecoder {
 
         // CTRL settings
         const ctrlSettings: ICtrlSettings[] = [];
-        if (buffer.length == PRESET_LONG_FORMAT_LENGHT) {
-            for (let i = 0; i < 8; i = i + 1) {
-                // Each block is 12 bytes
-                const ctrlSetting = this.decodeCtrlSettings(buffer, offset);
-                offset += 12
-                // console.log(ctrlSetting);
-                ctrlSettings[i] = ctrlSetting;
-            }
-        } else if (buffer.length == PRESET_SHORT_FORMAT_LENGHT) {
+        if (isShortFormat) {
             for (let i = 0; i < 4; i = i + 1) {
                 // Each block is 12 bytes
                 const ctrlSetting = this.decodeCtrlSettings(buffer, offset);
@@ -235,6 +240,14 @@ export class PresetDecoder {
             ctrlSettings[7] = {
                 number: 7, mode: 0, pedalsAssign: [0,0,0,0,0,0,0,0,0,0,0] 
             };
+        } else {
+            for (let i = 0; i < 8; i = i + 1) {
+                // Each block is 12 bytes
+                const ctrlSetting = this.decodeCtrlSettings(buffer, offset);
+                offset += 12
+                console.log(ctrlSetting);
+                ctrlSettings[i] = ctrlSetting;
+            }
         }
 
         // Create FXLoop
@@ -313,7 +326,7 @@ export class PresetDecoder {
 
         //console.log(buffer.subarray(offset, offset+4));
         const moduleID = buffer.readUInt32LE(offset);
-        console.log("Effect Module ID", moduleID);
+        // console.log("Effect Module ID", moduleID);
         offset += 4;
 
         const params: number[] = []

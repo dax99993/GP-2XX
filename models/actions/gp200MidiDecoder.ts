@@ -340,8 +340,9 @@ export class GP200MidiDecoder implements IDeviceActions {
         // Reset meessage accumulator
         this.presetInfoMessages = [];
 
-        // decode preset data
-        return this.presetImporter.decoder.decodePresetData(Buffer.from(presetData), 0);
+        // decode preset data 
+        // Is it always the long format for all models?
+        return this.presetImporter.decoder.decodePresetData(Buffer.from(presetData), 0, false);
     }
 
 

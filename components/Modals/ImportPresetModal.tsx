@@ -48,9 +48,19 @@ export const ImportPresetsModal = observer(() => {
     }
 
     // MODAL BODY
-    const DATA: PresetListItem[] = store.gp200.presets.map(p => {
-        return {name: p.name, number: p.number, bankCode: p.bankCode}
+    const mapBankCode = (n: number) => {
+        const presetsPerBank = store.gp200.isJR ? 3 : 4;
+        const bank = Math.floor(n / presetsPerBank);
+        const slotNumber = n % presetsPerBank;
+        const slot = String.fromCharCode(slotNumber + 'A'.charCodeAt(0));
+
+        return `${(bank+1).toString().padStart(2, '0')}-${slot}`
+    }
+
+    const DATA: PresetListItem[] = store.gp200.presets.map((p, i) => {
+        return {name: p.name, number: p.number, bankCode: mapBankCode(i) }
     })
+
 
     const isChecked = useCallback( (n: number) => {
         return selected.includes(n);

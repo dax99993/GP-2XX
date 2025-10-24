@@ -16,6 +16,8 @@ function CtrlSettings({ctrlID}: CtrlSettingsProps) {
     const store = useStore();
 
     if (store.gp200.currentPreset == undefined) {return null};
+    console.log("CTRL", ctrlID, store.gp200.currentPreset.ctrls[ctrlID]);
+    if (store.gp200.currentPreset.ctrls[ctrlID] == undefined) {return null};
 
     const effects = store.gp200.currentPreset.effects;
     const pedals = store.gp200.currentPreset.ctrls[ctrlID].pedalsAssign;

@@ -34,8 +34,17 @@ export const SavePresetModal = observer(() => {
         onClose();
     }
 
-    const PRESET_LABELS: [string, string][] = store.gp200.presets.map(p => {
-        return [p.number.toString(), p.bankCode + " " + p.name]
+    const mapBankCode = (n: number) => {
+        const presetsPerBank = store.gp200.isJR ? 3 : 4;
+        const bank = Math.floor(n / presetsPerBank);
+        const slotNumber = n % presetsPerBank;
+        const slot = String.fromCharCode(slotNumber + 'A'.charCodeAt(0));
+
+        return `${(bank+1).toString().padStart(2, '0')}-${slot}`
+    }
+
+    const PRESET_LABELS: [string, string][] = store.gp200.presets.map((p, i) => {
+        return [p.number.toString(), mapBankCode(i) + " " + p.name]
     });
 
     return (
