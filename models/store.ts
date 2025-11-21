@@ -3,6 +3,7 @@ import { SYNC_MODAL_ID } from "@/components/Modals/SyncModal";
 import { eventHandler, SyncEvents } from "@/utils/eventHandler";
 import { PresetExporter } from "@/utils/presetExporter";
 import { PresetImporter } from "@/utils/presetImporter";
+import { WavImporter } from "@/utils/wavImporter";
 import { action, makeObservable, observable, runInAction } from "mobx";
 import { GP200MidiDecoder } from "./actions/gp200MidiDecoder";
 import { GP200MidiEncoder } from "./actions/gp200MidiEncoder";
@@ -18,6 +19,7 @@ export class Store {
     gpMidiDecoder: GP200MidiDecoder;
     presetImporter: PresetImporter;
     presetExporter: PresetExporter;
+    wavImporter: WavImporter;
 
     modals: ModalStore;
 
@@ -29,6 +31,7 @@ export class Store {
         this.modals = new ModalStore();
         this.presetImporter = new PresetImporter();
         this.presetExporter = new PresetExporter();
+        this.wavImporter = new WavImporter();
 
         this.syncTimer = null;
 

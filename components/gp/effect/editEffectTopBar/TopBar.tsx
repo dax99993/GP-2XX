@@ -49,12 +49,13 @@ function GoHomeButton() {
 
 function RightElements() {
   const store = useStore();
-  const handleUnimplementedToast = createHandleToast({
-    // "LoadIRToast",
-    title: "Dear user",
-    description: "This features has not been implemented yet!.",
-    duration: 3000
-  });
+
+  // const handleUnimplementedToast = createHandleToast({
+  //   // "LoadIRToast",
+  //   title: "Dear user",
+  //   description: "This features has not been implemented yet!.",
+  //   duration: 3000
+  // });
 
   const handleErrorImportingPresetToast = createHandleToast({
     // "LoadIRToast",
@@ -63,9 +64,16 @@ function RightElements() {
     duration: 3000
   });
 
+  const handleErrorImportingIrToast = createHandleToast({
+    // "LoadIRToast",
+    title: "Importing IR",
+    description: "An error occur while reading wav file!.",
+    duration: 3000
+  });
+
   const {isLandscape, isTablet} = useOrientation();
 
-  const onClickImport = async () => {
+  const onClickPresetImport = async () => {
       const status = await store.presetImporter.LoadFiles();
       if (status) {
         // Should change this function to return error when file is not a valid .prst
@@ -83,12 +91,32 @@ function RightElements() {
       }
   }
 
-  const onClickExport = async () => {
+  const onClickPresetExport = async () => {
       console.log("Export Button clicked!");
 
       // Open Modal
       console.log("Open modal");
       store.modals.openModal(EXPORT_PRESETS_MODAL_ID);
+  }
+
+  const onClickLoadIr = async () => {
+      const status = await store.wavImporter.LoadFiles();
+      if (status) {
+        // Should change this function to return error when file is not a valid .wav 
+        // add a try catch block to handle erroneous files
+        try {
+          store.wavImporter.decodeFiles();
+        } catch (error: unknown) {
+          console.log("Error while decoding WAV files", error);
+          handleErrorImportingIrToast();
+          return;
+        }
+
+        console.log(store.wavImporter.wavs[0]);
+
+      //   // Get memory positions to load presets
+      //   store.modals.openModal(IMPORT_PRESET_MODAL_ID);
+      }
   }
 
   return (
@@ -170,7 +198,7 @@ function RightElements() {
             textValue="Import preset"
             onPress={() => {
               console.log("import preset");
-              onClickImport();
+              onClickPresetImport();
             }}
           >
             <Icon as={FolderInputIcon} size="sm" className="mr-2" />
@@ -181,7 +209,7 @@ function RightElements() {
             textValue="Export preset"
             onPress={() => {
               console.log("export preset");
-              onClickExport();
+              onClickPresetExport();
             }}
           >
             <Icon as={FolderOutputIcon} size="sm" className="mr-2" />
@@ -193,7 +221,7 @@ function RightElements() {
             textValue="Load IR"
             onPress={() => {
               console.log("Load IR");
-              handleUnimplementedToast();
+              onClickLoadIr();
             }}
           >
             <Icon as={ArrowDownToLineIcon} size="sm" className="mr-2" />
