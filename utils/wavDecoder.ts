@@ -13,7 +13,8 @@ export class WavDecoder {
 
     decodeWavFile(buffer: Buffer): IWavInfo {
         let offset = 0;
-        console.log(buffer.byteOffset);
+        console.log("Number of bytes in file", buffer.byteLength);
+
         // RIFF Chunk descriptor
         // ChunkID -> RIFF
         const chunkId = buffer.readUInt32BE(offset);
@@ -42,15 +43,19 @@ export class WavDecoder {
             throw new Error(`SubChunk1D is not "fmt ": ${subChunk1Id}`);
         }
 
+        // Can be 16, 18 or 40
         const subChunk1Size = buffer.readUint32LE(offset);
         offset += 4;
-        // if( subChunk1Size !== 16) {
-        //     console.log(`File is not PCM: ${subChunk1Size}`);
-        // }
+        if(subChunk1Size !== 16 && subChunk1Size !== 18 && subChunk1Size !== 40) {
+            throw new Error(`Invalid fmt chunk: ${subChunk1Size}`);
+        }
 
-        // Value 1 -> PCM ; other values mean some sort of compression
+        // Value 1 -> PCM ; 3 -> IEEE float ; 6 -> A-Law ; 7 -> MU-Law ; 8 -> Extensible
         const audioFormat = buffer.readUint16LE(offset);
         offset += 2;
+        if (audioFormat !== 1) {
+            throw new Error(`Unsupported audio format: ${audioFormat}`);
+        }
 
         const numChannels = buffer.readUint16LE(offset);
         offset += 2;
@@ -67,6 +72,16 @@ export class WavDecoder {
         const bitsPerSample = buffer.readUint16LE(offset);
         offset += 2;
 
+        // Handle different fmt chunk sizes
+        if (subChunk1Size === 18) {
+            const extensionSize = buffer.readUint16LE(offset);
+            offset += 2;
+            console.log(`Extension size: ${extensionSize}`);
+        } else if (subChunk1Size === 40) {
+            throw new Error("Unsupported fmt chunk size.");
+        }
+
+
         // Sanity checks
         const expectedByteRate = sampleRate * numChannels * bitsPerSample / 8;
         if (byteRate !== expectedByteRate) {
@@ -78,10 +93,16 @@ export class WavDecoder {
             throw new Error(`Invalid block align: ${blockAlign} expected ${expectedBlockAlign}`);
         }
 
+        console.log(`ChunkID ${chunkId} ; ChunkSize ${chunkSize}; Format ${format}`);
+        console.log(`subChunk1ID ${subChunk1Id} ; subChunk1Size ${subChunk1Size}`);
+        console.log(`audioFormat ${audioFormat} ; numChannels ${numChannels} ; sampleRate ${sampleRate}`);
+        console.log(`byteRate ${byteRate} ; blockAlign ${blockAlign} ; bitsPerSample ${bitsPerSample}`);
+
         // data chunk
+        console.log("subChunk2Id offset", offset);
+        console.log(`subChunk2Id ${buffer.readUInt8(offset)} ${buffer.readUInt8(offset + 1)} ${buffer.readUInt8(offset + 2)} ${buffer.readUInt8(offset + 3)}`);
         const subChunk2Id = buffer.readUint32BE(offset);
         offset += 4;
-        console.log("chunk2id offset", offset);
         if (subChunk2Id !== 0x64617461) {
             throw new Error(`SubChunk2ID is not "data": ${subChunk2Id.toString(16)}`);
         }
@@ -99,7 +120,8 @@ export class WavDecoder {
 
         for (let sampleIndex = 0; sampleIndex < numSamples; sampleIndex++) {
             for(let i = 0; i < numChannels; i++) {
-                const sampleValue: number = buffer.readIntLE(i, bitsPerSample / 8);
+                const sampleValue: number = buffer.readIntLE(offset, bitsPerSample / 8);
+                offset += bitsPerSample / 8;
                 channelData[i].push(sampleValue);
             }
         }

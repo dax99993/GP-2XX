@@ -112,7 +112,8 @@ function RightElements() {
           return;
         }
 
-        console.log(store.wavImporter.wavs[0]);
+        // Log file to check
+        console.log("First 1100 samples", store.wavImporter.wavs[0].channelData[0].slice(0, 1100));
 
       //   // Get memory positions to load presets
       //   store.modals.openModal(IMPORT_PRESET_MODAL_ID);

@@ -35,10 +35,10 @@ export class WavImporter {
             console.log("Asset", i, asset);
             // Read file
             const s = await readAsStringAsync(asset.uri, { encoding: 'base64' });
-            console.log("base64: ", s);
+            //console.log("base64: ", s);
             // Convert to uint8array
             const buffer = Buffer.from(s, 'base64');
-            console.log("Buffer", buffer);
+            //console.log("Buffer", buffer);
 
             this.binaryFiles.push(buffer);
         }
@@ -52,8 +52,8 @@ export class WavImporter {
 
         this.binaryFiles.forEach(buffer => {
             try {
-                const presetInfo = this.decoder.decodeWavFile(buffer);
-                this.wavs.push(presetInfo);
+                const wavInfo = this.decoder.decodeWavFile(buffer);
+                this.wavs.push(wavInfo);
             } catch (e) {
                 console.log(e);
                 throw e;
