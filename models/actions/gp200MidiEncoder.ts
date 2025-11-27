@@ -620,7 +620,7 @@ export class GP200MidiEncoder implements IActions{
         // bytes 19 and 1a contain the preset Number (hex digits)
         // bytes 25 and 26 contain the preset Number (hex digits)
         // bytes 29 and 2a contain the preset Number (hex digits)
-        let msg = BaseSysExMsg.syncInfo.askPresetInfo;
+        let msg = BaseSysExMsg.syncPresetInfo.askPresetInfo;
         const [high_byte, low_byte] = this.encoder.byteToNibbles(num);
         msg[0x19] = high_byte;
         msg[0x1a] = low_byte;
@@ -636,7 +636,7 @@ export class GP200MidiEncoder implements IActions{
     }
 
     AskCurrentPresetInfo() {
-        this.midi.sendMessage(BaseSysExMsg.syncInfo.askCurrentPresetInfo);
+        this.midi.sendMessage(BaseSysExMsg.syncPresetInfo.askCurrentPresetInfo);
     }
 }
 
