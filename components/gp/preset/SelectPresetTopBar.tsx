@@ -19,7 +19,7 @@ function SelectPresetTopBar() {
     };
 
     const bankCode = store.gp200.currentPreset ? store.gp200.currentPresetBankCode : "YY-XX";
-    const presetName = store.gp200.currentPreset? store.gp200.currentPreset.name : "Preset name";
+    const presetName = store.gp200.currentPreset? store.gp200.currentPreset.name : "Preset Name";
 
     return (
         <TopBar>

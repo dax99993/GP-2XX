@@ -1,11 +1,3 @@
-import { Text, View } from "react-native";
+import { AboutScreen } from "@/screens/about_screen";
 
-
-
-export default function AboutScreen() {
-    return (
-        <View>
-            <Text>About screen</Text>
-        </View>
-    );
-}
+export default AboutScreen;

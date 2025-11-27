@@ -49,7 +49,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="testscreen"
+        name="test"
         options={{
           href: null, //Remove when testing
           title: 'Test Screen',

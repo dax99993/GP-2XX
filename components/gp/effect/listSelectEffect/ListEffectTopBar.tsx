@@ -16,7 +16,7 @@ function ListEffectTopBar() {
         router.back();
     };
 
-    const effectType = store.gp200.currentEffect ? store.gp200.currentEffect.typeName : "Module";
+    const effectType = store.gp200.currentEffect ? store.gp200.currentEffect.typeName : "Effect Module";
 
     return (
         <TopBar>

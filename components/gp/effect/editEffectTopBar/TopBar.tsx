@@ -112,11 +112,16 @@ function RightElements() {
           return;
         }
 
-        // Log file to check
+        // Log first file first channel to check correct decoding.
         console.log("First 1100 samples", store.wavImporter.wavs[0].channelData[0].slice(0, 1100));
 
-      //   // Get memory positions to load presets
-      //   store.modals.openModal(IMPORT_PRESET_MODAL_ID);
+        // Pre-process samples
+        // if not 24-bit, scale amplitude to 24-bit
+        // if sample rate is 96000, skip even samples; to get the ideal 48000 sample rate
+        // if sample rate is neither 96000 nor 48000; keep the samples the same
+
+        // Get memory slots to load IR's
+        // store.modals.openModal(IMPORT_IR_MODAL_ID);
       }
   }
 

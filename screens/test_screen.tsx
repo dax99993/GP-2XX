@@ -1,6 +1,4 @@
-
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
-
 
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
@@ -9,13 +7,12 @@ import { Orientation } from 'expo-screen-orientation';
 import React from 'react';
 
 
-
 import TopBar from '@/components/topBar/TopBar';
 import { Button, ButtonText } from '@/components/ui/button';
 
 
 
-export default function TestScreen() {
+export const TestScreen = () => {
   const {orientation, isLandscape} = useOrientation();
   console.log(Orientation[orientation]);
 
