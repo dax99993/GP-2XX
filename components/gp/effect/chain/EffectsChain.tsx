@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { Dimensions, DimensionValue, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import EffectChainUnit from "@/components/gp/effect/chain/EffectChainUnit";
+import ChainUnit from "@/components/gp/effect/chain/EffectChainUnit";
 import { Center } from "@/components/ui/center";
 import { EffectType } from "@/models/effect/effect";
 import { observer } from "mobx-react-lite";
@@ -134,10 +134,10 @@ function EffectChain() {
 
       return <Sortable.Handle mode={isFixed ? 'fixed' : 'draggable'}>
         {isFixed &&
-          <SettingsChainUnit size={chainItemSize * 1.2}/>
+          <SettingsChainUnit size={chainItemSize}/>
         }
         {!isFixed &&
-          <EffectChainUnit chainID={item} size={chainItemSize}/>
+          <ChainUnit chainID={item} size={chainItemSize}/>
         }
       </Sortable.Handle>
     },

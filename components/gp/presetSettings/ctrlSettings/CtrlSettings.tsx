@@ -1,10 +1,10 @@
+import ChainUnitImage from "@/components/gp/effect/chain/ChainUnitImage";
 import { Center } from "@/components/ui/center";
 import { HStack } from "@/components/ui/hstack";
 import { useStore } from "@/hooks/useStore";
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
 import { TouchableOpacity } from "react-native";
-import EffectImage from "../../effect/EffectImage";
 
 const DATA = ["PRE", "WAH", "DST", "AMP", "NR", "CAB", "EQ", "MOD", "DLY", "RVB", "VOL"];
 
@@ -39,7 +39,7 @@ function CtrlSettings({ctrlID}: CtrlSettingsProps) {
         return (
             <TouchableOpacity key={item} onPress={changeBinding} style={{alignItems: 'center'}}>
                 <Center style={{ width: 50, height: 50 }}>
-                        <EffectImage type={item} state={state} selected={selected}/>
+                        <ChainUnitImage type={item} state={state} selected={selected}/>
                 </Center>
             </TouchableOpacity>
         );

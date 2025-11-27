@@ -12,6 +12,9 @@ const unitONImages = {
     DLY: require("@/assets/images/GP200Icons/DLY_on.png"),
     RVB: require("@/assets/images/GP200Icons/RVB_on.png"),
     VOL: require("@/assets/images/GP200Icons/VOL_on.png"),
+
+    // Preset Settings
+    SET: require("@/assets/images/GP200Icons/SET_on.png"),
 }
 
 const unitOFFImages = {
@@ -26,6 +29,9 @@ const unitOFFImages = {
     DLY: require("@/assets/images/GP200Icons/DLY_off.png"),
     RVB: require("@/assets/images/GP200Icons/RVB_off.png"),
     VOL: require("@/assets/images/GP200Icons/VOL_off.png"),
+
+    // Preset Settings
+    SET: require("@/assets/images/GP200Icons/SET_off.png"),
 }
 
 const unitONSelectedImages = {
@@ -40,6 +46,9 @@ const unitONSelectedImages = {
     DLY: require("@/assets/images/GP200Icons/DLY_on_selected.png"),
     RVB: require("@/assets/images/GP200Icons/RVB_on_selected.png"),
     VOL: require("@/assets/images/GP200Icons/VOL_on_selected.png"),
+
+    // Preset Settings
+    SET: require("@/assets/images/GP200Icons/SET_on_selected.png"),
 }
 
 const unitOFFSelectedImages = {
@@ -55,10 +64,11 @@ const unitOFFSelectedImages = {
     RVB: require("@/assets/images/GP200Icons/RVB_off_selected.png"),
     VOL: require("@/assets/images/GP200Icons/VOL_off_selected.png"),
 
-    // VOL: require("@/assets/images/GP200Icons/VOL_off_selected.png"),
+    // Preset Settings
+    SET: require("@/assets/images/GP200Icons/SET_off_selected.png"),
 }
 
-interface EffectImageProps {
+interface ChainUnitImageProps {
     type: string,
     state: boolean,
     selected?: boolean,
@@ -76,16 +86,16 @@ function GetImage(type: string, state: boolean, selected?:boolean) {
   }
 }
 
-function EffectImage({type, state, selected}: EffectImageProps) {
+function ChainUnitImage({type, state, selected}: ChainUnitImageProps) {
 
   const image = GetImage(type, state, selected ?? false);
 
     return (
-            <Image
-              source={image}
-              resizeMode="cover"
-              style={selected ? styles.selectedImage : styles.nonSelectedImage}
-            />
+      <Image
+        source={image}
+        resizeMode="cover"
+        style={selected ? styles.selectedImage : styles.nonSelectedImage}
+      />
     );
 }
 
@@ -100,4 +110,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default EffectImage;
+export default ChainUnitImage;

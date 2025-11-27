@@ -1,31 +1,30 @@
 import { Center } from "@/components/ui/center";
 //import { observer } from "mobx-react-lite";
-import { Text } from "@/components/ui/text";
 import { useStore } from "@/hooks/useStore";
 import { observer } from "mobx-react-lite";
 import { StyleSheet, TouchableOpacity } from "react-native";
+import ChainUnitImage from "./ChainUnitImage";
 
 
 function SettingsChainUnit({size}: {size: number}) {
   const store = useStore();
-
-  // if (!store.gp200.currentPreset) {
-  //   console.log("NULL current Preset");
-  //   return null;
-  // }
 
   const select_unit = () => {
     //store.gp200.changeSelectedEffect(effect.type);
     console.log("Show settings");
     store.changeShowPatchSettings(true);
   }
+
   const isSelected = store.showPatchSettings;
 
     return (
       <TouchableOpacity onPress={select_unit} style={styles.baseContainer}>
-        <Center className="bg-secondary-300 rounded-lg" style={[{width: size, height:size}, isSelected ? styles.selected : {}]}>
-            <Text size="xs">Preset</Text>
-            <Text size="xs">Settings</Text>
+        <Center className="" style={{width: size, height: size}}>
+            <ChainUnitImage
+              type={"SET"}
+              state={true}
+              selected={isSelected}
+            />
         </Center>
       </TouchableOpacity>
     )

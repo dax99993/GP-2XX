@@ -3,19 +3,17 @@ import { useStore } from "@/hooks/useStore";
 import { EffectType } from "@/models/effect/effect";
 import { observer } from "mobx-react-lite";
 import { StyleSheet, TouchableOpacity } from "react-native";
-import EffectImage from "../EffectImage";
+import ChainUnitImage from "./ChainUnitImage";
+
+
 
 type EffectUnitProps = {
   chainID: number;
   size: number;
 }
 
-function EffectChainUnit(props: EffectUnitProps) {
+function ChainUnit(props: EffectUnitProps) {
   const store = useStore();
-  // if (!store.gp200.currentPreset) {
-  //   console.log("NULL current Preset");
-  //   return null
-  // }
 
   const effectType = store.gp200.currentPreset ? 
     store.gp200.currentPreset.effects[props.chainID].type :
@@ -38,7 +36,7 @@ function EffectChainUnit(props: EffectUnitProps) {
     return (
       <TouchableOpacity onPress={select_unit} style={styles.baseContainer}>
         <Center className="" style={{width: props.size, height: props.size}}>
-            <EffectImage
+            <ChainUnitImage
               type={EffectType[effectType]}
               state={effectState}
               selected={isSelected}
@@ -55,4 +53,4 @@ const styles = StyleSheet.create({
 })
 
 
-export default observer(EffectChainUnit);
+export default observer(ChainUnit);

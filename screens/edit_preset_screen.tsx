@@ -1,6 +1,6 @@
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 
-import EffectChain from '@/components/gp/effect/chain/EffectChain';
+import EffectsChain from '@/components/gp/effect/chain/EffectsChain';
 import EffectEdit from '@/components/gp/effect/edit/EffectEdit';
 import EditEffectTopBar from '@/components/gp/effect/edit/EffectEditTopBar';
 import PresetSettings from '@/components/gp/presetSettings/PresetSettings';
@@ -25,7 +25,7 @@ export const EditPresetScreen = observer(() => {
         <EditEffectTopBar/>
         <View style={isLandscape ? styles.landscapeContainer : styles.portraitContainer} >
           <View style={{backgroundColor: ''}}>
-          <EffectChain/>
+          <EffectsChain/>
           {/* Component to show only on tablet */}
           </View>
           <ScrollingProvider>
