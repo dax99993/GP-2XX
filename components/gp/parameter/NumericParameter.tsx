@@ -1,5 +1,5 @@
 //import Slider from "@react-native-community/slider";
-import NumericSlider from "@/components/NumericSlider";
+import NumericSlider from "@/components/core/NumericSlider";
 import { useScrolling } from "@/contexts/scroll-context";
 import { useStore } from "@/hooks/useStore";
 import { IParameter } from "@/models/parameter/IParameter";

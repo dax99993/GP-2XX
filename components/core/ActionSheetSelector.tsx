@@ -13,8 +13,8 @@ import { Text } from "@/components/ui/text";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { observer } from "mobx-react-lite";
 import { StyleSheet } from "react-native";
-import { Box } from "./ui/box";
-import { VStack } from "./ui/vstack";
+import { Box } from "../ui/box";
+import { VStack } from "../ui/vstack";
 
 type ActionSheetProps = {
     name: string;

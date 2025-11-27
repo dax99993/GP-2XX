@@ -54,6 +54,8 @@ const unitOFFSelectedImages = {
     DLY: require("@/assets/images/GP200Icons/DLY_off_selected.png"),
     RVB: require("@/assets/images/GP200Icons/RVB_off_selected.png"),
     VOL: require("@/assets/images/GP200Icons/VOL_off_selected.png"),
+
+    // VOL: require("@/assets/images/GP200Icons/VOL_off_selected.png"),
 }
 
 interface EffectImageProps {

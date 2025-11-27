@@ -1,4 +1,4 @@
-import SearchBar from "@/components/SearchBar";
+import SearchBar from "@/components/core/SearchBar";
 import { Box } from "@/components/ui/box";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";

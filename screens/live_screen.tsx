@@ -1,6 +1,6 @@
 import { Platform, StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import BoundBox from '@/components/BoundBox';
+import BoundBox from '@/components/core/BoundBox';
 import { Box } from '@/components/ui/box';
 import { Center } from '@/components/ui/center';
 import { Heading } from '@/components/ui/heading';

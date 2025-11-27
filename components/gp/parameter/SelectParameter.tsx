@@ -1,4 +1,4 @@
-import PickerSelector from "@/components/pickerSelector";
+import PickerSelector from "@/components/core/PickerSelector";
 import { useStore } from "@/hooks/useStore";
 import { Combox } from "@/models/parameter/Combox";
 import { observer } from "mobx-react-lite";

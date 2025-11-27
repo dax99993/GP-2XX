@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { Dimensions, DimensionValue, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import EffectChainUnit from "@/components/gp/effect/editEffectChain/EffectChainUnit";
+import EffectChainUnit from "@/components/gp/effect/chain/EffectChainUnit";
 import { Center } from "@/components/ui/center";
 import { EffectType } from "@/models/effect/effect";
 import { observer } from "mobx-react-lite";

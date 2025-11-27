@@ -1,5 +1,5 @@
-import NumericSlider from "@/components/NumericSlider";
-import PickerSelector from "@/components/pickerSelector";
+import NumericSlider from "@/components/core/NumericSlider";
+import PickerSelector from "@/components/core/PickerSelector";
 import { Divider } from "@/components/ui/divider";
 import { VStack } from "@/components/ui/vstack";
 import { useScrolling } from "@/contexts/scroll-context";

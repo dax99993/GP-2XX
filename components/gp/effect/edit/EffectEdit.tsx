@@ -7,11 +7,11 @@ import { ParamType } from "@/models/parameter/IParameter";
 import { Switch as SwitchParam } from "@/models/parameter/Switch";
 import { observer } from "mobx-react-lite";
 import { ScrollView, StyleSheet } from "react-native";
-import NumericParameter from "../parameter/NumericParameter";
-import SelectParameter from "../parameter/SelectParameter";
-import SwitchParameter from "../parameter/SwitchParameter";
-import EffectSelector from "./EffectSelector";
-import EffectState from "./EffectState";
+import NumericParameter from "../../parameter/NumericParameter";
+import SelectParameter from "../../parameter/SelectParameter";
+import SwitchParameter from "../../parameter/SwitchParameter";
+import EffectSelector from "../EffectSelector";
+import EffectState from "../EffectState";
 
 function EffectEdit() {
     const store = useStore();

@@ -1,6 +1,6 @@
-import { EXPORT_PRESETS_MODAL_ID } from "@/components/Modals/ExportPresetsModal";
-import { IMPORT_PRESET_MODAL_ID } from "@/components/Modals/ImportPresetModal";
-import TopBar from "@/components/topBar/TopBar";
+import TopBar from "@/components/core/TopBar";
+import { EXPORT_PRESETS_MODAL_ID } from "@/components/modals/ExportPresetsModal";
+import { IMPORT_PRESET_MODAL_ID } from "@/components/modals/ImportPresetModal";
 import { Button, ButtonGroup, ButtonIcon } from "@/components/ui/button";
 import { Center } from "@/components/ui/center";
 import { Icon } from "@/components/ui/icon";

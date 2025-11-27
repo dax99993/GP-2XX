@@ -1,5 +1,5 @@
-import { DISCONNECT_MODAL_ID } from "@/components/Modals/DisconnectModal";
-import { SYNC_MODAL_ID } from "@/components/Modals/SyncModal";
+import { DISCONNECT_MODAL_ID } from "@/components/modals/DisconnectModal";
+import { SYNC_MODAL_ID } from "@/components/modals/SyncModal";
 import { eventHandler, SyncEvents } from "@/utils/eventHandler";
 import { PresetExporter } from "@/utils/presetExporter";
 import { PresetImporter } from "@/utils/presetImporter";

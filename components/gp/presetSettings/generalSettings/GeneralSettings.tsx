@@ -1,5 +1,5 @@
-import BoundBox from "@/components/BoundBox";
-import NumericSlider from "@/components/NumericSlider";
+import BoundBox from "@/components/core/BoundBox";
+import NumericSlider from "@/components/core/NumericSlider";
 import { Center } from "@/components/ui/center";
 import { Heading } from "@/components/ui/heading";
 import { VStack } from "@/components/ui/vstack";

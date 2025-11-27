@@ -7,7 +7,7 @@ import { Orientation } from 'expo-screen-orientation';
 import React from 'react';
 
 
-import TopBar from '@/components/topBar/TopBar';
+import TopBar from '@/components/core/TopBar';
 import { Button, ButtonText } from '@/components/ui/button';
 
 

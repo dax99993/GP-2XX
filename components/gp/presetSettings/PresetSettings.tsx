@@ -1,6 +1,6 @@
 import { Platform, StatusBar, StyleSheet } from 'react-native';
 
-import BoundBox from '@/components/BoundBox';
+import BoundBox from '@/components/core/BoundBox';
 import CtrlsSettings from '@/components/gp/presetSettings/ctrlSettings/CtrlsSettings';
 import ExpsSettings from '@/components/gp/presetSettings/expSettings/ExpsSettings';
 import FxLoopSettings from '@/components/gp/presetSettings/fxLoopSettings/FxLoopSettings';

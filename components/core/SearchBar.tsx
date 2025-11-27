@@ -1,6 +1,6 @@
 import { SearchIcon, XIcon } from "lucide-react-native";
 import { useState } from "react";
-import { Input, InputField, InputIcon, InputSlot } from "./ui/input";
+import { Input, InputField, InputIcon, InputSlot } from "../ui/input";
 
 // Search bar
 interface SearchBarProps {

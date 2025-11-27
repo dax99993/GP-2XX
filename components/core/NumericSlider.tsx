@@ -2,8 +2,8 @@ import { Box } from "@/components/ui/box";
 import { Slider } from '@react-native-assets/slider';
 import { useMemo, useState } from "react";
 import { StyleSheet } from "react-native";
-import { Center } from "./ui/center";
-import { Text } from "./ui/text";
+import { Center } from "../ui/center";
+import { Text } from "../ui/text";
 
 type NumericSliderProps = {
     name: string;

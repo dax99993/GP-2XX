@@ -1,5 +1,5 @@
 import { ViewStyle } from "react-native";
-import { Box } from "./ui/box";
+import { Box } from "../ui/box";
 
 interface BoundBoxProps {
     style?: ViewStyle;

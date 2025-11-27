@@ -1,4 +1,4 @@
-import BoundBox from "@/components/BoundBox";
+import BoundBox from "@/components/core/BoundBox";
 import { Button, ButtonGroup, ButtonText } from "@/components/ui/button";
 import { Center } from "@/components/ui/center";
 import { Divider } from "@/components/ui/divider";

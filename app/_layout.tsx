@@ -1,4 +1,4 @@
-import { ModalManager } from "@/components/Modals/Modal";
+import { ModalManager } from "@/components/modals/Modal";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
 import { StoreContext } from "@/hooks/useStore";

@@ -1,8 +1,8 @@
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 
-import EffectChain from '@/components/gp/effect/editEffectChain/EffectChain';
-import EditEffectTopBar from '@/components/gp/effect/editEffectTopBar/TopBar';
-import EffectEdit from '@/components/gp/effect/EffectEdit';
+import EffectChain from '@/components/gp/effect/chain/EffectChain';
+import EffectEdit from '@/components/gp/effect/edit/EffectEdit';
+import EditEffectTopBar from '@/components/gp/effect/edit/EffectEditTopBar';
 import PresetSettings from '@/components/gp/presetSettings/PresetSettings';
 import { VStack } from '@/components/ui/vstack';
 import { ScrollingProvider } from '@/contexts/scroll-context';

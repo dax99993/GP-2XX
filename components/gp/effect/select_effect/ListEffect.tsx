@@ -12,7 +12,7 @@ import { observer } from "mobx-react-lite";
 import React, { useMemo, useRef, useState } from "react";
 import { TouchableOpacity } from "react-native";
 
-import SearchBar from "@/components/SearchBar";
+import SearchBar from "@/components/core/SearchBar";
 import { useStore } from "@/hooks/useStore";
 import { createHandleToast } from "@/utils/toast";
 import { FlashList } from "@shopify/flash-list";

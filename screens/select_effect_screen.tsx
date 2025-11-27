@@ -1,5 +1,5 @@
-import ListEffect from '@/components/gp/effect/listSelectEffect/ListEffect';
-import ListEffectTopBar from '@/components/gp/effect/listSelectEffect/ListEffectTopBar';
+import ListEffect from '@/components/gp/effect/select_effect/ListEffect';
+import ListEffectTopBar from '@/components/gp/effect/select_effect/ListEffectTopBar';
 import { VStack } from '@/components/ui/vstack';
 import { useKeepAwake } from 'expo-keep-awake';
 import { Platform, StatusBar, StyleSheet } from 'react-native';

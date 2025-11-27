@@ -1,4 +1,4 @@
-import TopBar from "@/components/topBar/TopBar";
+import TopBar from "@/components/core/TopBar";
 import { Button, ButtonIcon } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useStore } from "@/hooks/useStore";

@@ -10,7 +10,7 @@ import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { useEffect } from 'react';
 
-import TopBar from '@/components/topBar/TopBar';
+import TopBar from '@/components/core/TopBar';
 import { Center } from '@/components/ui/center';
 import { SmartphoneIcon } from 'lucide-react-native';
 
