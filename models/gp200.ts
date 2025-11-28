@@ -13,6 +13,8 @@ export class GP200Model {
     //presets: PresetModel[];
     presets: IPresetInfo[];
 
+    irNames: string[];
+
     // Currently available for editing
     currentPresetNumber: number | undefined;
     currentPreset: PresetModel | undefined;
@@ -24,16 +26,26 @@ export class GP200Model {
     isSynced: boolean;
 
     syncedPresets: number;
+    syncedIRName: number;
 
     syncingStoredPresets: boolean;
     syncingCurrentPreset: boolean;
+    syncingIRNames: boolean;
 
 
     constructor() {
       this.isJR = false;
 
       // initialize internal values
-      this.presets = []
+      this.presets = [];
+
+      this.irNames = []
+      // this.irNames = [
+      //   "User IR 1", "User IR 2", "User IR 3", "User IR 4", "User IR 5",
+      //   "User IR 6", "User IR 7", "User IR 8", "User IR 9", "User IR 10",
+      //   "User IR 11", "User IR 12", "User IR 13", "User IR 14", "User IR 15",
+      //   "User IR 16", "User IR 17", "User IR 18", "User IR 19", "User IR 20",
+      // ];
 
       this.currentPresetNumber = undefined;
       this.currentPreset = undefined;
@@ -44,9 +56,11 @@ export class GP200Model {
       this.isSynced = false;
 
       this.syncedPresets = 0;
+      this.syncedIRName = 0;
 
       this.syncingStoredPresets = false;
       this.syncingCurrentPreset = false;
+      this.syncingIRNames = false;
 
       makeObservable(this, {
         // OBSERVABLES
@@ -62,9 +76,11 @@ export class GP200Model {
         isSynced: observable,
 
         syncedPresets: observable,
+        syncedIRName: observable,
 
         syncingStoredPresets: observable,
         syncingCurrentPreset: observable,
+        syncingIRNames: observable,
 
         // COMPUTED
         currentPresetBankCode: computed,
@@ -93,8 +109,9 @@ export class GP200Model {
 
     // SYNCING METHODS
     SetToStartSyncing() {
-      this.presets = []
-      this.syncedPresets = 0
+      this.presets = [];
+      this.syncedPresets = 0;
+      this.syncedIRName = 0;
       this.syncing = false; 
       this.syncingErrorOccur = false;
     }
@@ -103,6 +120,7 @@ export class GP200Model {
       this.syncing = false;
     }
 
+    // --------------------- Syncing PRESETS --------------------------------------
     StoredPresetSynced() {
       // Notify
       console.log("----------------------------------------------------------------");
@@ -139,12 +157,6 @@ export class GP200Model {
       this.changeSelectedEffect(0);
     }
 
-    // get isSynced(): boolean {
-    //   // Add all other synced
-    //   // return this.StorePresetsSynced;
-    //   return false;
-    // }
-
     get AreStoredPresetsSynced(): boolean {
       if (this.isJR) {
         return this.presets.length == 255;
@@ -153,6 +165,32 @@ export class GP200Model {
       }
     }
 
+    // --------------------- Syncing IR names --------------------------------------
+    addIRName(name: string) {
+      this.irNames.push(name);
+    }
+
+    get AreStoredIRNamesSynced(): boolean {
+      return this.irNames.length == 20;
+    }
+
+    StoredIRNameSynced() {
+      // Notify
+      console.log("----------------------------------------------------------------");
+      console.log("IR Name Synced", this.irNames.length - 1);
+      console.log("----------------------------------------------------------------");
+
+      // Set flag
+      if (this.AreStoredIRNamesSynced) {
+        this.syncingIRNames = false;
+      }
+
+      console.log("Next IR Name Sync to emit!");
+      // eventHandler.emitEvent(SyncEvents.StoredPresetSynced, this.syncedPresets);
+      eventHandler.emitEvent(SyncEvents.UserIRNameSynced, this.irNames.length);
+    }
+
+    // Getters
     get currentPresetBankNumber(): number | undefined {
       const number = this.currentPresetNumber;
 

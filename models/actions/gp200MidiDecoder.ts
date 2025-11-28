@@ -1,6 +1,5 @@
 import { BaseSysExMsg, PresetFromMemorySysEx, SysExGPHeader } from "@/constants/SysExMsg";
 import { DecoderUtils } from "@/utils/decodeUtils";
-// import { MIDIMessageEvent } from "@motiz88/react-native-midi";
 import { action, makeObservable, observable } from "mobx";
 import { MIDIMessageEvent } from "react-native-midi";
 import { EffectType } from "../effect/effect";
@@ -57,7 +56,6 @@ export class GP200MidiDecoder implements IDeviceActions {
 
     // DECODE - ACTIONS
 
-
     SyncPresetInfo() {
         // Extract Preset Information
         const presetInfo = this.GetPresetInfo();
@@ -79,6 +77,27 @@ export class GP200MidiDecoder implements IDeviceActions {
         }
     }
 
+    SyncIRName(message: Uint8Array) {
+        // Extract IR Name Information
+
+        // byte 0x15 and 0x16 contains the IR position of the IR to ask the name (range 0 to 19) in hex digits
+        // byte 0x25 and 0x44 contains the IR name encoded in hex digits (ascii) 15 or 16 characters 
+        const IRNumber = this.decoder.nibblesToByte(message[0x15], message[0x16]);
+        const IRName = this.decoder.decodeAsciiName([...message.slice(0x25, 0x44)]);
+
+        console.log(`IR Number (${IRNumber})`);
+        console.log(`IR Name (${IRName})`);
+
+        // Check if syncing stored presets or syncing current preset
+        if (this.gp200.syncingIRNames) {
+            console.log("Adding IR Name");
+            // Update model
+            this.gp200.addIRName(IRName);
+
+            // Notify synced stored preset
+            this.gp200.StoredIRNameSynced();
+        }
+    }
 
     // PRESET ACTIONS
     ChangePreset(message: number[] | Uint8Array) {
@@ -137,7 +156,7 @@ export class GP200MidiDecoder implements IDeviceActions {
         const presetNumberToSave = this.decoder.nibblesToByte(highByte, lowByte)
 
         const encodedName = [...message.slice(0x1d, 0x3c + 1)];
-        let presetName = this.decoder.decodePresetName(encodedName);
+        let presetName = this.decoder.decodeAsciiName(encodedName);
         // Sanity check presetName should be at most 16 ASCII characters
         // Remove NON printable ASCII characters
         presetName = presetName.replace(/[^\x20-\x7E]/g, "");
@@ -405,6 +424,9 @@ export class GP200MidiDecoder implements IDeviceActions {
                 case 146: 
                     this.decodeSysEx146length(message);
                     break;
+                case 70:
+                    this.decodeSysEx70length(message);
+                    break;
                 case 62:
                     this.decodeSysEx62length(message);
                     break;
@@ -483,6 +505,16 @@ export class GP200MidiDecoder implements IDeviceActions {
             this.presetInfoMessages[6] = message;
             console.log("Preset Info message 7 received!.");
             this.SyncPresetInfo();
+        }
+    }
+
+    decodeSysEx70length(message: Uint8Array) {
+        // Is the same message to ask and get (response) ir names
+        const getIRName = BaseSysExMsg.syncIRInfo.getIRName;
+
+        if ( this.isSameMessage(message, getIRName)) {
+            console.log("Get IR Name message received!.");
+            this.SyncIRName(message);
         }
     }
 

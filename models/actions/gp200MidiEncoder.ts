@@ -638,5 +638,21 @@ export class GP200MidiEncoder implements IActions{
     AskCurrentPresetInfo() {
         this.midi.sendMessage(BaseSysExMsg.syncPresetInfo.askCurrentPresetInfo);
     }
+
+    AskIRName(IRNumber: number) {
+        // Checks num in range [0, 19]
+        const num = Math.min(Math.max(IRNumber, 0), 19);
+
+        // Construct message
+        // byte 0x15 and 0x16 contains the IR position of the IR to ask the name (range 0 to 19) in hex digits
+        let msg = BaseSysExMsg.syncIRInfo.askIRName;
+        const [high_byte, low_byte] = this.encoder.byteToNibbles(num);
+
+        msg[0x15] = high_byte;
+        msg[0x16] = low_byte;
+
+        // Execute action in physical device
+        this.midi.sendMessage(msg);
+    }
 }
 

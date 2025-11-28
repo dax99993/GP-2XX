@@ -146,12 +146,15 @@ export class DecoderUtils {
         return this.uint8BytesToInt16TwosComplement(bytes);
     }
 
-    decodePresetName(msg: number[]) {
+    decodeAsciiName(msg: number[]) {
         // each characters is represented in ascii, split in to nibles
         const bytes = this.nibbleArrayToByteArray(msg);
 
         // map bytes to string
-        return bytes.map(b => String.fromCharCode(b)).join("");
+        const name = bytes.map(b => String.fromCharCode(b)).join("");
+
+        // Remove non-ascii and extended ascii characters
+        return name.replace(/[^\x00-\x7F]/g, "");
     }
 
     decodeEffectInfo(msg: number[]): IEffectInfo {

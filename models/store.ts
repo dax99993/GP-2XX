@@ -80,7 +80,7 @@ export class Store {
     }
 
     SyncGP() {
-        // Set a timeout for syncing
+        // Set a timeout for syncing (90 seconds timeout)
         this.syncTimer = setTimeout(() => {
             console.log("Sync Timeout Executed!")
             if (!this.gp200.isSynced) {
@@ -88,6 +88,7 @@ export class Store {
                 // remove syncing events
                 eventHandler.removeEventListener(SyncEvents.StoredPresetSynced);
                 eventHandler.removeEventListener(SyncEvents.CurrentPresetSynced);
+                eventHandler.removeEventListener(SyncEvents.UserIRNameSynced);
                 eventHandler.removeEventListener(SyncEvents.SyncComplete);
 
                 // Set Flag to show sync error modal
@@ -95,6 +96,7 @@ export class Store {
                     this.gp200.syncing = false;
                     this.gp200.syncingStoredPresets = false;
                     this.gp200.syncingCurrentPreset = false;
+                    this.gp200.syncingIRNames = false;
                     this.gp200.syncingErrorOccur = true;
                 })
             }
@@ -103,6 +105,7 @@ export class Store {
         // ADD ALL THE SYNC EVENT LISTENERS
         eventHandler.addEventListener(SyncEvents.StoredPresetSynced, (args: number[]) => this.StoredPresetsSynced.bind(this)(args[0]));
         eventHandler.addEventListener(SyncEvents.CurrentPresetSynced, this.CurrentPresetSynced.bind(this));
+        eventHandler.addEventListener(SyncEvents.UserIRNameSynced, this.StoredIRNameSynced.bind(this));
         eventHandler.addEventListener(SyncEvents.SyncComplete, this.SyncComplete.bind(this));
 
         // Reset state to start Syncing again
@@ -144,7 +147,6 @@ export class Store {
         })
 
         // Close Syncing modal
-        // this.modals.closeModal("syncModal");
         this.modals.closeModal();
     }
 
@@ -189,9 +191,42 @@ export class Store {
         })
 
         // This is the last event so sync is complete
-        this.SyncComplete();
+        // this.SyncComplete();
+
+        // Remove event listener
+        console.log("Sync Current presets finished");
+        eventHandler.removeEventListener(SyncEvents.CurrentPresetSynced);
+        runInAction(() => {
+            this.gp200.syncingCurrentPreset = false;
+        })
+
+        // START NEXT SYNC STEP
+        console.log("Ask IR NAME 0");
+        runInAction(() => {
+            this.gp200.syncingIRNames = true;
+        })
+        this.gpMidiEncoder.AskIRName(0);
     }
 
+    StoredIRNameSynced(IRNumber: number) {
+        console.log("Sync IR Name event received!", IRNumber);
+        if (this.gp200.syncingIRNames) {
+            console.log("Ask Preset Info", IRNumber);
+            this.gpMidiEncoder.AskIRName(IRNumber);
+        } else {
+            // Remove event listener
+            console.log("Sync IR name finished");
+            eventHandler.removeEventListener(SyncEvents.UserIRNameSynced);
+            runInAction(() => {
+                this.gp200.syncingIRNames = false;
+            })
+
+            // START NEXT SYNC STEP
+            // This is the last event so sync is complete
+            this.SyncComplete();
+        }
+    }
+    
     // SyncGP() {
     //     // Reset state to start Syncing again
     //     this.gp200.SetToStartSyncing();

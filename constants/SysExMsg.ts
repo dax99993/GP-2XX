@@ -184,10 +184,13 @@ export const BaseSysExMsg = {
             0x01, 0x0d, 0x0e, 0x00, 0x05, 0xf7
         ],
 
-        // Same structure as ask; idk if i should copy same data here or
-        // just re-use it
-        // getIRName: [
-        // ]
+        // byte 0x15 and 0x16 contains the IR position of the IR to ask the name (range 0 to 19) in hex digits
+        // byte 0x25 and 0x44 contains the IR name encoded in hex digits (ascii) 15 or 16 characters 
+        getIRName: [
+            0xf0 ,0x21 ,0x25 ,0x7e ,0x47 ,0x50 ,0x2d ,0x32,
+            0x12, 0x1c, 0x00, 0x00, 0x00, 0x00, 0x09, 0x01,
+            0x00, 0x01, 0x08, 0x00, 0x00, 
+        ]
     }
 }
 

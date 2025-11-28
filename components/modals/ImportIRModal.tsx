@@ -41,7 +41,7 @@ export const ImportIRModal = observer(() => {
     }
 
     // MODAL BODY
-    const LABELS: [string, string][] = [["0", "a"], ["1", "b"]];
+    const LABELS: [string, string][] = store.gp200.irNames.map((v, i) => [i.toString(), `User IR ${i+1} - ${v}`]);
 
     return (
         <Modal
