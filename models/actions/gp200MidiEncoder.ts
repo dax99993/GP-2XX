@@ -1,7 +1,8 @@
 import { DefaultEffectsInfo } from "@/constants/DefaultEffects";
-import { BaseSysExMsg, LoadPresetToMemorySysEx } from "@/constants/SysExMsg";
+import { BaseSysExMsg, LoadIRToMemorySysEx, LoadPresetToMemorySysEx } from "@/constants/SysExMsg";
 import { EncoderUtils } from "@/utils/encodeUtils";
 import { PresetEncoder } from "@/utils/preset/presetEncoder";
+import { IWavInfo } from "@/utils/wav/IwavInfo";
 import { action, makeObservable, observable } from "mobx";
 import { EffectType } from "../effect/effect";
 import { GP200Model } from "../gp200";
@@ -162,7 +163,7 @@ export class GP200MidiEncoder implements IActions{
         const NullFilledPresetName = presetName.slice(0, 16).padEnd(16, "\0");
 
         // Maximum of 16 characters
-        const encodedName = this.encoder.encodePresetName(NullFilledPresetName);
+        const encodedName = this.encoder.encodeAsciiName(NullFilledPresetName);
 
         // Write encoded name to message
         encodedName.forEach((c, i) => {
@@ -610,6 +611,108 @@ export class GP200MidiEncoder implements IActions{
         this.midi.sendMessage(msg5);
         this.midi.sendMessage(msg6);
         this.midi.sendMessage(msg7);
+    }
+
+    LoadIRToMemory(wavInfo: IWavInfo, loadPosition: number, name: string) {
+        // Encode wavInfo channel samples to 32-bit
+        const samplesDataInt32 = this.encoder.encodeNumbersToInt32Array(wavInfo.channelData[0]);
+        // Get an array with the bytes of 32-bit samples in little endian
+        const samplesDataUint8 = this.encoder.encodeInt32ArrayToUint8Array(samplesDataInt32);
+        // Convert sample bytes to nibbles
+        const samplesDataNibbles = this.encoder.byteArrayToNibbleArray([...samplesDataUint8]);
+        
+        // Split into 23 messages
+        let message1 = LoadIRToMemorySysEx.message1;
+        const [highByte, lowByte] = this.encoder.byteToNibbles(loadPosition);
+        message1[0x15] = highByte;
+        message1[0x16] = lowByte;
+
+        // Encode name in nibbles
+        let encodedName = this.encoder.encodeAsciiName(name);
+        encodedName = [...encodedName, ...Array<number>(32 - encodedName.length).fill(0)];
+
+        for(let i = 0; i < encodedName.length; i++) {
+            message1[i + 0x25] = encodedName[i];
+        }
+
+        const splitOffset = [
+            0,
+            310,
+            310 + 1*366,
+            310 + 2*366,
+            310 + 3*366,
+            310 + 4*366,
+            310 + 5*366,
+            310 + 6*366,
+            310 + 7*366,
+            310 + 8*366,
+            310 + 9*366,
+            310 + 10*366,
+            310 + 11*366,
+            310 + 12*366,
+            310 + 13*366,
+            310 + 14*366,
+            310 + 15*366,
+            310 + 16*366,
+            310 + 17*366,
+            310 + 18*366,
+            310 + 19*366,
+            310 + 20*366,
+            310 + 21*366,
+            310 + 21*366 + 196,
+        ]
+
+        const msg1 = [...message1, ...samplesDataNibbles.slice(splitOffset[0], splitOffset[1]), 0xf7];
+        const msg2 = [...LoadIRToMemorySysEx.message2, ...samplesDataNibbles.slice(splitOffset[1], splitOffset[2]), 0xf7];
+        const msg3 = [...LoadIRToMemorySysEx.message3, ...samplesDataNibbles.slice(splitOffset[2], splitOffset[3]), 0xf7];
+        const msg4 = [...LoadIRToMemorySysEx.message4, ...samplesDataNibbles.slice(splitOffset[3], splitOffset[4]), 0xf7];
+        const msg5 = [...LoadIRToMemorySysEx.message5, ...samplesDataNibbles.slice(splitOffset[4], splitOffset[5]), 0xf7];
+        const msg6 = [...LoadIRToMemorySysEx.message6, ...samplesDataNibbles.slice(splitOffset[5], splitOffset[6]), 0xf7];
+        const msg7 = [...LoadIRToMemorySysEx.message7, ...samplesDataNibbles.slice(splitOffset[6], splitOffset[7]), 0xf7];
+        const msg8 = [...LoadIRToMemorySysEx.message8, ...samplesDataNibbles.slice(splitOffset[7], splitOffset[8]), 0xf7];
+        const msg9 = [...LoadIRToMemorySysEx.message9, ...samplesDataNibbles.slice(splitOffset[8], splitOffset[9]), 0xf7];
+        const msg10 = [...LoadIRToMemorySysEx.message10, ...samplesDataNibbles.slice(splitOffset[9], splitOffset[10]), 0xf7];
+        const msg11 = [...LoadIRToMemorySysEx.message11, ...samplesDataNibbles.slice(splitOffset[10], splitOffset[11]), 0xf7];
+        const msg12 = [...LoadIRToMemorySysEx.message12, ...samplesDataNibbles.slice(splitOffset[11], splitOffset[12]), 0xf7];
+        const msg13 = [...LoadIRToMemorySysEx.message13, ...samplesDataNibbles.slice(splitOffset[12], splitOffset[13]), 0xf7];
+        const msg14 = [...LoadIRToMemorySysEx.message14, ...samplesDataNibbles.slice(splitOffset[13], splitOffset[14]), 0xf7];
+        const msg15 = [...LoadIRToMemorySysEx.message15, ...samplesDataNibbles.slice(splitOffset[14], splitOffset[15]), 0xf7];
+        const msg16 = [...LoadIRToMemorySysEx.message16, ...samplesDataNibbles.slice(splitOffset[15], splitOffset[16]), 0xf7];
+        const msg17 = [...LoadIRToMemorySysEx.message17, ...samplesDataNibbles.slice(splitOffset[16], splitOffset[17]), 0xf7];
+        const msg18 = [...LoadIRToMemorySysEx.message18, ...samplesDataNibbles.slice(splitOffset[17], splitOffset[18]), 0xf7];
+        const msg19 = [...LoadIRToMemorySysEx.message19, ...samplesDataNibbles.slice(splitOffset[18], splitOffset[19]), 0xf7];
+        const msg20 = [...LoadIRToMemorySysEx.message20, ...samplesDataNibbles.slice(splitOffset[19], splitOffset[20]), 0xf7];
+        const msg21 = [...LoadIRToMemorySysEx.message21, ...samplesDataNibbles.slice(splitOffset[20], splitOffset[21]), 0xf7];
+        const msg22 = [...LoadIRToMemorySysEx.message22, ...samplesDataNibbles.slice(splitOffset[21], splitOffset[22]), 0xf7];
+        const msg23 = [...LoadIRToMemorySysEx.message23, ...samplesDataNibbles.slice(splitOffset[22], splitOffset[23]), 0xf7];
+
+        // Update Model 
+        this.gp200.changeIRName(loadPosition, name);
+
+        // Send messages
+        this.midi.sendMessage(msg1);
+        this.midi.sendMessage(msg2);
+        this.midi.sendMessage(msg3);
+        this.midi.sendMessage(msg4);
+        this.midi.sendMessage(msg5);
+        this.midi.sendMessage(msg6);
+        this.midi.sendMessage(msg7);
+        this.midi.sendMessage(msg8);
+        this.midi.sendMessage(msg9);
+        this.midi.sendMessage(msg10);
+        this.midi.sendMessage(msg11);
+        this.midi.sendMessage(msg12);
+        this.midi.sendMessage(msg13);
+        this.midi.sendMessage(msg14);
+        this.midi.sendMessage(msg15);
+        this.midi.sendMessage(msg16);
+        this.midi.sendMessage(msg17);
+        this.midi.sendMessage(msg18);
+        this.midi.sendMessage(msg19);
+        this.midi.sendMessage(msg20);
+        this.midi.sendMessage(msg21);
+        this.midi.sendMessage(msg22);
+        this.midi.sendMessage(msg23);
     }
 
     AskStoredPresetInfo(presetNumber: number) {

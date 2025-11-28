@@ -285,7 +285,7 @@ export const LoadIRToMemorySysEx = {
     // 22 mesagges of 380 bytes and 1 of 210 bytes
 
     // 380 bytes total, header is 37 bytes, ir name is 32 bytes, sample data is 310 and SysEx end is 1
-    // header 0x00 to 0x24
+    // header 0x00 to 0x24 ; 0x IR Number hex digits
     // 0x25 to 0x44 IR name encoded in ascii hex digits (16 characters)
     // 0x45 to 0x17a (sample data)
     // 0x178 sysex end byte

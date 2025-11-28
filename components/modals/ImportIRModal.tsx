@@ -31,11 +31,8 @@ export const ImportIRModal = observer(() => {
         // console.log("Loading IR", store.wavImporter.fileNames[0], "to location", selectedPosition);
 
         // Send midi message to update preset info
-        // store.gpMidiEncoder.LoadPresetToMemory(presetInfo, saveLocation);
+        store.gpMidiEncoder.LoadIRToMemory(store.wavImporter.wavs[0], selectedPosition, name);
 
-        // Reset selected presets
-        // setSelected([]);
-        
         // CloseModal
         onClose();
     }

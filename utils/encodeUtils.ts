@@ -95,11 +95,32 @@ export class EncoderUtils {
         return this.byteArrayToNibbleArray(bytes)
     }
 
-    encodePresetName(name: string) {
+    encodeAsciiName(name: string) {
         // convert to ASCII byte array
         const ascii = Array.from(name).map(char => char.charCodeAt(0));
         // split in nibbles
         return this.byteArrayToNibbleArray(ascii);
     }
 
+    encodeNumbersToInt32Array(nums: number[]) {
+        return new Int32Array(nums);
+    }
+
+    encodeInt32ArrayToUint8Array(int32Array: Int32Array) {
+        // Map to Uint8
+        // Create an ArrayBuffer large enough to hold all the 32-bit integers
+        // Each 32-bit integer occupies 4 bytes.
+        const buffer = new ArrayBuffer(int32Array.length * 4);
+        const dataView = new DataView(buffer);
+
+        // Iterate through the 32-bit array and write each integer to the DataView
+        for (let i = 0; i < int32Array.length; i++) {
+            // Write as a 32-bit signed integer (setInt32) or unsigned (setUint32)
+            // The third argument (false) indicates little-endian byte order.
+            // Set to true for big-endian.
+            dataView.setUint32(i * 4, int32Array[i], true); // Using setUint32, littleEndian
+        }
+
+        return new Uint8Array(buffer);
+    }
 }

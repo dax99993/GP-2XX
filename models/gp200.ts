@@ -65,6 +65,7 @@ export class GP200Model {
       makeObservable(this, {
         // OBSERVABLES
         presets: observable,
+        irNames: observable,
 
         currentPresetNumber: observable,
         currentPreset: observable,
@@ -90,6 +91,8 @@ export class GP200Model {
 
         StoredPresetSynced: action,
         CurrentPresetSynced: action,
+
+        changeIRName: action,
 
         // Change preset actions
         changePreset: action,
@@ -188,6 +191,10 @@ export class GP200Model {
       console.log("Next IR Name Sync to emit!");
       // eventHandler.emitEvent(SyncEvents.StoredPresetSynced, this.syncedPresets);
       eventHandler.emitEvent(SyncEvents.UserIRNameSynced, this.irNames.length);
+    }
+
+    changeIRName(IRNumber: number, IRName: string) {
+      this.irNames[IRNumber] = IRName;
     }
 
     // Getters
