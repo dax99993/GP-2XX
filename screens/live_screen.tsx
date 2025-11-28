@@ -176,21 +176,20 @@ export const LiveScreen = observer(() => {
 
 
   return (
-      <VStack className="bg-secondary-0" style={styles.maincontainer}>
-        <View style={{flex:1, flexDirection: orientation.isLandscape ? "row" : "column"}}>
+    <VStack className="bg-secondary-0" style={styles.maincontainer}>
+      <View style={{flex:1, flexDirection: orientation.isLandscape ? "row" : "column"}}>
         <Box style={{flex:1}}>
-        <BoundBox>
-          <Center>
-            <Heading size="2xl">
-              {`Preset: ${store.gp200.currentPresetBankCode}`}
-            </Heading>
-            <Heading size="2xl">
-              {store.gp200.currentPreset?.name}
-            </Heading>
-          </Center>
-        </BoundBox>
-        <Box className="mx-5 my-5">
-          <HStack space="2xl" style={{ justifyContent: 'space-between' }}>
+          <BoundBox >
+            <Center>
+              <Heading size="2xl">
+                {`Preset: ${store.gp200.currentPresetBankCode}`}
+              </Heading>
+              <Heading size="2xl">
+                {store.gp200.currentPreset?.name}
+              </Heading>
+            </Center>
+          </BoundBox>
+          <HStack space="2xl" style={{ justifyContent: 'space-between', marginVertical: 15 }}>
             <CustomButton
               text={"Prev Bank"}
               selected={false}
@@ -208,9 +207,7 @@ export const LiveScreen = observer(() => {
               }}
             />
           </HStack>
-        </Box>
-        <Box className="mx-5 my-5">
-          <HStack space="2xl" style={{ justifyContent: 'space-between' }}>
+          <HStack space="2xl" style={{ justifyContent: 'space-between', marginVertical: 15 }}>
             <CustomButton
               text={"A"}
               selected={store.gp200.currentPresetBankSlotNumber === 0}
@@ -246,7 +243,6 @@ export const LiveScreen = observer(() => {
             />
             }
           </HStack>
-        </Box>
       </Box>
       <Box className="pb-3" style={{flex:1, }}>
         <BoundBox>
