@@ -11,7 +11,7 @@ import { WavProcessor } from './wavProcessor';
 export class WavImporter {
     binaryFiles: Buffer[];
     wavs: IWavInfo[];
-    fileNames: String[];
+    fileNames: string[];
 
     decoder: WavDecoder;
     processor: WavProcessor;

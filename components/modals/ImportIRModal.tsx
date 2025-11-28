@@ -2,28 +2,29 @@ import { observer } from "mobx-react-lite";
 import { Heading } from "../ui/heading";
 
 import { useStore } from "@/hooks/useStore";
-import { FileInputIcon } from "lucide-react-native";
+import { Picker } from "@react-native-picker/picker";
+import { AlertCircleIcon, FileInputIcon } from "lucide-react-native";
 import { useState } from "react";
-import { Button, ButtonGroup, ButtonIcon, ButtonText } from "../ui/button";
+import { Button, ButtonIcon, ButtonText } from "../ui/button";
+import { FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText, FormControlHelper, FormControlHelperText, FormControlLabel, FormControlLabelText } from "../ui/form-control";
 import { HStack } from "../ui/hstack";
 import { CloseIcon, Icon } from "../ui/icon";
-import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader } from "../ui/modal";
-import { Text } from "../ui/text";
+import { Input, InputField } from "../ui/input";
+import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalHeader } from "../ui/modal";
+import { VStack } from "../ui/vstack";
 
 export const IMPORT_IR_MODAL_ID = "importIRModal";
 
 export const ImportIRModal = observer(() => {
     const store = useStore();
-    const [selectedPosition, setSelectedPosition] = useState<number>(0);
-    const [name, setName] = useState<String>("");
 
     // MODAL RELATED Variables and Functions
     const onClose = () => {
         store.modals.closeModal();
     }
 
-    const onSave = () => {
-        console.log("Importing IR to positions", selectedPosition);
+    const onSave = (selectedPosition: number, name: string) => {
+        console.log("Importing IR to position", selectedPosition, "with name", name);
 
         // Load preset to GP200 memory
         // const presetInfo = store.presetImporter.presets[index];
@@ -40,19 +41,7 @@ export const ImportIRModal = observer(() => {
     }
 
     // MODAL BODY
-    // const DATA: PresetListItem[] = store.gp200.presets.map((p, i) => {
-    //     return {name: p.name, number: p.number, bankCode: mapBankCode(i) }
-    // })
-
-    // const onChange = useCallback((v: boolean, n: number) => {
-    //     if (v == false) {
-    //         setSelected((prev) => prev.filter(p => p !== n));
-    //     } else {
-    //         if (!selected.includes(n)) {
-    //             setSelected((prev) => [...prev, n]);
-    //         }
-    //     }
-    // }, [selected]);
+    const LABELS: [string, string][] = [["0", "a"], ["1", "b"]];
 
     return (
         <Modal
@@ -73,12 +62,15 @@ export const ImportIRModal = observer(() => {
                     </ModalCloseButton>
                 </ModalHeader>
                 <ModalBody>
-                    <HStack>
-                        <Text>{selectedPosition}</Text>
-                        <Text>{name}</Text>
-                    </HStack>
+                    <ImportIRForm
+                        labels={LABELS}
+                        inputValue={store.wavImporter.fileNames[0].slice(0, 15)}
+                        selectValue={"0"}
+                        onCancel={onClose}
+                        onSave={onSave}
+                    />
                 </ModalBody>
-                <ModalFooter>
+                {/* <ModalFooter>
                     <ButtonGroup flexDirection="row">
                         <Button
                             variant='outline'
@@ -97,8 +89,118 @@ export const ImportIRModal = observer(() => {
                             <ButtonText>Import</ButtonText>
                         </Button>
                     </ButtonGroup>
-                </ModalFooter>
+                </ModalFooter> */}
             </ModalContent>
         </Modal>
     );
 });
+
+interface ImportIRFormProps {
+    labels: [string, string][];
+    inputValue: string;
+    selectValue: string;
+    onCancel: () => void;
+    onSave: (IRNumber: number, IRName: string) => void;
+}
+
+const ImportIRForm = (props: ImportIRFormProps) => {
+    const MAX_LENGTH = 15;
+    const [inputValue, setInputValue] = useState(props.inputValue);
+    const [isInputValid, setIsInputValid] = useState(true);
+    const [selectValue, setSelectValue] = useState(props.selectValue);
+
+    const pickerItems = props.labels.map(label => (
+        <Picker.Item key={label[0]} value={label[0]} label={label[1]}/>
+    ));
+
+    // Valid ascii string with at max 16 characters
+    const validateInput = (s: string) => {
+        return s.length <= MAX_LENGTH && /^[\x00-\x7E]*$/.test(s);
+    }
+
+    const onChangeInput = (s: string) => {
+        setIsInputValid(validateInput(s));
+        setInputValue(s);
+    }
+
+    return (
+        <>
+            <VStack space="md" style={{ flex: 1 }}>
+                <FormControl
+                    isInvalid={!isInputValid}
+                    size="md"
+                    isDisabled={false}
+                    isReadOnly={false}
+                    isRequired={false}
+                >
+                    <FormControlLabel>
+                        <FormControlLabelText>IR name</FormControlLabelText>
+                    </FormControlLabel>
+                    <Input
+                        style={{ flex: 7 }}
+                        className="my-1" size="md"
+                        isInvalid={!isInputValid}
+                    >
+                        <InputField
+                            placeholder="IR name"
+                            value={inputValue}
+                            onChangeText={(s) =>
+                                onChangeInput(s)
+                            }
+                        />
+                    </Input>
+                    <FormControlHelper>
+                        <FormControlHelperText>
+                            {`${inputValue.length} of max ${MAX_LENGTH} characters.`}
+                        </FormControlHelperText>
+                    </FormControlHelper>
+                    <FormControlError>
+                        <FormControlErrorIcon as={AlertCircleIcon} />
+                        <FormControlErrorText>
+                            Only ASCII characters are allowed.
+                        </FormControlErrorText>
+                    </FormControlError>
+                </FormControl>
+
+                <FormControl>
+                    <FormControlLabel>
+                        <FormControlLabelText>IR slot</FormControlLabelText>
+                    </FormControlLabel>
+
+                    <Picker style={{ flex: 3 }}
+                        mode="dialog"
+                        selectedValue={selectValue}
+                        onValueChange={(v, i) => { setSelectValue(v) }}
+                    >
+                        {pickerItems}
+                    </Picker>
+                </FormControl>
+            </VStack>
+            <HStack style={{ justifyContent: 'flex-end' }}>
+                <FormControl>
+                    <Button
+                        variant="outline"
+                        action="secondary"
+                        onPress={props.onCancel}
+                    >
+                        <ButtonText>Cancel</ButtonText>
+                    </Button>
+                </FormControl>
+                <FormControl >
+                    <Button
+                        isDisabled={!isInputValid}
+                        action={isInputValid ? "primary" : "negative"}
+                        className="ml-4"
+                        onPress={() => {
+                            console.log(selectValue, inputValue);
+                            props.onSave(parseInt(selectValue), inputValue)
+                        }}
+                    >
+                        <ButtonIcon as={FileInputIcon}/>
+                        <ButtonText>Import</ButtonText>
+                    </Button>
+                </FormControl>
+            </HStack>
+        </>
+    );
+}
