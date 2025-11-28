@@ -148,7 +148,13 @@ export class DecoderUtils {
 
     decodeAsciiName(msg: number[]) {
         // each characters is represented in ascii, split in to nibles
-        const bytes = this.nibbleArrayToByteArray(msg);
+        let bytes = this.nibbleArrayToByteArray(msg);
+
+        // Remove all bytes after encountering the first null char (0)
+        const zeroIndex = bytes.indexOf(0);
+        if (zeroIndex != -1) {
+            bytes.splice(zeroIndex);
+        }
 
         // map bytes to string
         const name = bytes.map(b => String.fromCharCode(b)).join("");

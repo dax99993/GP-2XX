@@ -16,7 +16,13 @@ function EffectSelector() {
         router.push("/ui/edit/select_effect");
     };
 
-    const name = store.gp200.currentEffect ? store.gp200.currentEffect.name : "";
+    const isIR = (ID: number) => (ID >= 168820736 && ID <= 168820755);
+    const getIRIndex = (ID: number) => (ID - 168820736);
+
+    const ID = store.gp200.currentEffect ? store.gp200.currentEffect.ID : -1;
+    let name = store.gp200.currentEffect ? store.gp200.currentEffect.name : "";
+    name = ID != -1 && isIR(ID) ? store.gp200.irNames[getIRIndex(ID)] : name;
+
 
     return (
         <TouchableOpacity style={{ flex: 1 }} onPress={goToSelectEffect}>
