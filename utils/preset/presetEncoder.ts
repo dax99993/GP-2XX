@@ -2,7 +2,7 @@ import { ICtrlSettings } from "@/models/preset/ICtrlSettings";
 import { IExpSettings } from "@/models/preset/IExpSettings";
 import { IKnobSettings } from "@/models/preset/IKnobSettings";
 import { IEffectInfo, IPresetInfo } from "@/models/preset/IPresetInfo";
-import { EncoderUtils } from "./encodeUtils";
+import { EncoderUtils } from "@/utils/encodeUtils";
 
 export class PresetEncoder {
     encoder: EncoderUtils;

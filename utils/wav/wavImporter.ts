@@ -2,27 +2,36 @@ import * as DocumentPicker from 'expo-document-picker';
 import { readAsStringAsync } from "expo-file-system";
 
 import { Buffer } from "buffer";
-import { IWavInfo, WavDecoder } from './wavDecoder';
+import { IWavInfo } from './IwavInfo';
+import { WavDecoder } from './wavDecoder';
+import { WavProcessor } from './wavProcessor';
+
 
 
 export class WavImporter {
     binaryFiles: Buffer[];
     wavs: IWavInfo[];
+    fileNames: String[];
+
     decoder: WavDecoder;
+    processor: WavProcessor;
 
     constructor() {
         this.binaryFiles = [];
-        this.wavs= [];
+        this.fileNames= [];
+        this.wavs = [];
         this.decoder = new WavDecoder;
-        
+        this.processor = new WavProcessor;
     }
 
     async LoadFiles(): Promise<Boolean> {
         // Reset storage
         this.binaryFiles = [];
+        this.fileNames = [];
 
+        // Just allow one IR at a time
         const documents = await DocumentPicker.getDocumentAsync({
-            multiple: true,
+            multiple: false,
             type: "audio/x-wav"
         });
 
@@ -41,6 +50,7 @@ export class WavImporter {
             //console.log("Buffer", buffer);
 
             this.binaryFiles.push(buffer);
+            this.fileNames.push(asset.name);
         }
 
         return true;
@@ -61,5 +71,11 @@ export class WavImporter {
         });
 
         return this.wavs;
+    }
+
+    processWavs() {
+        // Convert to Mono, 24-bit with 1024 samples
+        this.wavs[0] = this.processor.convertWavFile(this.wavs[0]);
+        console.log("New sample length = ", this.wavs[0].channelData[0].length);
     }
 }

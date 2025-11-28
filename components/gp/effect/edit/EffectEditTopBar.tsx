@@ -1,5 +1,6 @@
 import TopBar from "@/components/core/TopBar";
 import { EXPORT_PRESETS_MODAL_ID } from "@/components/modals/ExportPresetsModal";
+import { IMPORT_IR_MODAL_ID } from "@/components/modals/ImportIRModal";
 import { IMPORT_PRESET_MODAL_ID } from "@/components/modals/ImportPresetModal";
 import { Button, ButtonGroup, ButtonIcon } from "@/components/ui/button";
 import { Center } from "@/components/ui/center";
@@ -49,6 +50,7 @@ function GoHomeButton() {
 
 function RightElements() {
   const store = useStore();
+  const {isLandscape, isTablet} = useOrientation();
 
   // const handleUnimplementedToast = createHandleToast({
   //   // "LoadIRToast",
@@ -58,29 +60,33 @@ function RightElements() {
   // });
 
   const handleErrorImportingPresetToast = createHandleToast({
-    // "LoadIRToast",
     title: "Importing preset",
     description: "An error occur while reading preset!.",
     duration: 3000
-  });
+  }, "bottom", "error");
 
   const handleErrorImportingIrToast = createHandleToast({
-    // "LoadIRToast",
-    title: "Importing IR",
+    title: "Loading IR",
     description: "An error occur while reading wav file!.",
     duration: 3000
-  });
+  }, "bottom", "error");
 
-  const {isLandscape, isTablet} = useOrientation();
+  const NotAcceptableSampleRateIRToast = createHandleToast({
+    title: "Inadequate IR sampling rate",
+    description: "The IR (wav) file does not have a sampling rate of 44100 Hz.",
+    duration: 3000
+  }, "bottom", "warning");
+
 
   const onClickPresetImport = async () => {
       const status = await store.presetImporter.LoadFiles();
+
       if (status) {
         // Should change this function to return error when file is not a valid .prst
         // add a try catch block to handle erroneous files
         try {
           store.presetImporter.decodeFiles();
-        } catch (error: unknown) {
+        } catch (error) {
           console.log("Error while decoding PRST files", error);
           handleErrorImportingPresetToast();
           return;
@@ -101,12 +107,13 @@ function RightElements() {
 
   const onClickLoadIr = async () => {
       const status = await store.wavImporter.LoadFiles();
+
       if (status) {
         // Should change this function to return error when file is not a valid .wav 
         // add a try catch block to handle erroneous files
         try {
           store.wavImporter.decodeFiles();
-        } catch (error: unknown) {
+        } catch (error) {
           console.log("Error while decoding WAV files", error);
           handleErrorImportingIrToast();
           return;
@@ -114,14 +121,16 @@ function RightElements() {
 
         // Log first file first channel to check correct decoding.
         console.log("First 1100 samples", store.wavImporter.wavs[0].channelData[0].slice(0, 1100));
+        if (store.wavImporter.wavs[0].sampleRate !== 44100) {
+          NotAcceptableSampleRateIRToast();
+          return;
+        }
 
-        // Pre-process samples
-        // if not 24-bit, scale amplitude to 24-bit
-        // if sample rate is 96000, skip even samples; to get the ideal 48000 sample rate
-        // if sample rate is neither 96000 nor 48000; keep the samples the same
+        // Process samples (ideal IR is 24-bit PCM at 44100 kHz sampling rate)
+        store.wavImporter.processWavs();
 
         // Get memory slots to load IR's
-        // store.modals.openModal(IMPORT_IR_MODAL_ID);
+        store.modals.openModal(IMPORT_IR_MODAL_ID);
       }
   }
 

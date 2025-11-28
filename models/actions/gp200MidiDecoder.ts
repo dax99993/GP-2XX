@@ -10,7 +10,7 @@ import { ExpModule } from "../preset/IExpSettings";
 import { IPresetInfo } from "../preset/IPresetInfo";
 import { IDeviceActions } from "./IActions";
 
-import { PresetImporter } from "@/utils/presetImporter";
+import { PresetImporter } from "@/utils/preset/presetImporter";
 import { Buffer } from "buffer";
 
 function compareArrays(a: number[] | Uint8Array, b: number[] | Uint8Array) {

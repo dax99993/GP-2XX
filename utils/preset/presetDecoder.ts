@@ -3,7 +3,7 @@ import { IExpSettings } from "@/models/preset/IExpSettings";
 import { IFxLoopSettings } from "@/models/preset/IFxLoopSettings";
 import { IKnobSettings } from "@/models/preset/IKnobSettings";
 import { IEffectInfo, IPresetInfo } from "@/models/preset/IPresetInfo";
-import { DecoderUtils } from "./decodeUtils";
+import { DecoderUtils } from "@/utils/decodeUtils";
 
 const PRESET_LONG_FORMAT_LENGHT = 1224;
 const PRESET_SHORT_FORMAT_LENGHT = 1176;

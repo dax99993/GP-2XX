@@ -1,7 +1,7 @@
 import { DefaultEffectsInfo } from "@/constants/DefaultEffects";
 import { BaseSysExMsg, LoadPresetToMemorySysEx } from "@/constants/SysExMsg";
 import { EncoderUtils } from "@/utils/encodeUtils";
-import { PresetEncoder } from "@/utils/presetEncoder";
+import { PresetEncoder } from "@/utils/preset/presetEncoder";
 import { action, makeObservable, observable } from "mobx";
 import { EffectType } from "../effect/effect";
 import { GP200Model } from "../gp200";

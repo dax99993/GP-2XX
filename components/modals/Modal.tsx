@@ -2,6 +2,7 @@ import { useStore } from "@/hooks/useStore";
 import { observer } from "mobx-react-lite";
 import { DISCONNECT_MODAL_ID, DisconnectModal } from "./DisconnectModal";
 import { EXPORT_PRESETS_MODAL_ID, ExportPresetsModal } from "./ExportPresetsModal";
+import { IMPORT_IR_MODAL_ID, ImportIRModal } from "./ImportIRModal";
 import { IMPORT_PRESET_MODAL_ID, ImportPresetsModal } from "./ImportPresetModal";
 import { SAVE_PRESET_MODAL_ID, SavePresetModal } from "./SaveModal";
 import { SYNC_MODAL_ID, SyncModal } from "./SyncModal";
@@ -22,6 +23,8 @@ export const ModalManager = observer(() => {
                 return <ExportPresetsModal/>;
             case IMPORT_PRESET_MODAL_ID:
                 return <ImportPresetsModal/>;
+            case IMPORT_IR_MODAL_ID:
+                return <ImportIRModal/>;
             default:
                 return null;
         }

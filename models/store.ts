@@ -1,9 +1,9 @@
 import { DISCONNECT_MODAL_ID } from "@/components/modals/DisconnectModal";
 import { SYNC_MODAL_ID } from "@/components/modals/SyncModal";
 import { eventHandler, SyncEvents } from "@/utils/eventHandler";
-import { PresetExporter } from "@/utils/presetExporter";
-import { PresetImporter } from "@/utils/presetImporter";
-import { WavImporter } from "@/utils/wavImporter";
+import { PresetExporter } from "@/utils/preset/presetExporter";
+import { PresetImporter } from "@/utils/preset/presetImporter";
+import { WavImporter } from "@/utils/wav/wavImporter";
 import { action, makeObservable, observable, runInAction } from "mobx";
 import { GP200MidiDecoder } from "./actions/gp200MidiDecoder";
 import { GP200MidiEncoder } from "./actions/gp200MidiEncoder";

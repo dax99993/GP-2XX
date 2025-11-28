@@ -1,4 +1,5 @@
 import { Toast, ToastDescription, ToastTitle, useToast } from "@/components/ui/toast";
+import { ToastPlacement } from "@gluestack-ui/toast/lib/types";
 
 type ToastData = {
     // ID: string,
@@ -7,7 +8,11 @@ type ToastData = {
     duration: number,
 }
 
-export function createHandleToast(toastData: ToastData) {
+export function createHandleToast(
+    toastData: ToastData,
+    placement: ToastPlacement = 'top', 
+    action: "error" | "info" | "warning" = "info"
+) {
     const toast = useToast();
     const ID = Math.random().toString();
 
@@ -15,12 +20,12 @@ export function createHandleToast(toastData: ToastData) {
         toast.show({
             // id: toastData.ID,
             id: ID,
-            placement: 'top',
+            placement: placement,
             duration: toastData.duration,
             render: ({ id }) => {
                 const uniqueToastId = 'toast-' + id;
                 return (
-                    <Toast style= {{ marginTop: 50 } } nativeID={ uniqueToastId } action="info" variant="solid" >
+                    <Toast style= {{ marginTop: 50, marginBottom: 100 } } nativeID={ uniqueToastId } action={action} variant="solid" >
                         <ToastTitle>{toastData.title}</ ToastTitle >
                         <ToastDescription>
                             {toastData.description}
