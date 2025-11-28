@@ -559,6 +559,23 @@ export class GP200MidiEncoder implements IActions{
         this.midi.sendMessage(baseSysEx);
     }
 
+    // IR ACTIONS
+    DeleteIR(IRNumber: number) {
+        let message = BaseSysExMsg.IRActions.deleteIR;
+
+        // byte 0x19 and 0x1a contain the IR number to delete (hex digits)
+        const [highNibble, lowNibble] = this.encoder.byteToNibbles(IRNumber);
+        message[0x19] = highNibble;
+        message[0x1a] = lowNibble;
+
+        // Update Model
+        // this.gp200.irNames[IRNumber] = "User IR";
+        this.gp200.deleteIRName(IRNumber);
+        
+        // Send message
+        this.midi.sendMessage(message);
+    }
+
     LoadPresetToMemory(presetInfo: IPresetInfo, loadPosition: number) {
         // Change preset info number and bank code to match new memory position
         presetInfo.number = loadPosition;

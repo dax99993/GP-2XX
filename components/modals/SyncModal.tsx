@@ -18,6 +18,8 @@ export const SyncModal = observer(() => {
     let syncingBodyText = "";
     if (store.gp200.syncingStoredPresets || store.gp200.syncingCurrentPreset) {
         syncingBodyText = "Loading Presets";
+    } else if (store.gp200.syncingIRNames) {
+        syncingBodyText = "Loading IR Names";
     }
     const progressValue = store.gp200.presets.length / 256 * 100;
 

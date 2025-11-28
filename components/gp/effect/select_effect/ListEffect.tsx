@@ -22,25 +22,28 @@ import { FlashList } from "@shopify/flash-list";
 function ListEffect() {
     const store = useStore();
 
-    const handleToast = createHandleToast({
-        title: "Dear user",
-        description: "This features has not been implemented yet!.",
-        duration: 3000
-    }, 'bottom');
+    const IRNames = store.gp200.irNames;
 
-    // if (store.gp200.currentEffect == undefined) {return null}
     const effectType = store.gp200.currentEffect ? store.gp200.currentEffect.type : EffectType.PRE; 
-
     const DATA = useMemo(() => {
         return ChangeEffectsInfo[EffectType[effectType] as keyof typeof ChangeEffectsInfo];
     }, []);
-
     const ID = store.gp200.currentEffect ? store.gp200.currentEffect.ID : DATA[10].ID; 
-    const IRNames = store.gp200.irNames;
 
     const listRef = useRef<FlashList<any>>(null);
     const [filteredData, setFilteredData] = useState<IChangeEffect[]>(DATA);
 
+    const notifyToast = createHandleToast({
+        title: "IR Deleted",
+        description: `The IR has been deleted!.`,
+        duration: 3000,
+    }, 'bottom');
+
+    const unimplementedToast = createHandleToast({
+        title: "Dear user",
+        description: "This features has not been implemented yet!.",
+        duration: 3000
+    }, 'bottom');
 
     // AMP
     // 251658240, 251658241, 251658242, 251658243, 251658244,
@@ -74,6 +77,7 @@ function ListEffect() {
                 estimatedItemSize={60}
                 data={filteredData}
                 keyExtractor={item => item.name + item.index}
+                extraData={IRNames}
                 renderItem={(item) => 
                     <ListEffectItem
                         name={isIR(item.item.ID) ? IRNames[getIRIndex(item.item.ID)] : item.item.name}
@@ -81,12 +85,15 @@ function ListEffect() {
                         selected={item.item.ID === ID}
                         description={item.item.description}
                         isDeletable={isIR(item.item.ID) || isNAM(item.item.ID)}
-                        onLoadFile={() => {
+                        onDelete={() => {
                             // Show toast Not implemented yet
-                            handleToast();
                             if (isIR(item.item.ID)) {
-                                return console.log("Delete IR on", item.item.name, item.item.ID);
+                                const IRNumber = getIRIndex(item.item.ID);
+                                console.log("Delete IR on", item.item.name, item.item.ID, IRNumber);
+                                store.gpMidiEncoder.DeleteIR(IRNumber);
+                                notifyToast();
                             } else if (isNAM(item.item.ID)) {
+                                unimplementedToast();
                                 return console.log("Delete NAM on", item.item.name, item.item.ID);
                             }
                         }}
@@ -105,7 +112,7 @@ type ListEffectItemProps = {
     selected: boolean;
     description: string;
     isDeletable: boolean;
-    onLoadFile?: () => void;
+    onDelete: () => void;
 }
 
 function ListEffectItem(props: ListEffectItemProps) {
@@ -132,18 +139,18 @@ function ListEffectItem(props: ListEffectItemProps) {
                     <Text numberOfLines={showFullDescription}>{props.description}</Text>
                 </VStack>
                 {props.isDeletable &&
-                <UploadItem onPress={props.onLoadFile}/>
+                <DeleteItem onPress={props.onDelete}/>
                 }
             </TouchableOpacity>
         </Box>
     );
 }
 
-interface UploadItemProps {
-    onPress?: () => void;
+interface DeleteItemProps {
+    onPress: () => void;
 }
 
-const UploadItem: React.FC<UploadItemProps> = ({onPress}) => {
+const DeleteItem: React.FC<DeleteItemProps> = ({onPress}) => {
     return (
         <TouchableOpacity 
             style={{justifyContent: 'center', alignItems: 'center'}}

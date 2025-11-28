@@ -93,6 +93,7 @@ export class GP200Model {
         CurrentPresetSynced: action,
 
         changeIRName: action,
+        deleteIRName: action,
 
         // Change preset actions
         changePreset: action,
@@ -195,6 +196,11 @@ export class GP200Model {
 
     changeIRName(IRNumber: number, IRName: string) {
       this.irNames[IRNumber] = IRName;
+    }
+
+    deleteIRName(IRNumber: number) {
+      // More than delete is reset to default values
+      this.irNames[IRNumber] = "User IR";
     }
 
     // Getters
