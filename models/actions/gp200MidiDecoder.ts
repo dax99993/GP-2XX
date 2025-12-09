@@ -92,7 +92,7 @@ export class GP200MidiDecoder implements IDeviceActions {
         if (this.gp200.syncingIRNames) {
             console.log("Adding IR Name");
             // Update model
-            this.gp200.addIRName(IRName);
+            this.gp200.addIRName(IRName, IRNumber);
 
             // Notify synced stored preset
             this.gp200.StoredIRNameSynced();

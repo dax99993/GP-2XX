@@ -114,6 +114,8 @@ export class GP200Model {
     // SYNCING METHODS
     SetToStartSyncing() {
       this.presets = [];
+      this.irNames = [];
+
       this.syncedPresets = 0;
       this.syncedIRName = 0;
       this.syncing = false; 
@@ -170,8 +172,9 @@ export class GP200Model {
     }
 
     // --------------------- Syncing IR names --------------------------------------
-    addIRName(name: string) {
-      this.irNames.push(name);
+    addIRName(name: string, IRNumber: number) {
+      // this.irNames.push(name);
+      this.irNames[IRNumber] = name;
     }
 
     get AreStoredIRNamesSynced(): boolean {
