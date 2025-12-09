@@ -104,10 +104,11 @@ export class GP200MidiDecoder implements IDeviceActions {
 
         // bytes 0x19 and 0x1a encode the preset/patch number (Hex digits)
         let baseSysEx = message;
-        const high_byte = baseSysEx[0x19] 
-        const low_byte = baseSysEx[0x1a]
+        const high_byte = baseSysEx[0x19];
+        const low_byte = baseSysEx[0x1a];
 
         const num = this.decoder.nibblesToByte(high_byte, low_byte);
+        console.log("preset number:", num);
 
         // Update model
         this.gp200.changePreset(num);
@@ -572,7 +573,9 @@ export class GP200MidiDecoder implements IDeviceActions {
         const changePresetVolumePanBPM = BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
 
         // Compare to change preset message
-        if ( this.isSameMessage(message, changePresetSysEx) ) {
+        // Message to notify IR was deleted, has the same first 21 bytes and differs
+        // by last two bytes; for changing preset 00 00, for deleted IR 01 07
+        if ( this.isSameMessage(message, changePresetSysEx, 23) ) {
             console.log("Change preset message received!.");
             this.ChangePreset(message);
 

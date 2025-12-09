@@ -91,7 +91,7 @@ function ListEffect() {
                                 const IRNumber = getIRIndex(item.item.ID);
                                 console.log("Delete IR on", item.item.name, item.item.ID, IRNumber);
                                 store.gpMidiEncoder.DeleteIR(IRNumber);
-                                notifyToast();
+                                // notifyToast();
                             } else if (isNAM(item.item.ID)) {
                                 unimplementedToast();
                                 return console.log("Delete NAM on", item.item.name, item.item.ID);

@@ -569,7 +569,6 @@ export class GP200MidiEncoder implements IActions{
         message[0x1a] = lowNibble;
 
         // Update Model
-        // this.gp200.irNames[IRNumber] = "User IR";
         this.gp200.deleteIRName(IRNumber);
         
         // Send message
