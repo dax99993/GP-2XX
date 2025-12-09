@@ -1,4 +1,4 @@
-import ListEffect from '@/components/gp/effect/select_effect/ListEffect';
+import { ListEffect } from '@/components/gp/effect/select_effect/ListEffect';
 import ListEffectTopBar from '@/components/gp/effect/select_effect/ListEffectTopBar';
 import { VStack } from '@/components/ui/vstack';
 import { useKeepAwake } from 'expo-keep-awake';
