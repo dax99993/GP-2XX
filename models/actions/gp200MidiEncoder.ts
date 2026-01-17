@@ -1,5 +1,9 @@
-import { DefaultEffectsInfo } from "@/constants/DefaultEffects";
-import { BaseSysExMsg, LoadIRToMemorySysEx, LoadPresetToMemorySysEx } from "@/constants/SysExMsg";
+import { EffectsCatalog } from "@/constants/DefaultEffects";
+import {
+    BaseSysExMsg,
+    LoadIRToMemorySysEx,
+    LoadPresetToMemorySysEx,
+} from "@/constants/SysExMsg";
 import { EncoderUtils } from "@/utils/encodeUtils";
 import { PresetEncoder } from "@/utils/preset/presetEncoder";
 import { IWavInfo } from "@/utils/wav/IwavInfo";
@@ -13,765 +17,950 @@ import { KnobModule } from "../preset/IKnobSettings";
 import { IPresetInfo } from "../preset/IPresetInfo";
 import { IActions } from "./IActions";
 
-
 function mod(n: number, m: number) {
   return ((n % m) + m) % m;
 }
 
-export class GP200MidiEncoder implements IActions{
+export class GP200MidiEncoder implements IActions {
+  gp200: GP200Model;
+  midi: MidiDevice;
+  encoder: EncoderUtils;
+  presetEncoder: PresetEncoder;
 
-    gp200: GP200Model;
-    midi: MidiDevice;
-    encoder: EncoderUtils;
-    presetEncoder: PresetEncoder;
+  constructor(gp200: GP200Model, midi: MidiDevice) {
+    this.midi = midi;
+    this.gp200 = gp200;
+    this.encoder = new EncoderUtils();
+    this.presetEncoder = new PresetEncoder();
 
+    makeObservable(this, {
+      gp200: observable,
+      midi: observable,
 
-    constructor(gp200: GP200Model, midi: MidiDevice) {
-        this.midi = midi;
-        this.gp200 = gp200;
-        this.encoder = new EncoderUtils;
-        this.presetEncoder = new PresetEncoder;
+      ChangePreset: action,
+      NextPreset: action,
+      PreviousPreset: action,
 
+      ChangePresetChainOrder: action,
+      ChangePresetFxLoopPosition: action,
 
-        makeObservable(this, {
-            gp200: observable,
-            midi: observable,
+      ChangeEffectState: action,
+      ChangeEffectParamValue: action,
+      ChangeEffect: action,
+    });
+  }
 
-            ChangePreset: action,
-            NextPreset: action,
-            PreviousPreset: action,
+  get isJR() {
+    return this.gp200.isJR;
+  }
 
-            ChangePresetChainOrder: action,
-            ChangePresetFxLoopPosition: action,
+  //  --------------------------------------------------------------------------------
+  //      MIDI/MODEL ENCODE ACTIONS
+  //  ---------------------------------------------------------------------------------
 
-            ChangeEffectState: action,
-            ChangeEffectParamValue: action,
-            ChangeEffect: action,
+  // PRESET ACTIONS
+  ChangePreset(presetNumber: number) {
+    // Checks num in range [0, 255]
+    // const num = Math.min(Math.max(presetNumber, 0), 255);
+    const num = Math.min(Math.max(presetNumber, 0), this.isJR ? 254 : 255);
 
-        });
+    // Construc message
+    // bytes 0x19 and 0x1a encode the preset/patch number (Hex digits)
+    let msg = BaseSysExMsg.PresetAction.changePreset;
+    const [high_byte, low_byte] = this.encoder.byteToNibbles(num);
+    msg[0x19] = high_byte;
+    msg[0x1a] = low_byte;
 
+    // Update model
+    this.gp200.changePreset(num);
+
+    // Execute action in physical device
+    this.midi.sendMessage(msg);
+  }
+
+  NextPreset() {
+    if (this.gp200.currentPresetNumber === undefined) {
+      return;
     }
 
-    get isJR() {
-        return this.gp200.isJR;
+    let num = this.gp200.currentPresetNumber + 1;
+    if (this.isJR) {
+      num = mod(num, 255);
+    } else {
+      num = mod(num, 256);
     }
 
-    //  --------------------------------------------------------------------------------
-    //      MIDI/MODEL ENCODE ACTIONS
-    //  ---------------------------------------------------------------------------------
+    this.ChangePreset(num);
+  }
 
-    // PRESET ACTIONS
-    ChangePreset(presetNumber: number) {
-        // Checks num in range [0, 255]
-        // const num = Math.min(Math.max(presetNumber, 0), 255);
-        const num = Math.min(Math.max(presetNumber, 0), this.isJR ? 254: 255);
-
-        // Construc message
-        // bytes 0x19 and 0x1a encode the preset/patch number (Hex digits)
-        let msg = BaseSysExMsg.PresetAction.changePreset;
-        const [high_byte, low_byte] = this.encoder.byteToNibbles(num);
-        msg[0x19] = high_byte;
-        msg[0x1a] = low_byte;
-
-        // Update model
-        this.gp200.changePreset(num);
-
-        // Execute action in physical device
-        this.midi.sendMessage(msg);
+  PreviousPreset() {
+    if (this.gp200.currentPresetNumber === undefined) {
+      return;
     }
 
-    NextPreset() {
-        if (this.gp200.currentPresetNumber === undefined) { return; }
-
-        let num = this.gp200.currentPresetNumber + 1;
-        if (this.isJR) {
-            num = mod(num, 255);
-        } else {
-            num = mod(num, 256);
-        }
-
-
-        this.ChangePreset(num);
+    let num = this.gp200.currentPresetNumber - 1;
+    if (this.isJR) {
+      num = mod(num, 255);
+    } else {
+      num = mod(num, 256);
     }
 
+    this.ChangePreset(num);
+  }
 
-    PreviousPreset() {
-        if (this.gp200.currentPresetNumber === undefined) { return; }
-
-        let num = this.gp200.currentPresetNumber - 1;
-        if (this.isJR) {
-            num = mod(num, 255);
-        } else {
-            num = mod(num, 256);
-        }
-
-        this.ChangePreset(num);
+  NextBank() {
+    if (this.gp200.currentPresetBankNumber === undefined) {
+      return;
     }
 
-    NextBank() {
-        if (this.gp200.currentPresetBankNumber === undefined) { return; }
-
-        let bankNum = this.gp200.currentPresetBankNumber + 1;
-        let presetNum = 0;
-        if (this.isJR) {
-            bankNum = mod(bankNum, 85);
-            presetNum = bankNum * 3;
-        } else {
-            bankNum = mod(bankNum, 64);
-            presetNum = bankNum * 4;
-        }
-
-        this.ChangePreset(presetNum);
+    let bankNum = this.gp200.currentPresetBankNumber + 1;
+    let presetNum = 0;
+    if (this.isJR) {
+      bankNum = mod(bankNum, 85);
+      presetNum = bankNum * 3;
+    } else {
+      bankNum = mod(bankNum, 64);
+      presetNum = bankNum * 4;
     }
 
-    PrevBank() {
-        if (this.gp200.currentPresetBankNumber === undefined) { return; }
+    this.ChangePreset(presetNum);
+  }
 
-        let bankNum = this.gp200.currentPresetBankNumber - 1;
-        let presetNum = 0;
-        if (this.isJR) {
-            bankNum = mod(bankNum, 85);
-            presetNum = bankNum * 3;
-        } else {
-            bankNum = mod(bankNum, 64);
-            presetNum = bankNum * 4;
-        }
-
-        this.ChangePreset(presetNum);
+  PrevBank() {
+    if (this.gp200.currentPresetBankNumber === undefined) {
+      return;
     }
 
-    SaveCurrentPreset(presetNumberToSave: number, presetName: string) {
-        if (this.gp200.currentPreset === undefined) { return; }
-
-        // Should i check the presetNumberToSave is in appropiate range for gp200 jr and other models?
-        presetNumberToSave = Math.min(Math.max(presetNumberToSave, 0), this.isJR ? 254 : 255);
-        
-        // byte 0x15 and 0x16 Preset ID to save current preset: id is split in hex digits
-        // ** bytes 0x19 and 0x1c changing constantly IDK what they do maybe some timestamp
-        // bytes 0x1d to 0x3c Preset Name: ASCII encoded split in hex digits
-        let BaseSysEx = BaseSysExMsg.PresetAction.saveCurrentPreset;
-        const [highByte, lowByte] = this.encoder.byteToNibbles(presetNumberToSave);
-        BaseSysEx[0x15] = highByte;
-        BaseSysEx[0x16] = lowByte;
-
-        // Sanity check presetName should be at most 16 ASCII characters
-        // Enforce only printable ASCII characters
-        presetName = presetName.replace(/[^\x20-\x7E]/g, "");
-        // Remove whitespaces at the end
-        presetName = presetName.trimEnd();
-        // Fill with \0 to update whole display in GP200
-        const NullFilledPresetName = presetName.slice(0, 16).padEnd(16, "\0");
-
-        // Maximum of 16 characters
-        const encodedName = this.encoder.encodeAsciiName(NullFilledPresetName);
-
-        // Write encoded name to message
-        encodedName.forEach((c, i) => {
-            BaseSysEx[0x1d + i] = c
-        })
-
-        console.log(BaseSysEx);
-
-        //Update Model (use name without the filling \0 characters)
-        this.gp200.saveCurrentPreset(presetNumberToSave, presetName);
-
-        // Send message
-        this.midi.sendMessage(BaseSysEx);
+    let bankNum = this.gp200.currentPresetBankNumber - 1;
+    let presetNum = 0;
+    if (this.isJR) {
+      bankNum = mod(bankNum, 85);
+      presetNum = bankNum * 3;
+    } else {
+      bankNum = mod(bankNum, 64);
+      presetNum = bankNum * 4;
     }
 
-    // PRESET SETTINGS ACTIONS
-    ChangePresetVolume(volume: number) {
-        // byte 0x16 contains which parameter to change 0 -> volume; 1 -> BPM; 6 -> Pan
-        // bytes 0x19 and 0x1a contain the volume and BPM value split in hex
-        let BaseSysEx= BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
-        BaseSysEx[0x16] = 0;
+    this.ChangePreset(presetNum);
+  }
 
-        // Even if this is always positive, its encoded using twos complement  
-        const encodedValue = this.encoder.encode16BitTwosComplementToNibbles(volume);
-        for (let i = 0; i < encodedValue.length; i=i+1) {
-            BaseSysEx[0x19 + i] = encodedValue[i];
-        }
-
-        //Update Model
-        //this.gp200.currentPreset?.changeVolume(volume);
-
-        //Send message
-        this.midi.sendMessage(BaseSysEx);
+  SaveCurrentPreset(presetNumberToSave: number, presetName: string) {
+    if (this.gp200.currentPreset === undefined) {
+      return;
     }
 
-    ChangePresetBPM(bpm: number) {
-        // byte 0x16 contains which parameter to change 0 -> volume; 1 -> BPM; 6 -> Pan
-        // bytes 0x19 and 0x1a contain the volume and BPM value split in hex
-        let BaseSysEx= BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
-        BaseSysEx[0x16] = 1;
-        // Even if this is always positive, its encoded using twos complement  
-        const encodedValue = this.encoder.encode16BitTwosComplementToNibbles(bpm);
-        for (let i = 0; i < encodedValue.length; i=i+1) {
-            BaseSysEx[0x19 + i] = encodedValue[i];
-        }
-        console.log("Change BPM", bpm, encodedValue);
-        //Update Model
-        //this.gp200.currentPreset?.changeBPM(bpm);
+    // Should i check the presetNumberToSave is in appropiate range for gp200 jr and other models?
+    presetNumberToSave = Math.min(
+      Math.max(presetNumberToSave, 0),
+      this.isJR ? 254 : 255,
+    );
 
-        //Send message
-        this.midi.sendMessage(BaseSysEx);
+    // byte 0x15 and 0x16 Preset ID to save current preset: id is split in hex digits
+    // ** bytes 0x19 and 0x1c changing constantly IDK what they do maybe some timestamp
+    // bytes 0x1d to 0x3c Preset Name: ASCII encoded split in hex digits
+    let BaseSysEx = BaseSysExMsg.PresetAction.saveCurrentPreset;
+    const [highByte, lowByte] = this.encoder.byteToNibbles(presetNumberToSave);
+    BaseSysEx[0x15] = highByte;
+    BaseSysEx[0x16] = lowByte;
+
+    // Sanity check presetName should be at most 16 ASCII characters
+    // Enforce only printable ASCII characters
+    presetName = presetName.replace(/[^\x20-\x7E]/g, "");
+    // Remove whitespaces at the end
+    presetName = presetName.trimEnd();
+    // Fill with \0 to update whole display in GP200
+    const NullFilledPresetName = presetName.slice(0, 16).padEnd(16, "\0");
+
+    // Maximum of 16 characters
+    const encodedName = this.encoder.encodeAsciiName(NullFilledPresetName);
+
+    // Write encoded name to message
+    encodedName.forEach((c, i) => {
+      BaseSysEx[0x1d + i] = c;
+    });
+
+    console.log(BaseSysEx);
+
+    //Update Model (use name without the filling \0 characters)
+    this.gp200.saveCurrentPreset(presetNumberToSave, presetName);
+
+    // Send message
+    this.midi.sendMessage(BaseSysEx);
+  }
+
+  // PRESET SETTINGS ACTIONS
+  ChangePresetVolume(volume: number) {
+    // byte 0x16 contains which parameter to change 0 -> volume; 1 -> BPM; 6 -> Pan
+    // bytes 0x19 and 0x1a contain the volume and BPM value split in hex
+    let BaseSysEx = BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
+    BaseSysEx[0x16] = 0;
+
+    // Even if this is always positive, its encoded using twos complement
+    const encodedValue =
+      this.encoder.encode16BitTwosComplementToNibbles(volume);
+    for (let i = 0; i < encodedValue.length; i = i + 1) {
+      BaseSysEx[0x19 + i] = encodedValue[i];
     }
 
-    ChangePresetPan(pan: number) {
-        // byte 0x16 contains which parameter to change 0 -> volume; 1-> BPM; 6 -> Pan
-        // bytes 0x19 to 0x1c contain the PAN value encoded in two's complement
-        let BaseSysEx = BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
-        BaseSysEx[0x16] = 6;
+    //Update Model
+    //this.gp200.currentPreset?.changeVolume(volume);
 
-        const encodedValue = this.encoder.encode16BitTwosComplementToNibbles(pan);
-        for (let i = 0; i < encodedValue.length; i=i+1) {
-            BaseSysEx[0x19 + i] = encodedValue[i];
-        }
+    //Send message
+    this.midi.sendMessage(BaseSysEx);
+  }
 
-        // //Update Model
-        //this.gp200.currentPreset?.changePan(pan);
+  ChangePresetBPM(bpm: number) {
+    // byte 0x16 contains which parameter to change 0 -> volume; 1 -> BPM; 6 -> Pan
+    // bytes 0x19 and 0x1a contain the volume and BPM value split in hex
+    let BaseSysEx = BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
+    BaseSysEx[0x16] = 1;
+    // Even if this is always positive, its encoded using twos complement
+    const encodedValue = this.encoder.encode16BitTwosComplementToNibbles(bpm);
+    for (let i = 0; i < encodedValue.length; i = i + 1) {
+      BaseSysEx[0x19 + i] = encodedValue[i];
+    }
+    console.log("Change BPM", bpm, encodedValue);
+    //Update Model
+    //this.gp200.currentPreset?.changeBPM(bpm);
 
-        // //Send message
-        this.midi.sendMessage(BaseSysEx);
+    //Send message
+    this.midi.sendMessage(BaseSysEx);
+  }
+
+  ChangePresetPan(pan: number) {
+    // byte 0x16 contains which parameter to change 0 -> volume; 1-> BPM; 6 -> Pan
+    // bytes 0x19 to 0x1c contain the PAN value encoded in two's complement
+    let BaseSysEx = BaseSysExMsg.PresetSettingsAction.changePresetVolumePanBPM;
+    BaseSysEx[0x16] = 6;
+
+    const encodedValue = this.encoder.encode16BitTwosComplementToNibbles(pan);
+    for (let i = 0; i < encodedValue.length; i = i + 1) {
+      BaseSysEx[0x19 + i] = encodedValue[i];
     }
 
-    ChangePresetChainOrder(effectsChainOrder: number[]) {
-        if (this.gp200.currentPresetNumber === undefined) { return; }
-        if (this.gp200.currentPreset === undefined) { return; }
+    // //Update Model
+    //this.gp200.currentPreset?.changePan(pan);
 
-        const preset_num = this.gp200.currentPresetNumber;
-        // Keep this the same
-        const fxSendPos = this.gp200.currentPreset.fxLoop.sendPosition;
-        const fxReturnPos = this.gp200.currentPreset.fxLoop.returnPosition;
+    // //Send message
+    this.midi.sendMessage(BaseSysEx);
+  }
 
-        // bytes 0x15 and 0x16 have the preset number
-        // bytes 0x19 and 0x1a have the Fx loop send position
-        // bytes 0x1b and 0x1c have the Fx loop return position
-        // bytes 0x1d to 0x32 have the effect chain order
-        let msg = BaseSysExMsg.PresetSettingsAction.changeChainOrder;
-        // set preset number
-        const [high_byte, low_byte] = this.encoder.byteToNibbles(preset_num);
-        msg[0x15] = high_byte;
-        msg[0x16] = low_byte;
-
-        // set fx loop send pos (since value is in range 0-11) the high byte is always 0
-        msg[0x19] = 0
-        msg[0x1a] = fxSendPos;
-
-        // set fx loop return pos (since value is in range 0-11) the high byte is always 0
-        msg[0x1b] = 0
-        msg[0x1c] = fxReturnPos;
-
-        // set effect chain Order;
-        for(let i=0; i < 2 * effectsChainOrder.length; i=i+2) {
-            msg[0x1d + i] = 0;
-            msg[0x1d + i + 1] = effectsChainOrder[i/2];
-        }
-
-        // Update model
-        // This should modify a given preset not only the current, change later
-        this.gp200.currentPreset.changeEffectsChainOrder(effectsChainOrder);
-        // Also update FX send and return position
-        //this.gp200.current_effect.
-
-        // Send message        
-        this.midi.sendMessage(msg);
+  ChangePresetChainOrder(effectsChainOrder: number[]) {
+    if (this.gp200.currentPresetNumber === undefined) {
+      return;
+    }
+    if (this.gp200.currentPreset === undefined) {
+      return;
     }
 
-    // FXLOOP Settings
-    ChangePresetFxLoopPosition(sendPosition: number, returnPosition: number) {
-        if (this.gp200.currentPresetNumber === undefined) { return; }
-        if (this.gp200.currentPreset === undefined) { return; }
+    const preset_num = this.gp200.currentPresetNumber;
+    // Keep this the same
+    const fxSendPos = this.gp200.currentPreset.fxLoop.sendPosition;
+    const fxReturnPos = this.gp200.currentPreset.fxLoop.returnPosition;
 
-        const preset_num = this.gp200.currentPresetNumber;
+    // bytes 0x15 and 0x16 have the preset number
+    // bytes 0x19 and 0x1a have the Fx loop send position
+    // bytes 0x1b and 0x1c have the Fx loop return position
+    // bytes 0x1d to 0x32 have the effect chain order
+    let msg = BaseSysExMsg.PresetSettingsAction.changeChainOrder;
+    // set preset number
+    const [high_byte, low_byte] = this.encoder.byteToNibbles(preset_num);
+    msg[0x15] = high_byte;
+    msg[0x16] = low_byte;
 
-        // bytes 0x15 and 0x16 have the preset number
-        // bytes 0x19 and 0x1a have the Fx loop send position
-        // bytes 0x1b and 0x1c have the Fx loop return position
-        // bytes 0x1d to 0x32 have the effect chain order
-        let msg = BaseSysExMsg.PresetSettingsAction.changeChainOrder;
-        // set preset number
-        const [high_byte, low_byte] = this.encoder.byteToNibbles(preset_num);
-        msg[0x15] = high_byte;
-        msg[0x16] = low_byte;
+    // set fx loop send pos (since value is in range 0-11) the high byte is always 0
+    msg[0x19] = 0;
+    msg[0x1a] = fxSendPos;
 
-        // set fx loop send pos (since value is in range 0-11) the high byte is always 0
-        msg[0x19] = 0
-        msg[0x1a] = sendPosition;
+    // set fx loop return pos (since value is in range 0-11) the high byte is always 0
+    msg[0x1b] = 0;
+    msg[0x1c] = fxReturnPos;
 
-        // set fx loop return pos (since value is in range 0-11) the high byte is always 0
-        msg[0x1b] = 0
-        msg[0x1c] = returnPosition;
-
-        // set effect chain Order;
-        const effectsChainOrder = this.gp200.currentPreset.effectsChainOrder;
-        for(let i=0; i < 2 *effectsChainOrder.length; i=i+2) {
-            msg[0x1d + i] = 0;
-            msg[0x1d + i + 1] = effectsChainOrder[i/2];
-        }
-
-        // Update model
-        // This should modify a given preset not only the current, change later
-        //this.gp200.currentPreset.changeFxLoopPosition(sendPosition, returnPosition);
-
-        // Send message        
-        this.midi.sendMessage(msg);
+    // set effect chain Order;
+    for (let i = 0; i < 2 * effectsChainOrder.length; i = i + 2) {
+      msg[0x1d + i] = 0;
+      msg[0x1d + i + 1] = effectsChainOrder[i / 2];
     }
 
-    ChangePresetFxLoopSendLevel(sendLevel: number){
-        // byte 0x16 FxLoop Parameter ID: 3 -> sendLevel; 4 -> returnLevel; 5 -> mode
-        // bytes 0x19 and 0x1a Parameter Value: split in hex digits (nibbles)
-        let BaseSysEx= BaseSysExMsg.PresetSettingsAction.FxLoopSettings;
-        BaseSysEx[0x16] = 3;
-        const [highNibble, lowNibble] = this.encoder.byteToNibbles(sendLevel);
+    // Update model
+    // This should modify a given preset not only the current, change later
+    this.gp200.currentPreset.changeEffectsChainOrder(effectsChainOrder);
+    // Also update FX send and return position
+    //this.gp200.current_effect.
 
-        BaseSysEx[0x19] = highNibble;
-        BaseSysEx[0x1a] = lowNibble;
+    // Send message
+    this.midi.sendMessage(msg);
+  }
 
-        //Update Model
-        //this.gp200.currentPreset?.changeFXLoopSendLevel(sendLevel);
-
-        //Send message
-        this.midi.sendMessage(BaseSysEx);
+  // FXLOOP Settings
+  ChangePresetFxLoopPosition(sendPosition: number, returnPosition: number) {
+    if (this.gp200.currentPresetNumber === undefined) {
+      return;
+    }
+    if (this.gp200.currentPreset === undefined) {
+      return;
     }
 
-    ChangePresetFxLoopReturnLevel(returnLevel: number) {
-        // byte 0x16 FxLoop Parameter ID: 3 -> sendLevel; 4 -> returnLevel; 5 -> mode
-        // bytes 0x19 and 0x1a Parameter Value: split in hex digits (nibbles)
-        let BaseSysEx= BaseSysExMsg.PresetSettingsAction.FxLoopSettings;
-        BaseSysEx[0x16] = 4;
-        const [highNibble, lowNibble] = this.encoder.byteToNibbles(returnLevel);
+    const preset_num = this.gp200.currentPresetNumber;
 
-        BaseSysEx[0x19] = highNibble;
-        BaseSysEx[0x1a] = lowNibble;
+    // bytes 0x15 and 0x16 have the preset number
+    // bytes 0x19 and 0x1a have the Fx loop send position
+    // bytes 0x1b and 0x1c have the Fx loop return position
+    // bytes 0x1d to 0x32 have the effect chain order
+    let msg = BaseSysExMsg.PresetSettingsAction.changeChainOrder;
+    // set preset number
+    const [high_byte, low_byte] = this.encoder.byteToNibbles(preset_num);
+    msg[0x15] = high_byte;
+    msg[0x16] = low_byte;
 
-        //Update Model
-        //this.gp200.currentPreset?.changeFxLoopReturnLevel(returnLevel);
+    // set fx loop send pos (since value is in range 0-11) the high byte is always 0
+    msg[0x19] = 0;
+    msg[0x1a] = sendPosition;
 
-        //Send message
-        this.midi.sendMessage(BaseSysEx);
+    // set fx loop return pos (since value is in range 0-11) the high byte is always 0
+    msg[0x1b] = 0;
+    msg[0x1c] = returnPosition;
+
+    // set effect chain Order;
+    const effectsChainOrder = this.gp200.currentPreset.effectsChainOrder;
+    for (let i = 0; i < 2 * effectsChainOrder.length; i = i + 2) {
+      msg[0x1d + i] = 0;
+      msg[0x1d + i + 1] = effectsChainOrder[i / 2];
     }
 
-    ChangePresetFxLoopMode(mode: FxLoopMode) {
-        // byte 0x16 FxLoop Parameter ID: 3 -> sendLevel; 4 -> returnLevel; 5 -> mode
-        // bytes 0x19 and 0x1a Parameter Value: split in hex digits (nibbles)
-        let BaseSysEx = BaseSysExMsg.PresetSettingsAction.FxLoopSettings;
-        BaseSysEx[0x16] = 5;
-        const [highNibble, lowNibble] = this.encoder.byteToNibbles(mode);
+    // Update model
+    // This should modify a given preset not only the current, change later
+    //this.gp200.currentPreset.changeFxLoopPosition(sendPosition, returnPosition);
 
-        BaseSysEx[0x19] = highNibble;
-        BaseSysEx[0x1a] = lowNibble;
+    // Send message
+    this.midi.sendMessage(msg);
+  }
 
-        //Update Model
-        //this.gp200.currentPreset?.changeFxLoopMode(mode);
+  ChangePresetFxLoopSendLevel(sendLevel: number) {
+    // byte 0x16 FxLoop Parameter ID: 3 -> sendLevel; 4 -> returnLevel; 5 -> mode
+    // bytes 0x19 and 0x1a Parameter Value: split in hex digits (nibbles)
+    let BaseSysEx = BaseSysExMsg.PresetSettingsAction.FxLoopSettings;
+    BaseSysEx[0x16] = 3;
+    const [highNibble, lowNibble] = this.encoder.byteToNibbles(sendLevel);
 
-        //Send message
-        this.midi.sendMessage(BaseSysEx);
-    }
+    BaseSysEx[0x19] = highNibble;
+    BaseSysEx[0x1a] = lowNibble;
 
-    // CTRL Settings
-    ChangePresetCtrlSettings(ctrlID: number, pedalBinding: number[]) {
-        // byte 0x16 CTRL number: number with range (0 to 7)
-        // byte 0x18 CTRL mode: number with values 00 -> Yellow ; 01 -> Red
-        // byte 0x1d Pedals with id 4 to 7 bind: bitflags in low nibble		     (0000 MOD;EQ;CAB;NR)
-        // byte 0x1e Pedals with id 0 to 3 bind: bitflags in low nibble 		 (0000 AMP;DST;WAH;PRE)
-        // byte 0x20 Pedals with id 8 to 10 bind: bitflags in low nibble 		 (0000 0;VOL;RVB;DLY)
-        let BaseSysEx= BaseSysExMsg.PresetSettingsAction.CTRLSettings;
-        BaseSysEx[0x16] = ctrlID;
-        BaseSysEx[0x18] = 0; //force yellow for the moment
+    //Update Model
+    //this.gp200.currentPreset?.changeFXLoopSendLevel(sendLevel);
 
-        const pedals4to7 = pedalBinding.slice(4, 8)
+    //Send message
+    this.midi.sendMessage(BaseSysEx);
+  }
+
+  ChangePresetFxLoopReturnLevel(returnLevel: number) {
+    // byte 0x16 FxLoop Parameter ID: 3 -> sendLevel; 4 -> returnLevel; 5 -> mode
+    // bytes 0x19 and 0x1a Parameter Value: split in hex digits (nibbles)
+    let BaseSysEx = BaseSysExMsg.PresetSettingsAction.FxLoopSettings;
+    BaseSysEx[0x16] = 4;
+    const [highNibble, lowNibble] = this.encoder.byteToNibbles(returnLevel);
+
+    BaseSysEx[0x19] = highNibble;
+    BaseSysEx[0x1a] = lowNibble;
+
+    //Update Model
+    //this.gp200.currentPreset?.changeFxLoopReturnLevel(returnLevel);
+
+    //Send message
+    this.midi.sendMessage(BaseSysEx);
+  }
+
+  ChangePresetFxLoopMode(mode: FxLoopMode) {
+    // byte 0x16 FxLoop Parameter ID: 3 -> sendLevel; 4 -> returnLevel; 5 -> mode
+    // bytes 0x19 and 0x1a Parameter Value: split in hex digits (nibbles)
+    let BaseSysEx = BaseSysExMsg.PresetSettingsAction.FxLoopSettings;
+    BaseSysEx[0x16] = 5;
+    const [highNibble, lowNibble] = this.encoder.byteToNibbles(mode);
+
+    BaseSysEx[0x19] = highNibble;
+    BaseSysEx[0x1a] = lowNibble;
+
+    //Update Model
+    //this.gp200.currentPreset?.changeFxLoopMode(mode);
+
+    //Send message
+    this.midi.sendMessage(BaseSysEx);
+  }
+
+  // CTRL Settings
+  ChangePresetCtrlSettings(ctrlID: number, pedalBinding: number[]) {
+    // byte 0x16 CTRL number: number with range (0 to 7)
+    // byte 0x18 CTRL mode: number with values 00 -> Yellow ; 01 -> Red
+    // byte 0x1d Pedals with id 4 to 7 bind: bitflags in low nibble		     (0000 MOD;EQ;CAB;NR)
+    // byte 0x1e Pedals with id 0 to 3 bind: bitflags in low nibble 		 (0000 AMP;DST;WAH;PRE)
+    // byte 0x20 Pedals with id 8 to 10 bind: bitflags in low nibble 		 (0000 0;VOL;RVB;DLY)
+    let BaseSysEx = BaseSysExMsg.PresetSettingsAction.CTRLSettings;
+    BaseSysEx[0x16] = ctrlID;
+    BaseSysEx[0x18] = 0; //force yellow for the moment
+
+    const pedals4to7 =
+      pedalBinding
+        .slice(4, 8)
         .map((v, i) => v * Math.pow(2, i))
-        .reduce((accumulator, currentValue) => accumulator + currentValue, 0) & 0x0F;
+        .reduce((accumulator, currentValue) => accumulator + currentValue, 0) &
+      0x0f;
 
-        const pedals0to3 = pedalBinding.slice(0, 4)
+    const pedals0to3 =
+      pedalBinding
+        .slice(0, 4)
         .map((v, i) => v * Math.pow(2, i))
-        .reduce((accumulator, currentValue) => accumulator + currentValue, 0) & 0x0F;
+        .reduce((accumulator, currentValue) => accumulator + currentValue, 0) &
+      0x0f;
 
-
-        const pedals8to10 = pedalBinding.slice(8, 11)
+    const pedals8to10 =
+      pedalBinding
+        .slice(8, 11)
         .map((v, i) => v * Math.pow(2, i))
-        .reduce((accumulator, currentValue) => accumulator + currentValue, 0) & 0x0F;
+        .reduce((accumulator, currentValue) => accumulator + currentValue, 0) &
+      0x0f;
 
-        BaseSysEx[0x1d] = pedals4to7;
-        BaseSysEx[0x1e] = pedals0to3;
-        BaseSysEx[0x20] = pedals8to10;
+    BaseSysEx[0x1d] = pedals4to7;
+    BaseSysEx[0x1e] = pedals0to3;
+    BaseSysEx[0x20] = pedals8to10;
 
-        // //Update Model
-        this.gp200.currentPreset?.changeCtrlSettings(ctrlID, pedalBinding);
+    // //Update Model
+    this.gp200.currentPreset?.changeCtrlSettings(ctrlID, pedalBinding);
 
-        // //Send message
-        this.midi.sendMessage(BaseSysEx);
+    // //Send message
+    this.midi.sendMessage(BaseSysEx);
+  }
+
+  // EXP Settings
+  ChangePresetExpSettings(
+    expID: number,
+    expParamID: number,
+    expModule: ExpModule,
+    paramID: number,
+    paramMin: number,
+    paramMax: number,
+  ) {
+    // byte 0x15 EXP pedal to bind: values in range 0 -> 1A; 1 -> 1B; 2 -> 2
+    // byte 0x16 EXP parameter number to bind: 0 -> param 1; 1 -> param 2; 2 -> param 3
+    // byte 0x17 and 0x18 Module ID
+    // byte 0x1a Module parameter id to bind: with values in range (0 to 14)
+    // bytes 0x1d to 0x24 Parameter maximum value encoded
+    // bytes 0x25 to 0x2c Parameter minimum value encoded
+    let BaseSysEx = BaseSysExMsg.PresetSettingsAction.ExpSetting;
+    BaseSysEx[0x15] = expID;
+    BaseSysEx[0x16] = expParamID;
+    const [highNibble, lowNibble] = this.encoder.byteToNibbles(expModule);
+    BaseSysEx[0x17] = highNibble;
+    BaseSysEx[0x18] = lowNibble;
+
+    BaseSysEx[0x1a] = paramID;
+
+    const encodedMin = this.encoder.encodeParamValueFloat(paramMin);
+    const encodedMax = this.encoder.encodeParamValueFloat(paramMax);
+
+    // write both params
+    for (let i = 0; i < encodedMax.length; i = i + 1) {
+      BaseSysEx[0x1d + i] = encodedMax[i];
+      BaseSysEx[0x25 + i] = encodedMin[i];
     }
 
-    // EXP Settings
-    ChangePresetExpSettings(expID: number, expParamID: number, expModule: ExpModule, paramID: number, paramMin: number, paramMax: number) {
-        // byte 0x15 EXP pedal to bind: values in range 0 -> 1A; 1 -> 1B; 2 -> 2
-        // byte 0x16 EXP parameter number to bind: 0 -> param 1; 1 -> param 2; 2 -> param 3
-        // byte 0x17 and 0x18 Module ID
-        // byte 0x1a Module parameter id to bind: with values in range (0 to 14)
-        // bytes 0x1d to 0x24 Parameter maximum value encoded
-        // bytes 0x25 to 0x2c Parameter minimum value encoded
-        let BaseSysEx = BaseSysExMsg.PresetSettingsAction.ExpSetting;
-        BaseSysEx[0x15] = expID;
-        BaseSysEx[0x16] = expParamID;
-        const [highNibble, lowNibble] = this.encoder.byteToNibbles(expModule);
-        BaseSysEx[0x17] = highNibble;
-        BaseSysEx[0x18] = lowNibble;
+    // //Update Model
+    //this.gp200.currentPreset?.changeExpSettings(expID, expParamID, expModule, paramID, paramMin, paramMax);
 
-        BaseSysEx[0x1a] = paramID;
+    // //Send message
+    this.midi.sendMessage(BaseSysEx);
+  }
 
-        const encodedMin = this.encoder.encodeParamValueFloat(paramMin);
-        const encodedMax = this.encoder.encodeParamValueFloat(paramMax);
+  // Knob Settings
+  ChangePresetKnobSettings(
+    knobID: number,
+    knobModule: KnobModule,
+    knobParameter: number = 0,
+  ) {
+    // byte 0x16 Knob number: Number in range (0 to 2)
+    // bytes 0x17 and 0x18 Module number split in nibbles
+    // byte 0x1a Parameter number: Number in range (0 to 14)
+    let BaseSysEx = BaseSysExMsg.PresetSettingsAction.KnobSettings;
+    BaseSysEx[0x16] = knobID;
+    const [highNibble, lowNibble] = this.encoder.byteToNibbles(knobModule);
+    BaseSysEx[0x17] = highNibble;
+    BaseSysEx[0x18] = lowNibble;
 
+    BaseSysEx[0x1a] = knobParameter;
 
-        // write both params
-        for(let i = 0; i < encodedMax.length; i=i+1) {
-            BaseSysEx[0x1d + i] = encodedMax[i];
-            BaseSysEx[0x25 + i] = encodedMin[i];
-        }
+    // //Update Model
+    this.gp200.currentPreset?.changeKnobSettings(
+      knobID,
+      knobModule,
+      knobParameter,
+    );
 
-        // //Update Model
-        //this.gp200.currentPreset?.changeExpSettings(expID, expParamID, expModule, paramID, paramMin, paramMax);
+    // //Send message
+    this.midi.sendMessage(BaseSysEx);
+  }
 
-        // //Send message
-        this.midi.sendMessage(BaseSysEx);
+  // EFFECT ACTIONS
+  _contructChangeEffectMessage(
+    pedalID: EffectType,
+    effectID: number[],
+  ): number[] {
+    // 38 bytes
+    // byte 0x16 is the effect ID (0-10) ; bytes 0x1d to 0x24 are the effect ID
+    let baseSysEx = BaseSysExMsg.EffectActions.changeEffect;
+    baseSysEx[0x16] = pedalID;
+
+    // set the encoded values in message (8 bytes)
+    for (let i = 0; i < effectID.length; i++) {
+      baseSysEx[0x1d + i] = effectID[i];
     }
 
-    // Knob Settings
-    ChangePresetKnobSettings(knobID: number, knobModule: KnobModule, knobParameter: number = 0) {
-        // byte 0x16 Knob number: Number in range (0 to 2)
-        // bytes 0x17 and 0x18 Module number split in nibbles
-        // byte 0x1a Parameter number: Number in range (0 to 14)
-        let BaseSysEx= BaseSysExMsg.PresetSettingsAction.KnobSettings;
-        BaseSysEx[0x16] = knobID;
-        const [highNibble, lowNibble] = this.encoder.byteToNibbles(knobModule);
-        BaseSysEx[0x17] = highNibble;
-        BaseSysEx[0x18] = lowNibble;
+    return baseSysEx;
+  }
 
-        BaseSysEx[0x1a] = knobParameter;
-
-        // //Update Model
-        this.gp200.currentPreset?.changeKnobSettings(knobID, knobModule, knobParameter);
-
-        // //Send message
-        this.midi.sendMessage(BaseSysEx);
+  ChangeEffect(effectID: number) {
+    if (this.gp200.currentEffect === undefined) {
+      return;
     }
 
+    // This is always invoked when the current effect is the one we want to change
+    const pedalID = this.gp200.currentEffect.type;
 
-    // EFFECT ACTIONS
-    _contructChangeEffectMessage(pedalID: EffectType, effectID: number[]): number[] {
-        // 38 bytes 
-        // byte 0x16 is the effect ID (0-10) ; bytes 0x1d to 0x24 are the effect ID
-        let baseSysEx = BaseSysExMsg.EffectActions.changeEffect;
-        baseSysEx[0x16] = pedalID;
+    // Update model
+    //this.gp200.changeEffectByID(effectID, pedalID);
 
-        // set the encoded values in message (8 bytes)
-        for (let i = 0; i < effectID.length; i++) {
-            baseSysEx[0x1d + i] = effectID[i];
-        }
+    // CHECK WHEN TYPE IS AMP TO ALSO CHANGE THE APPROPIATE CAB
+    const defaultEffectsInfo = EffectsCatalog.filter(
+      (c) => c.name === EffectType[pedalID],
+    )[0].effects;
 
-        return baseSysEx;
+    let defaultEffectInfo = defaultEffectsInfo.filter(
+      (e) => e.ID == effectID,
+    )[0];
+
+    // When changing AMP implementations, also CAB needs to be changed
+    if (defaultEffectInfo.cabCode != null) {
+      const cabCodeID = defaultEffectInfo.cabCode;
+      const t: EffectType = EffectType.CAB;
+      console.log("Associated cabCode", cabCodeID);
+      const CabSysExMsg = this._contructChangeEffectMessage(
+        t,
+        this.encoder.encodeEffectIDToNibbles(cabCodeID),
+      );
+      this.midi.sendMessage(CabSysExMsg);
     }
 
-    ChangeEffect(effectID: number) {
-        if (this.gp200.currentEffect === undefined) { return; }
+    // Map int to 8 bytes hex digits little endian
+    const effectIDNibbles = this.encoder.encodeEffectIDToNibbles(effectID);
+    // Construct midi message
+    const SysExMsg = this._contructChangeEffectMessage(
+      pedalID,
+      effectIDNibbles,
+    );
+    // Send physical device
+    this.midi.sendMessage(SysExMsg);
+  }
 
-        // This is always invoked when the current effect is the one we want to change
-        const pedalID = this.gp200.currentEffect.type;
-
-        // Update model
-        //this.gp200.changeEffectByID(effectID, pedalID);
-
-        // CHECK WHEN TYPE IS AMP TO ALSO CHANGE THE APPROPIATE CAB
-        const defaultEffectsInfo = DefaultEffectsInfo[EffectType[pedalID] as keyof typeof DefaultEffectsInfo];
-        let defaultEffectInfo = defaultEffectsInfo.filter(e => e.ID == effectID)[0];
-
-        // When changing AMP implementations, also CAB needs to be changed
-        if (defaultEffectInfo.cabCode != null) { 
-            const cabCodeID = defaultEffectInfo.cabCode;
-            const t: EffectType = EffectType.CAB;
-            console.log("Associated cabCode", cabCodeID);
-            const CabSysExMsg = this._contructChangeEffectMessage(t, this.encoder.encodeEffectIDToNibbles(cabCodeID));
-            this.midi.sendMessage(CabSysExMsg);
-        }
-
-        // Map int to 8 bytes hex digits little endian
-        const effectIDNibbles = this.encoder.encodeEffectIDToNibbles(effectID)
-        // Construct midi message
-        const SysExMsg = this._contructChangeEffectMessage(pedalID, effectIDNibbles);
-        // Send physical device
-        this.midi.sendMessage(SysExMsg);
+  //ChangeEffectState(pedal_id: number, state: boolean) {
+  ChangeEffectState(state: boolean) {
+    if (this.gp200.currentPreset === undefined) {
+      return;
+    }
+    if (this.gp200.currentEffect === undefined) {
+      return;
     }
 
-    //ChangeEffectState(pedal_id: number, state: boolean) {
-    ChangeEffectState(state: boolean) {
-        if (this.gp200.currentPreset === undefined) { return; }
-        if (this.gp200.currentEffect === undefined) { return; }
+    const pedal_id = this.gp200.currentEffect.type;
+    // Check pedal_id in range [0, 10]
 
-        const pedal_id = this.gp200.currentEffect.type;
-        // Check pedal_id in range [0, 10]
+    //byte 0x16 is the effect ID (0-10) ; byte 0x18 is the state of pedal OFF -> 0, ON -> 1
+    let baseSysEx = BaseSysExMsg.EffectActions.changeState;
+    baseSysEx[0x16] = pedal_id;
+    baseSysEx[0x18] = state ? 1 : 0;
 
-        //byte 0x16 is the effect ID (0-10) ; byte 0x18 is the state of pedal OFF -> 0, ON -> 1
-        let baseSysEx = BaseSysExMsg.EffectActions.changeState;
-        baseSysEx[0x16] = pedal_id;
-        baseSysEx[0x18] = state ? 1 : 0;
+    // Update model
+    this.gp200.currentPreset.effects[pedal_id].state = state;
 
-        // Update model
-        this.gp200.currentPreset.effects[pedal_id].state = state;
+    // Send to physical device
+    this.midi.sendMessage(baseSysEx);
+  }
 
-        // Send to physical device
-        this.midi.sendMessage(baseSysEx);
+  //ChangeEffectParamValue(effectChainID: number, paramId: number, paramType: string, n:number) {
+  ChangeEffectParamValue(paramId: number, paramNumericType: string, n: number) {
+    if (this.gp200.currentEffect === undefined) {
+      return;
     }
 
-    //ChangeEffectParamValue(effectChainID: number, paramId: number, paramType: string, n:number) {
-    ChangeEffectParamValue(paramId: number, paramNumericType: string, n:number) {
-        if (this.gp200.currentEffect === undefined) { return; }
+    const effectChainID = this.gp200.currentEffect.type;
 
-        const effectChainID = this.gp200.currentEffect.type;
+    // byte 0x16 contains the effect chain id (0 to 10)
+    // byte 0x18 containes parameter id,
+    // bytes 0x25 to 0x2c contains the encoded value
+    let baseSysEx = BaseSysExMsg.EffectActions.changeParameterValue;
+    baseSysEx[0x16] = effectChainID;
+    baseSysEx[0x18] = paramId;
 
-        // byte 0x16 contains the effect chain id (0 to 10)
-        // byte 0x18 containes parameter id,
-        // bytes 0x25 to 0x2c contains the encoded value
-        let baseSysEx = BaseSysExMsg.EffectActions.changeParameterValue;
-        baseSysEx[0x16] = effectChainID;
-        baseSysEx[0x18] = paramId;
-
-        let encodedValue: number[];
-        if (paramNumericType == "float") {
-            // round number to first decimal
-            encodedValue = this.encoder.encodeParamValueFloat(n);
-        // should i check explictly for int?
-        } else {
-            // round number
-            encodedValue = this.encoder.encodeParamValueFloat(n);
-        }
-
-        // set the encoded values in message (8 bytes)
-        for (let i = 0; i <= 7; i++) {
-            baseSysEx[0x25 + i] = encodedValue[i];
-        }
-
-        // Update model
-        this.gp200.changeParamValue(effectChainID, paramId, n);
-
-        // Send to physical device
-        this.midi.sendMessage(baseSysEx);
+    let encodedValue: number[];
+    if (paramNumericType == "float") {
+      // round number to first decimal
+      encodedValue = this.encoder.encodeParamValueFloat(n);
+      // should i check explictly for int?
+    } else {
+      // round number
+      encodedValue = this.encoder.encodeParamValueFloat(n);
     }
 
-    // IR ACTIONS
-    DeleteIR(IRNumber: number) {
-        let message = BaseSysExMsg.IRActions.deleteIR;
-
-        // byte 0x19 and 0x1a contain the IR number to delete (hex digits)
-        const [highNibble, lowNibble] = this.encoder.byteToNibbles(IRNumber);
-        message[0x19] = highNibble;
-        message[0x1a] = lowNibble;
-
-        // Update Model
-        this.gp200.deleteIRName(IRNumber);
-        
-        // Send message
-        this.midi.sendMessage(message);
+    // set the encoded values in message (8 bytes)
+    for (let i = 0; i <= 7; i++) {
+      baseSysEx[0x25 + i] = encodedValue[i];
     }
 
-    LoadPresetToMemory(presetInfo: IPresetInfo, loadPosition: number) {
-        // Change preset info number and bank code to match new memory position
-        presetInfo.number = loadPosition;
-        // presetInfo.bankCode = presetNumberToBankCode(loadPosition);
+    // Update model
+    this.gp200.changeParamValue(effectChainID, paramId, n);
 
-        // Encode presetInfo to bytes
-        const presetData = this.presetEncoder.encodePresetData(presetInfo);
+    // Send to physical device
+    this.midi.sendMessage(baseSysEx);
+  }
 
-        // Convert bytes to nibbles
-        const presetDataNibbles = this.encoder.byteArrayToNibbleArray(presetData);
-        
-        // Split into 7 messages
-        let message1 = LoadPresetToMemorySysEx.message1;
-        const [highByte, lowByte] = this.encoder.byteToNibbles(loadPosition);
-        message1[25] = highByte;
-        message1[26] = lowByte;
-        message1[37] = highByte;
-        message1[38] = lowByte;
-        message1[41] = highByte;
-        message1[42] = lowByte;
-        // IDK if this bytes are always 0x05 and 0x08 or they change
-        // message1[49] = ??;
-        // message1[50] = ??;
+  // IR ACTIONS
+  DeleteIR(IRNumber: number) {
+    let message = BaseSysExMsg.IRActions.deleteIR;
 
-        const splitOffset = [0,
-            326,
-            326 + 1*366,
-            326 + 2*366,
-            326 + 3*366,
-            326 + 4*366,
-            326 + 5*366,
-            326 + 5*366 + 172,
-        ]
-        const msg1 = [...message1, ...presetDataNibbles.slice(splitOffset[0], splitOffset[1]), 0xf7];
-        const msg2 = [...LoadPresetToMemorySysEx.message2, ...presetDataNibbles.slice(splitOffset[1], splitOffset[2]), 0xf7];
-        const msg3 = [...LoadPresetToMemorySysEx.message3, ...presetDataNibbles.slice(splitOffset[2], splitOffset[3]), 0xf7];
-        const msg4 = [...LoadPresetToMemorySysEx.message4, ...presetDataNibbles.slice(splitOffset[3], splitOffset[4]), 0xf7];
-        const msg5 = [...LoadPresetToMemorySysEx.message5, ...presetDataNibbles.slice(splitOffset[4], splitOffset[5]), 0xf7];
-        const msg6 = [...LoadPresetToMemorySysEx.message6, ...presetDataNibbles.slice(splitOffset[5], splitOffset[6]), 0xf7];
-        const msg7 = [...LoadPresetToMemorySysEx.message7, ...presetDataNibbles.slice(splitOffset[6], splitOffset[7]), 0xf7];
+    // byte 0x19 and 0x1a contain the IR number to delete (hex digits)
+    const [highNibble, lowNibble] = this.encoder.byteToNibbles(IRNumber);
+    message[0x19] = highNibble;
+    message[0x1a] = lowNibble;
 
-        // Update Model 
-        this.gp200.LoadPresetTo(presetInfo, loadPosition);
+    // Update Model
+    this.gp200.deleteIRName(IRNumber);
 
-        // Send messages
-        this.midi.sendMessage(msg1);
-        this.midi.sendMessage(msg2);
-        this.midi.sendMessage(msg3);
-        this.midi.sendMessage(msg4);
-        this.midi.sendMessage(msg5);
-        this.midi.sendMessage(msg6);
-        this.midi.sendMessage(msg7);
+    // Send message
+    this.midi.sendMessage(message);
+  }
+
+  LoadPresetToMemory(presetInfo: IPresetInfo, loadPosition: number) {
+    // Change preset info number and bank code to match new memory position
+    presetInfo.number = loadPosition;
+    // presetInfo.bankCode = presetNumberToBankCode(loadPosition);
+
+    // Encode presetInfo to bytes
+    const presetData = this.presetEncoder.encodePresetData(presetInfo);
+
+    // Convert bytes to nibbles
+    const presetDataNibbles = this.encoder.byteArrayToNibbleArray(presetData);
+
+    // Split into 7 messages
+    let message1 = LoadPresetToMemorySysEx.message1;
+    const [highByte, lowByte] = this.encoder.byteToNibbles(loadPosition);
+    message1[25] = highByte;
+    message1[26] = lowByte;
+    message1[37] = highByte;
+    message1[38] = lowByte;
+    message1[41] = highByte;
+    message1[42] = lowByte;
+    // IDK if this bytes are always 0x05 and 0x08 or they change
+    // message1[49] = ??;
+    // message1[50] = ??;
+
+    const splitOffset = [
+      0,
+      326,
+      326 + 1 * 366,
+      326 + 2 * 366,
+      326 + 3 * 366,
+      326 + 4 * 366,
+      326 + 5 * 366,
+      326 + 5 * 366 + 172,
+    ];
+    const msg1 = [
+      ...message1,
+      ...presetDataNibbles.slice(splitOffset[0], splitOffset[1]),
+      0xf7,
+    ];
+    const msg2 = [
+      ...LoadPresetToMemorySysEx.message2,
+      ...presetDataNibbles.slice(splitOffset[1], splitOffset[2]),
+      0xf7,
+    ];
+    const msg3 = [
+      ...LoadPresetToMemorySysEx.message3,
+      ...presetDataNibbles.slice(splitOffset[2], splitOffset[3]),
+      0xf7,
+    ];
+    const msg4 = [
+      ...LoadPresetToMemorySysEx.message4,
+      ...presetDataNibbles.slice(splitOffset[3], splitOffset[4]),
+      0xf7,
+    ];
+    const msg5 = [
+      ...LoadPresetToMemorySysEx.message5,
+      ...presetDataNibbles.slice(splitOffset[4], splitOffset[5]),
+      0xf7,
+    ];
+    const msg6 = [
+      ...LoadPresetToMemorySysEx.message6,
+      ...presetDataNibbles.slice(splitOffset[5], splitOffset[6]),
+      0xf7,
+    ];
+    const msg7 = [
+      ...LoadPresetToMemorySysEx.message7,
+      ...presetDataNibbles.slice(splitOffset[6], splitOffset[7]),
+      0xf7,
+    ];
+
+    // Update Model
+    this.gp200.LoadPresetTo(presetInfo, loadPosition);
+
+    // Send messages
+    this.midi.sendMessage(msg1);
+    this.midi.sendMessage(msg2);
+    this.midi.sendMessage(msg3);
+    this.midi.sendMessage(msg4);
+    this.midi.sendMessage(msg5);
+    this.midi.sendMessage(msg6);
+    this.midi.sendMessage(msg7);
+  }
+
+  LoadIRToMemory(wavInfo: IWavInfo, loadPosition: number, name: string) {
+    // Encode wavInfo channel samples to 32-bit
+    const samplesDataInt32 = this.encoder.encodeNumbersToInt32Array(
+      wavInfo.channelData[0],
+    );
+    // Get an array with the bytes of 32-bit samples in little endian
+    const samplesDataUint8 =
+      this.encoder.encodeInt32ArrayToUint8Array(samplesDataInt32);
+    // Convert sample bytes to nibbles
+    const samplesDataNibbles = this.encoder.byteArrayToNibbleArray([
+      ...samplesDataUint8,
+    ]);
+
+    // Split into 23 messages
+    let message1 = LoadIRToMemorySysEx.message1;
+    const [highByte, lowByte] = this.encoder.byteToNibbles(loadPosition);
+    message1[0x15] = highByte;
+    message1[0x16] = lowByte;
+
+    // Encode name in nibbles
+    let encodedName = this.encoder.encodeAsciiName(name);
+    encodedName = [
+      ...encodedName,
+      ...Array<number>(32 - encodedName.length).fill(0),
+    ];
+
+    for (let i = 0; i < encodedName.length; i++) {
+      message1[i + 0x25] = encodedName[i];
     }
 
-    LoadIRToMemory(wavInfo: IWavInfo, loadPosition: number, name: string) {
-        // Encode wavInfo channel samples to 32-bit
-        const samplesDataInt32 = this.encoder.encodeNumbersToInt32Array(wavInfo.channelData[0]);
-        // Get an array with the bytes of 32-bit samples in little endian
-        const samplesDataUint8 = this.encoder.encodeInt32ArrayToUint8Array(samplesDataInt32);
-        // Convert sample bytes to nibbles
-        const samplesDataNibbles = this.encoder.byteArrayToNibbleArray([...samplesDataUint8]);
-        
-        // Split into 23 messages
-        let message1 = LoadIRToMemorySysEx.message1;
-        const [highByte, lowByte] = this.encoder.byteToNibbles(loadPosition);
-        message1[0x15] = highByte;
-        message1[0x16] = lowByte;
+    const splitOffset = [
+      0,
+      310,
+      310 + 1 * 366,
+      310 + 2 * 366,
+      310 + 3 * 366,
+      310 + 4 * 366,
+      310 + 5 * 366,
+      310 + 6 * 366,
+      310 + 7 * 366,
+      310 + 8 * 366,
+      310 + 9 * 366,
+      310 + 10 * 366,
+      310 + 11 * 366,
+      310 + 12 * 366,
+      310 + 13 * 366,
+      310 + 14 * 366,
+      310 + 15 * 366,
+      310 + 16 * 366,
+      310 + 17 * 366,
+      310 + 18 * 366,
+      310 + 19 * 366,
+      310 + 20 * 366,
+      310 + 21 * 366,
+      310 + 21 * 366 + 196,
+    ];
 
-        // Encode name in nibbles
-        let encodedName = this.encoder.encodeAsciiName(name);
-        encodedName = [...encodedName, ...Array<number>(32 - encodedName.length).fill(0)];
+    const msg1 = [
+      ...message1,
+      ...samplesDataNibbles.slice(splitOffset[0], splitOffset[1]),
+      0xf7,
+    ];
+    const msg2 = [
+      ...LoadIRToMemorySysEx.message2,
+      ...samplesDataNibbles.slice(splitOffset[1], splitOffset[2]),
+      0xf7,
+    ];
+    const msg3 = [
+      ...LoadIRToMemorySysEx.message3,
+      ...samplesDataNibbles.slice(splitOffset[2], splitOffset[3]),
+      0xf7,
+    ];
+    const msg4 = [
+      ...LoadIRToMemorySysEx.message4,
+      ...samplesDataNibbles.slice(splitOffset[3], splitOffset[4]),
+      0xf7,
+    ];
+    const msg5 = [
+      ...LoadIRToMemorySysEx.message5,
+      ...samplesDataNibbles.slice(splitOffset[4], splitOffset[5]),
+      0xf7,
+    ];
+    const msg6 = [
+      ...LoadIRToMemorySysEx.message6,
+      ...samplesDataNibbles.slice(splitOffset[5], splitOffset[6]),
+      0xf7,
+    ];
+    const msg7 = [
+      ...LoadIRToMemorySysEx.message7,
+      ...samplesDataNibbles.slice(splitOffset[6], splitOffset[7]),
+      0xf7,
+    ];
+    const msg8 = [
+      ...LoadIRToMemorySysEx.message8,
+      ...samplesDataNibbles.slice(splitOffset[7], splitOffset[8]),
+      0xf7,
+    ];
+    const msg9 = [
+      ...LoadIRToMemorySysEx.message9,
+      ...samplesDataNibbles.slice(splitOffset[8], splitOffset[9]),
+      0xf7,
+    ];
+    const msg10 = [
+      ...LoadIRToMemorySysEx.message10,
+      ...samplesDataNibbles.slice(splitOffset[9], splitOffset[10]),
+      0xf7,
+    ];
+    const msg11 = [
+      ...LoadIRToMemorySysEx.message11,
+      ...samplesDataNibbles.slice(splitOffset[10], splitOffset[11]),
+      0xf7,
+    ];
+    const msg12 = [
+      ...LoadIRToMemorySysEx.message12,
+      ...samplesDataNibbles.slice(splitOffset[11], splitOffset[12]),
+      0xf7,
+    ];
+    const msg13 = [
+      ...LoadIRToMemorySysEx.message13,
+      ...samplesDataNibbles.slice(splitOffset[12], splitOffset[13]),
+      0xf7,
+    ];
+    const msg14 = [
+      ...LoadIRToMemorySysEx.message14,
+      ...samplesDataNibbles.slice(splitOffset[13], splitOffset[14]),
+      0xf7,
+    ];
+    const msg15 = [
+      ...LoadIRToMemorySysEx.message15,
+      ...samplesDataNibbles.slice(splitOffset[14], splitOffset[15]),
+      0xf7,
+    ];
+    const msg16 = [
+      ...LoadIRToMemorySysEx.message16,
+      ...samplesDataNibbles.slice(splitOffset[15], splitOffset[16]),
+      0xf7,
+    ];
+    const msg17 = [
+      ...LoadIRToMemorySysEx.message17,
+      ...samplesDataNibbles.slice(splitOffset[16], splitOffset[17]),
+      0xf7,
+    ];
+    const msg18 = [
+      ...LoadIRToMemorySysEx.message18,
+      ...samplesDataNibbles.slice(splitOffset[17], splitOffset[18]),
+      0xf7,
+    ];
+    const msg19 = [
+      ...LoadIRToMemorySysEx.message19,
+      ...samplesDataNibbles.slice(splitOffset[18], splitOffset[19]),
+      0xf7,
+    ];
+    const msg20 = [
+      ...LoadIRToMemorySysEx.message20,
+      ...samplesDataNibbles.slice(splitOffset[19], splitOffset[20]),
+      0xf7,
+    ];
+    const msg21 = [
+      ...LoadIRToMemorySysEx.message21,
+      ...samplesDataNibbles.slice(splitOffset[20], splitOffset[21]),
+      0xf7,
+    ];
+    const msg22 = [
+      ...LoadIRToMemorySysEx.message22,
+      ...samplesDataNibbles.slice(splitOffset[21], splitOffset[22]),
+      0xf7,
+    ];
+    const msg23 = [
+      ...LoadIRToMemorySysEx.message23,
+      ...samplesDataNibbles.slice(splitOffset[22], splitOffset[23]),
+      0xf7,
+    ];
 
-        for(let i = 0; i < encodedName.length; i++) {
-            message1[i + 0x25] = encodedName[i];
-        }
+    // Update Model
+    this.gp200.changeIRName(loadPosition, name);
 
-        const splitOffset = [
-            0,
-            310,
-            310 + 1*366,
-            310 + 2*366,
-            310 + 3*366,
-            310 + 4*366,
-            310 + 5*366,
-            310 + 6*366,
-            310 + 7*366,
-            310 + 8*366,
-            310 + 9*366,
-            310 + 10*366,
-            310 + 11*366,
-            310 + 12*366,
-            310 + 13*366,
-            310 + 14*366,
-            310 + 15*366,
-            310 + 16*366,
-            310 + 17*366,
-            310 + 18*366,
-            310 + 19*366,
-            310 + 20*366,
-            310 + 21*366,
-            310 + 21*366 + 196,
-        ]
+    // Send messages
+    this.midi.sendMessage(msg1);
+    this.midi.sendMessage(msg2);
+    this.midi.sendMessage(msg3);
+    this.midi.sendMessage(msg4);
+    this.midi.sendMessage(msg5);
+    this.midi.sendMessage(msg6);
+    this.midi.sendMessage(msg7);
+    this.midi.sendMessage(msg8);
+    this.midi.sendMessage(msg9);
+    this.midi.sendMessage(msg10);
+    this.midi.sendMessage(msg11);
+    this.midi.sendMessage(msg12);
+    this.midi.sendMessage(msg13);
+    this.midi.sendMessage(msg14);
+    this.midi.sendMessage(msg15);
+    this.midi.sendMessage(msg16);
+    this.midi.sendMessage(msg17);
+    this.midi.sendMessage(msg18);
+    this.midi.sendMessage(msg19);
+    this.midi.sendMessage(msg20);
+    this.midi.sendMessage(msg21);
+    this.midi.sendMessage(msg22);
+    this.midi.sendMessage(msg23);
+  }
 
-        const msg1 = [...message1, ...samplesDataNibbles.slice(splitOffset[0], splitOffset[1]), 0xf7];
-        const msg2 = [...LoadIRToMemorySysEx.message2, ...samplesDataNibbles.slice(splitOffset[1], splitOffset[2]), 0xf7];
-        const msg3 = [...LoadIRToMemorySysEx.message3, ...samplesDataNibbles.slice(splitOffset[2], splitOffset[3]), 0xf7];
-        const msg4 = [...LoadIRToMemorySysEx.message4, ...samplesDataNibbles.slice(splitOffset[3], splitOffset[4]), 0xf7];
-        const msg5 = [...LoadIRToMemorySysEx.message5, ...samplesDataNibbles.slice(splitOffset[4], splitOffset[5]), 0xf7];
-        const msg6 = [...LoadIRToMemorySysEx.message6, ...samplesDataNibbles.slice(splitOffset[5], splitOffset[6]), 0xf7];
-        const msg7 = [...LoadIRToMemorySysEx.message7, ...samplesDataNibbles.slice(splitOffset[6], splitOffset[7]), 0xf7];
-        const msg8 = [...LoadIRToMemorySysEx.message8, ...samplesDataNibbles.slice(splitOffset[7], splitOffset[8]), 0xf7];
-        const msg9 = [...LoadIRToMemorySysEx.message9, ...samplesDataNibbles.slice(splitOffset[8], splitOffset[9]), 0xf7];
-        const msg10 = [...LoadIRToMemorySysEx.message10, ...samplesDataNibbles.slice(splitOffset[9], splitOffset[10]), 0xf7];
-        const msg11 = [...LoadIRToMemorySysEx.message11, ...samplesDataNibbles.slice(splitOffset[10], splitOffset[11]), 0xf7];
-        const msg12 = [...LoadIRToMemorySysEx.message12, ...samplesDataNibbles.slice(splitOffset[11], splitOffset[12]), 0xf7];
-        const msg13 = [...LoadIRToMemorySysEx.message13, ...samplesDataNibbles.slice(splitOffset[12], splitOffset[13]), 0xf7];
-        const msg14 = [...LoadIRToMemorySysEx.message14, ...samplesDataNibbles.slice(splitOffset[13], splitOffset[14]), 0xf7];
-        const msg15 = [...LoadIRToMemorySysEx.message15, ...samplesDataNibbles.slice(splitOffset[14], splitOffset[15]), 0xf7];
-        const msg16 = [...LoadIRToMemorySysEx.message16, ...samplesDataNibbles.slice(splitOffset[15], splitOffset[16]), 0xf7];
-        const msg17 = [...LoadIRToMemorySysEx.message17, ...samplesDataNibbles.slice(splitOffset[16], splitOffset[17]), 0xf7];
-        const msg18 = [...LoadIRToMemorySysEx.message18, ...samplesDataNibbles.slice(splitOffset[17], splitOffset[18]), 0xf7];
-        const msg19 = [...LoadIRToMemorySysEx.message19, ...samplesDataNibbles.slice(splitOffset[18], splitOffset[19]), 0xf7];
-        const msg20 = [...LoadIRToMemorySysEx.message20, ...samplesDataNibbles.slice(splitOffset[19], splitOffset[20]), 0xf7];
-        const msg21 = [...LoadIRToMemorySysEx.message21, ...samplesDataNibbles.slice(splitOffset[20], splitOffset[21]), 0xf7];
-        const msg22 = [...LoadIRToMemorySysEx.message22, ...samplesDataNibbles.slice(splitOffset[21], splitOffset[22]), 0xf7];
-        const msg23 = [...LoadIRToMemorySysEx.message23, ...samplesDataNibbles.slice(splitOffset[22], splitOffset[23]), 0xf7];
+  AskStoredPresetInfo(presetNumber: number) {
+    // Checks num in range [0, 255]
+    const num = Math.min(Math.max(presetNumber, 0), 255);
 
-        // Update Model 
-        this.gp200.changeIRName(loadPosition, name);
+    // Construct message
+    // bytes 19 and 1a contain the preset Number (hex digits)
+    // bytes 25 and 26 contain the preset Number (hex digits)
+    // bytes 29 and 2a contain the preset Number (hex digits)
+    let msg = BaseSysExMsg.syncPresetInfo.askPresetInfo;
+    const [high_byte, low_byte] = this.encoder.byteToNibbles(num);
+    msg[0x19] = high_byte;
+    msg[0x1a] = low_byte;
 
-        // Send messages
-        this.midi.sendMessage(msg1);
-        this.midi.sendMessage(msg2);
-        this.midi.sendMessage(msg3);
-        this.midi.sendMessage(msg4);
-        this.midi.sendMessage(msg5);
-        this.midi.sendMessage(msg6);
-        this.midi.sendMessage(msg7);
-        this.midi.sendMessage(msg8);
-        this.midi.sendMessage(msg9);
-        this.midi.sendMessage(msg10);
-        this.midi.sendMessage(msg11);
-        this.midi.sendMessage(msg12);
-        this.midi.sendMessage(msg13);
-        this.midi.sendMessage(msg14);
-        this.midi.sendMessage(msg15);
-        this.midi.sendMessage(msg16);
-        this.midi.sendMessage(msg17);
-        this.midi.sendMessage(msg18);
-        this.midi.sendMessage(msg19);
-        this.midi.sendMessage(msg20);
-        this.midi.sendMessage(msg21);
-        this.midi.sendMessage(msg22);
-        this.midi.sendMessage(msg23);
-    }
+    msg[0x25] = high_byte;
+    msg[0x26] = low_byte;
 
-    AskStoredPresetInfo(presetNumber: number) {
-        // Checks num in range [0, 255]
-        const num = Math.min(Math.max(presetNumber, 0), 255);
+    msg[0x29] = high_byte;
+    msg[0x2a] = low_byte;
 
-        // Construct message
-        // bytes 19 and 1a contain the preset Number (hex digits)
-        // bytes 25 and 26 contain the preset Number (hex digits)
-        // bytes 29 and 2a contain the preset Number (hex digits)
-        let msg = BaseSysExMsg.syncPresetInfo.askPresetInfo;
-        const [high_byte, low_byte] = this.encoder.byteToNibbles(num);
-        msg[0x19] = high_byte;
-        msg[0x1a] = low_byte;
+    // Execute action in physical device
+    this.midi.sendMessage(msg);
+  }
 
-        msg[0x25] = high_byte;
-        msg[0x26] = low_byte;
+  AskCurrentPresetInfo() {
+    this.midi.sendMessage(BaseSysExMsg.syncPresetInfo.askCurrentPresetInfo);
+  }
 
-        msg[0x29] = high_byte;
-        msg[0x2a] = low_byte;
+  AskIRName(IRNumber: number) {
+    // Checks num in range [0, 19]
+    const num = Math.min(Math.max(IRNumber, 0), 19);
 
-        // Execute action in physical device
-        this.midi.sendMessage(msg);
-    }
+    // Construct message
+    // byte 0x15 and 0x16 contains the IR position of the IR to ask the name (range 0 to 19) in hex digits
+    let msg = BaseSysExMsg.syncIRInfo.askIRName;
+    const [high_byte, low_byte] = this.encoder.byteToNibbles(num);
 
-    AskCurrentPresetInfo() {
-        this.midi.sendMessage(BaseSysExMsg.syncPresetInfo.askCurrentPresetInfo);
-    }
+    msg[0x15] = high_byte;
+    msg[0x16] = low_byte;
 
-    AskIRName(IRNumber: number) {
-        // Checks num in range [0, 19]
-        const num = Math.min(Math.max(IRNumber, 0), 19);
-
-        // Construct message
-        // byte 0x15 and 0x16 contains the IR position of the IR to ask the name (range 0 to 19) in hex digits
-        let msg = BaseSysExMsg.syncIRInfo.askIRName;
-        const [high_byte, low_byte] = this.encoder.byteToNibbles(num);
-
-        msg[0x15] = high_byte;
-        msg[0x16] = low_byte;
-
-        // Execute action in physical device
-        this.midi.sendMessage(msg);
-    }
+    // Execute action in physical device
+    this.midi.sendMessage(msg);
+  }
 }
-
