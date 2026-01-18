@@ -1,4 +1,4 @@
-import { EffectsCatalog } from "@/constants/DefaultEffects";
+import { EffectsCatalog } from "@/constants/Effects";
 import { makeAutoObservable } from "mobx";
 import {
     DeserializeParam,

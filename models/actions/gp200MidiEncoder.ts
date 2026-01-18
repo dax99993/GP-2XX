@@ -1,8 +1,9 @@
-import { EffectsCatalog } from "@/constants/DefaultEffects";
+import { CCMessages } from "@/constants/CCMsg";
+import { EffectsCatalog } from "@/constants/Effects";
 import {
-    BaseSysExMsg,
-    LoadIRToMemorySysEx,
-    LoadPresetToMemorySysEx,
+  BaseSysExMsg,
+  LoadIRToMemorySysEx,
+  LoadPresetToMemorySysEx,
 } from "@/constants/SysExMsg";
 import { EncoderUtils } from "@/utils/encodeUtils";
 import { PresetEncoder } from "@/utils/preset/presetEncoder";
@@ -75,7 +76,7 @@ export class GP200MidiEncoder implements IActions {
     this.gp200.changePreset(num);
 
     // Execute action in physical device
-    this.midi.sendMessage(msg);
+    this.midi.sendSysExMessage(msg);
   }
 
   NextPreset() {
@@ -185,7 +186,7 @@ export class GP200MidiEncoder implements IActions {
     this.gp200.saveCurrentPreset(presetNumberToSave, presetName);
 
     // Send message
-    this.midi.sendMessage(BaseSysEx);
+    this.midi.sendSysExMessage(BaseSysEx);
   }
 
   // PRESET SETTINGS ACTIONS
@@ -206,7 +207,7 @@ export class GP200MidiEncoder implements IActions {
     //this.gp200.currentPreset?.changeVolume(volume);
 
     //Send message
-    this.midi.sendMessage(BaseSysEx);
+    this.midi.sendSysExMessage(BaseSysEx);
   }
 
   ChangePresetBPM(bpm: number) {
@@ -224,7 +225,20 @@ export class GP200MidiEncoder implements IActions {
     //this.gp200.currentPreset?.changeBPM(bpm);
 
     //Send message
-    this.midi.sendMessage(BaseSysEx);
+    this.midi.sendSysExMessage(BaseSysEx);
+  }
+
+  tapTempo() {
+    let msg = CCMessages.tapTempo;
+    console.log("tapTempo msg", msg);
+    this.midi.sendCCMessage(msg.cc, msg.onValue, 0);
+    // this.midi.sendCCMessage(75, 127, 0);
+  }
+
+  toggleTuner(show: boolean) {
+    const msg = CCMessages.tuner;
+    console.log("tuner msg", msg);
+    this.midi.sendCCMessage(msg.cc, show ? msg.onValue : msg.offValue, 0);
   }
 
   ChangePresetPan(pan: number) {
@@ -242,7 +256,7 @@ export class GP200MidiEncoder implements IActions {
     //this.gp200.currentPreset?.changePan(pan);
 
     // //Send message
-    this.midi.sendMessage(BaseSysEx);
+    this.midi.sendSysExMessage(BaseSysEx);
   }
 
   ChangePresetChainOrder(effectsChainOrder: number[]) {
@@ -289,7 +303,7 @@ export class GP200MidiEncoder implements IActions {
     //this.gp200.current_effect.
 
     // Send message
-    this.midi.sendMessage(msg);
+    this.midi.sendSysExMessage(msg);
   }
 
   // FXLOOP Settings
@@ -333,7 +347,7 @@ export class GP200MidiEncoder implements IActions {
     //this.gp200.currentPreset.changeFxLoopPosition(sendPosition, returnPosition);
 
     // Send message
-    this.midi.sendMessage(msg);
+    this.midi.sendSysExMessage(msg);
   }
 
   ChangePresetFxLoopSendLevel(sendLevel: number) {
@@ -350,7 +364,7 @@ export class GP200MidiEncoder implements IActions {
     //this.gp200.currentPreset?.changeFXLoopSendLevel(sendLevel);
 
     //Send message
-    this.midi.sendMessage(BaseSysEx);
+    this.midi.sendSysExMessage(BaseSysEx);
   }
 
   ChangePresetFxLoopReturnLevel(returnLevel: number) {
@@ -367,7 +381,7 @@ export class GP200MidiEncoder implements IActions {
     //this.gp200.currentPreset?.changeFxLoopReturnLevel(returnLevel);
 
     //Send message
-    this.midi.sendMessage(BaseSysEx);
+    this.midi.sendSysExMessage(BaseSysEx);
   }
 
   ChangePresetFxLoopMode(mode: FxLoopMode) {
@@ -384,7 +398,7 @@ export class GP200MidiEncoder implements IActions {
     //this.gp200.currentPreset?.changeFxLoopMode(mode);
 
     //Send message
-    this.midi.sendMessage(BaseSysEx);
+    this.midi.sendSysExMessage(BaseSysEx);
   }
 
   // CTRL Settings
@@ -427,7 +441,7 @@ export class GP200MidiEncoder implements IActions {
     this.gp200.currentPreset?.changeCtrlSettings(ctrlID, pedalBinding);
 
     // //Send message
-    this.midi.sendMessage(BaseSysEx);
+    this.midi.sendSysExMessage(BaseSysEx);
   }
 
   // EXP Settings
@@ -467,7 +481,7 @@ export class GP200MidiEncoder implements IActions {
     //this.gp200.currentPreset?.changeExpSettings(expID, expParamID, expModule, paramID, paramMin, paramMax);
 
     // //Send message
-    this.midi.sendMessage(BaseSysEx);
+    this.midi.sendSysExMessage(BaseSysEx);
   }
 
   // Knob Settings
@@ -495,7 +509,7 @@ export class GP200MidiEncoder implements IActions {
     );
 
     // //Send message
-    this.midi.sendMessage(BaseSysEx);
+    this.midi.sendSysExMessage(BaseSysEx);
   }
 
   // EFFECT ACTIONS
@@ -545,7 +559,7 @@ export class GP200MidiEncoder implements IActions {
         t,
         this.encoder.encodeEffectIDToNibbles(cabCodeID),
       );
-      this.midi.sendMessage(CabSysExMsg);
+      this.midi.sendSysExMessage(CabSysExMsg);
     }
 
     // Map int to 8 bytes hex digits little endian
@@ -556,7 +570,7 @@ export class GP200MidiEncoder implements IActions {
       effectIDNibbles,
     );
     // Send physical device
-    this.midi.sendMessage(SysExMsg);
+    this.midi.sendSysExMessage(SysExMsg);
   }
 
   //ChangeEffectState(pedal_id: number, state: boolean) {
@@ -580,7 +594,7 @@ export class GP200MidiEncoder implements IActions {
     this.gp200.currentPreset.effects[pedal_id].state = state;
 
     // Send to physical device
-    this.midi.sendMessage(baseSysEx);
+    this.midi.sendSysExMessage(baseSysEx);
   }
 
   //ChangeEffectParamValue(effectChainID: number, paramId: number, paramType: string, n:number) {
@@ -617,7 +631,7 @@ export class GP200MidiEncoder implements IActions {
     this.gp200.changeParamValue(effectChainID, paramId, n);
 
     // Send to physical device
-    this.midi.sendMessage(baseSysEx);
+    this.midi.sendSysExMessage(baseSysEx);
   }
 
   // IR ACTIONS
@@ -633,7 +647,7 @@ export class GP200MidiEncoder implements IActions {
     this.gp200.deleteIRName(IRNumber);
 
     // Send message
-    this.midi.sendMessage(message);
+    this.midi.sendSysExMessage(message);
   }
 
   LoadPresetToMemory(presetInfo: IPresetInfo, loadPosition: number) {
@@ -710,13 +724,13 @@ export class GP200MidiEncoder implements IActions {
     this.gp200.LoadPresetTo(presetInfo, loadPosition);
 
     // Send messages
-    this.midi.sendMessage(msg1);
-    this.midi.sendMessage(msg2);
-    this.midi.sendMessage(msg3);
-    this.midi.sendMessage(msg4);
-    this.midi.sendMessage(msg5);
-    this.midi.sendMessage(msg6);
-    this.midi.sendMessage(msg7);
+    this.midi.sendSysExMessage(msg1);
+    this.midi.sendSysExMessage(msg2);
+    this.midi.sendSysExMessage(msg3);
+    this.midi.sendSysExMessage(msg4);
+    this.midi.sendSysExMessage(msg5);
+    this.midi.sendSysExMessage(msg6);
+    this.midi.sendSysExMessage(msg7);
   }
 
   LoadIRToMemory(wavInfo: IWavInfo, loadPosition: number, name: string) {
@@ -896,29 +910,29 @@ export class GP200MidiEncoder implements IActions {
     this.gp200.changeIRName(loadPosition, name);
 
     // Send messages
-    this.midi.sendMessage(msg1);
-    this.midi.sendMessage(msg2);
-    this.midi.sendMessage(msg3);
-    this.midi.sendMessage(msg4);
-    this.midi.sendMessage(msg5);
-    this.midi.sendMessage(msg6);
-    this.midi.sendMessage(msg7);
-    this.midi.sendMessage(msg8);
-    this.midi.sendMessage(msg9);
-    this.midi.sendMessage(msg10);
-    this.midi.sendMessage(msg11);
-    this.midi.sendMessage(msg12);
-    this.midi.sendMessage(msg13);
-    this.midi.sendMessage(msg14);
-    this.midi.sendMessage(msg15);
-    this.midi.sendMessage(msg16);
-    this.midi.sendMessage(msg17);
-    this.midi.sendMessage(msg18);
-    this.midi.sendMessage(msg19);
-    this.midi.sendMessage(msg20);
-    this.midi.sendMessage(msg21);
-    this.midi.sendMessage(msg22);
-    this.midi.sendMessage(msg23);
+    this.midi.sendSysExMessage(msg1);
+    this.midi.sendSysExMessage(msg2);
+    this.midi.sendSysExMessage(msg3);
+    this.midi.sendSysExMessage(msg4);
+    this.midi.sendSysExMessage(msg5);
+    this.midi.sendSysExMessage(msg6);
+    this.midi.sendSysExMessage(msg7);
+    this.midi.sendSysExMessage(msg8);
+    this.midi.sendSysExMessage(msg9);
+    this.midi.sendSysExMessage(msg10);
+    this.midi.sendSysExMessage(msg11);
+    this.midi.sendSysExMessage(msg12);
+    this.midi.sendSysExMessage(msg13);
+    this.midi.sendSysExMessage(msg14);
+    this.midi.sendSysExMessage(msg15);
+    this.midi.sendSysExMessage(msg16);
+    this.midi.sendSysExMessage(msg17);
+    this.midi.sendSysExMessage(msg18);
+    this.midi.sendSysExMessage(msg19);
+    this.midi.sendSysExMessage(msg20);
+    this.midi.sendSysExMessage(msg21);
+    this.midi.sendSysExMessage(msg22);
+    this.midi.sendSysExMessage(msg23);
   }
 
   AskStoredPresetInfo(presetNumber: number) {
@@ -941,11 +955,13 @@ export class GP200MidiEncoder implements IActions {
     msg[0x2a] = low_byte;
 
     // Execute action in physical device
-    this.midi.sendMessage(msg);
+    this.midi.sendSysExMessage(msg);
   }
 
   AskCurrentPresetInfo() {
-    this.midi.sendMessage(BaseSysExMsg.syncPresetInfo.askCurrentPresetInfo);
+    this.midi.sendSysExMessage(
+      BaseSysExMsg.syncPresetInfo.askCurrentPresetInfo,
+    );
   }
 
   AskIRName(IRNumber: number) {
@@ -961,6 +977,6 @@ export class GP200MidiEncoder implements IActions {
     msg[0x16] = low_byte;
 
     // Execute action in physical device
-    this.midi.sendMessage(msg);
+    this.midi.sendSysExMessage(msg);
   }
 }
