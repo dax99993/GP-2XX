@@ -4,7 +4,6 @@ import React from 'react';
 
 export default function TabLayout() {
   //const colorScheme = useColorScheme();
-  
 
   return (
       <Stack>

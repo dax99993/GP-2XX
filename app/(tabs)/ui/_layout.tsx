@@ -49,6 +49,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="global"
+        options={{
+          //href: null, //Maybe add this screen later
+          title: 'Global',
+          tabBarIcon: ({ color }) => <Ionicons name="settings" size={28} color={color} />
+        }}
+      />
+      <Tabs.Screen
         name="test"
         options={{
           href: null, //Remove when testing
